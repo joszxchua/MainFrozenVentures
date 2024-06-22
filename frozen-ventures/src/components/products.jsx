@@ -13,7 +13,7 @@ export const Products = () => {
       <div className="relative">
         <img
           src={Blueberry}
-          alt="Product Image"
+          alt="Product"
           className="w-[300px] rounded-2xl"
         />
         <FontAwesomeIcon

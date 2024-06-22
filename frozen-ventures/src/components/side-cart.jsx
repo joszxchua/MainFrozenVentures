@@ -8,7 +8,7 @@ import {
   faMinus,
 } from "@fortawesome/free-solid-svg-icons";
 
-export const SideCart = forwardRef(({ closeSideCart }, ref) => {
+export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
   return (
     <div
       ref={ref}
@@ -52,7 +52,7 @@ export const SideCart = forwardRef(({ closeSideCart }, ref) => {
           <div className="py-4 flex justify-between text-lg">
             <p>Php 120.00</p>
 
-            <div className="flex gap-5 items-center">
+            <div className="flex gap-7 items-center">
               <FontAwesomeIcon
                 icon={faMinus}
                 className="text-xl cursor-pointer"
@@ -71,7 +71,10 @@ export const SideCart = forwardRef(({ closeSideCart }, ref) => {
         </div>
 
         <div className="border-t-2 py-10 flex justify-between">
-          <button className="font-bold text-lg px-3 py-1 bg-white text-purple-200 rounded-md border-2 border-purple-200 hover:text-white hover:bg-purple-200 duration-300 ease-in-out">
+          <button
+            onClick={cartClick}
+            className="font-bold text-lg px-3 py-1 bg-white text-purple-200 rounded-md border-2 border-purple-200 hover:text-white hover:bg-purple-200 duration-300 ease-in-out"
+          >
             View Cart
           </button>
           <button className="text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">

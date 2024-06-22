@@ -26,6 +26,15 @@ export const Navbar = () => {
     }
   };
 
+  const handleCloseSideCart = () => {
+    setShowSideCart(false);
+  };
+
+  const handleViewCartClick = () => {
+    setShowSideCart(false);
+    navigate("/cart");
+  };
+
   useEffect(() => {
     if (showSideCart) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -42,10 +51,7 @@ export const Navbar = () => {
     <div className="fixed top-0 left-0 p-5 bg-white w-full flex justify-between z-50">
       {showSideCart && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30 backdrop-blur-sm">
-          <SideCart
-            ref={sideCartRef}
-            closeSideCart={() => setShowSideCart(false)}
-          />
+          <SideCart ref={sideCartRef} closeSideCart={handleCloseSideCart} cartClick={handleViewCartClick}/>
         </div>
       )}
       <div

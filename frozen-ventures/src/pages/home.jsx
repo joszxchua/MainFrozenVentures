@@ -2,8 +2,15 @@ import React from "react";
 import Bg from "../assets/home-bg.jpg";
 import MoreFlavors from "../assets/MoreFlavors.png";
 import { Products } from "../components/products";
+import { useNavigate } from "react-router-dom";
 
 export const Home = () => {
+  const navigate = useNavigate();
+
+  const handleShopClick = () => {
+    navigate("/shop");
+  };
+
   return (
     <div className="mt-20 overflow-hidden">
       {/* HERO SECTION */}
@@ -21,7 +28,10 @@ export const Home = () => {
             Connecting You to the Finest Ice Cream Delights - Taste the Magic in
             Every Scoop!
           </p>
-          <button className="mt-5 font-inter font-bold text-xl text-white bg-purple-200 px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
+          <button
+            onClick={handleShopClick}
+            className="mt-5 font-inter font-bold text-xl text-white bg-purple-200 px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+          >
             Shop Now
           </button>
         </div>
@@ -52,7 +62,10 @@ export const Home = () => {
             Explore our extensive product catalog for a diverse range of
             delicious flavors, from classic favorites to innovative creations.{" "}
           </p>
-          <button className="mt-6 font-bold text-lg px-3 py-1 bg-white text-purple-200 rounded-md border-2 border-white hover:text-white hover:bg-purple-200 duration-300 ease-in-out">
+          <button
+            onClick={handleShopClick}
+            className="mt-6 font-bold text-lg px-3 py-1 bg-white text-purple-200 rounded-md border-2 border-white hover:text-white hover:bg-purple-200 duration-300 ease-in-out"
+          >
             More Flavors
           </button>
         </div>

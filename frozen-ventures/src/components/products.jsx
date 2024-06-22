@@ -28,7 +28,7 @@ export const Products = () => {
           <p className="text-gray-200">Shop Name</p>
         </div>
 
-        <div className="my-2 flex gap-2">
+        <div className="py-5 flex gap-2">
           <FontAwesomeIcon icon={faStar} className="text-purple-200 text-3xl" />
           <FontAwesomeIcon icon={faStar} className="text-purple-200 text-3xl" />
           <FontAwesomeIcon icon={faStar} className="text-purple-200 text-3xl" />

@@ -1,12 +1,19 @@
-import { useState } from 'react'
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Navbar } from "./components/navbar";
+import { Home } from "./pages/home";
 
 function App() {
-
   return (
     <>
-     <p className="text-purple-200">SADASDBHJKASDB</p>
+      <Router>
+      <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </Router>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

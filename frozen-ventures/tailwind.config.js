@@ -19,6 +19,9 @@ export default {
           100: '#BDADFF',
           200: '#7B6AC2',
         }
+      },
+      fontFamily: {
+        inter: ['Inter', 'sans-serif'],
       }
     },
   },

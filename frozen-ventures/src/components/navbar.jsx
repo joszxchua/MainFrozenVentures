@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import logo from "../assets/logo.jpg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { SideCart } from "./side-cart";
 
 export const Navbar = () => {
   const [showSideCart, setShowSideCart] = useState(false);
   const sideCartRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleTitleClick = () => {
     navigate("/");
@@ -14,6 +15,10 @@ export const Navbar = () => {
 
   const handleShopClick = () => {
     navigate("/shop");
+  };
+
+  const handleSignClick = () => {
+    navigate("/sign");
   };
 
   const handleCartClick = () => {
@@ -47,11 +52,19 @@ export const Navbar = () => {
     };
   }, [showSideCart]);
 
+  if (location.pathname === "/sign") {
+    return null;
+  }
+
   return (
     <div className="fixed top-0 left-0 p-5 bg-white w-full flex justify-between z-50">
       {showSideCart && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30 backdrop-blur-sm">
-          <SideCart ref={sideCartRef} closeSideCart={handleCloseSideCart} cartClick={handleViewCartClick}/>
+          <SideCart
+            ref={sideCartRef}
+            closeSideCart={handleCloseSideCart}
+            cartClick={handleViewCartClick}
+          />
         </div>
       )}
       <div
@@ -75,7 +88,10 @@ export const Navbar = () => {
         >
           Cart
         </p>
-        <button className="bg-purple-200 text-white font-inter font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
+        <button
+          onClick={handleSignClick}
+          className="bg-purple-200 text-white font-inter font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+        >
           Sign In
         </button>
       </div>

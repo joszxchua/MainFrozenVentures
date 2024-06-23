@@ -1,27 +1,40 @@
 import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import municipalitiesInBataan from "../../../municipalities";
 
 export const SignUp = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [personalInfo, setPersonalInfo] = useState({
-    firstName: "",
-    lastName: "",
-    gender: "",
-    birthdate: "",
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      gender: "",
+      birthdate: "",
+      street: "",
+      municipality: "",
+      barangay: "",
+      province: "Bataan",
+      zipCode: "",
+      userRole: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
+
+  const [currentStep, setCurrentStep] = useState(1);
   const [addressInfo, setAddressInfo] = useState({
     street: "",
     barangay: "",
     municipality: "",
     province: "Bataan",
     zipCode: "",
-  });
-  const [accountInfo, setAccountInfo] = useState({
-    userRole: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
   });
   const [selectedMunicipality, setSelectedMunicipality] = useState("");
   const [barangays, setBarangays] = useState([]);
@@ -31,7 +44,11 @@ export const SignUp = () => {
   };
 
   const handleNextStep = () => {
-    setCurrentStep((prevStep) => prevStep + 1);
+    handleSubmit((data) => {
+      if (Object.keys(errors).length === 0) {
+        setCurrentStep((prevStep) => prevStep + 1);
+      }
+    })();
   };
 
   const getMaxDate = () => {
@@ -73,28 +90,45 @@ export const SignUp = () => {
         ...prevAddress,
         zipCode: selectedBarangay.zipCode,
       }));
+      setValue("zipCode", selectedBarangay.zipCode);
     }
-  }, [addressInfo.barangay, barangays]);
+  }, [addressInfo.barangay, barangays, setValue]);
 
   const handleChangeMunicipality = (e) => {
-    setSelectedMunicipality(e.target.value);
-    setAddressInfo({
-      ...addressInfo,
-      municipality: e.target.value,
-      barangay: "",
-    });
+    const selectedMunicipalityName = e.target.value;
+    setSelectedMunicipality(selectedMunicipalityName);
+
+    const selectedMunicipalityObj = municipalitiesInBataan.find(
+      (municipality) => municipality.name === selectedMunicipalityName
+    );
+
+    if (selectedMunicipalityObj) {
+      setAddressInfo({
+        ...addressInfo,
+        municipality: selectedMunicipalityName,
+        barangay: "",
+      });
+
+      setBarangays(
+        selectedMunicipalityObj.barangays.map((barangay) => ({
+          name: barangay.name,
+          zipCode: barangay.zipCode,
+        }))
+      );
+    }
   };
 
-  const handleSignUp = (e) => {
-    e.preventDefault();
-    
-    console.log("Signing up with:", personalInfo, addressInfo, accountInfo);
+  const handleSignUp = (data) => {
+    console.log("Signing up with:", data);
   };
 
   return (
     <>
       <div className="w-full flex flex-col">
-        <form action="" className="flex flex-col justify-center gap-10">
+        <form
+          onSubmit={handleSubmit(handleSignUp)}
+          className="flex flex-col justify-center gap-10"
+        >
           {currentStep === 1 && (
             <>
               <div className="flex justify-between gap-5">
@@ -103,36 +137,30 @@ export const SignUp = () => {
                     First Name:
                   </label>
                   <input
-                    className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                    {...register("firstName", { required: true })}
+                    className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
+                      errors.firstName ? "border-red-500" : ""
+                    }`}
                     type="text"
-                    name="firstName"
-                    id="firstName"
-                    value={personalInfo.firstName}
-                    onChange={(e) =>
-                      setPersonalInfo({
-                        ...personalInfo,
-                        firstName: e.target.value,
-                      })
-                    }
                   />
+                  {errors.firstName && (
+                    <span className="text-red-500">First name is required</span>
+                  )}
                 </div>
                 <div className="flex flex-col w-full">
                   <label className="font-semibold text-xl" htmlFor="lastName">
                     Last Name:
                   </label>
                   <input
-                    className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                    {...register("lastName", { required: true })}
+                    className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
+                      errors.lastName ? "border-red-500" : ""
+                    }`}
                     type="text"
-                    name="lastName"
-                    id="lastName"
-                    value={personalInfo.lastName}
-                    onChange={(e) =>
-                      setPersonalInfo({
-                        ...personalInfo,
-                        lastName: e.target.value,
-                      })
-                    }
                   />
+                  {errors.lastName && (
+                    <span className="text-red-500">Last name is required</span>
+                  )}
                 </div>
               </div>
 
@@ -141,21 +169,19 @@ export const SignUp = () => {
                   Gender:
                 </label>
                 <select
-                  className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
-                  name="gender"
-                  id="gender"
-                  value={personalInfo.gender}
-                  onChange={(e) =>
-                    setPersonalInfo({ ...personalInfo, gender: e.target.value })
-                  }
+                  {...register("gender", { required: true })}
+                  className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
+                    errors.gender ? "border-red-500" : ""
+                  }`}
                 >
-                  <option value="" disabled>
-                    Select your gender
-                  </option>
+                  <option value="">Select your gender</option>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
                   <option value="prefer-not-to-say">Prefer not to say</option>
                 </select>
+                {errors.gender && (
+                  <span className="text-red-500">Gender is required</span>
+                )}
               </div>
 
               <div className="flex flex-col w-full">
@@ -163,19 +189,16 @@ export const SignUp = () => {
                   Birthday:
                 </label>
                 <input
-                  className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                  {...register("birthdate", { required: true })}
+                  className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
+                    errors.birthdate ? "border-red-500" : ""
+                  }`}
                   type="date"
-                  name="birthdate"
-                  id="birthdate"
-                  value={personalInfo.birthdate}
                   max={getMaxDate()}
-                  onChange={(e) =>
-                    setPersonalInfo({
-                      ...personalInfo,
-                      birthdate: e.target.value,
-                    })
-                  }
                 />
+                {errors.birthdate && (
+                  <span className="text-red-500">Birthdate is required</span>
+                )}
               </div>
             </>
           )}
@@ -186,15 +209,15 @@ export const SignUp = () => {
                   Street:
                 </label>
                 <input
-                  className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                  {...register("street", { required: true })}
+                  className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
+                    errors.street ? "border-red-500" : ""
+                  }`}
                   type="text"
-                  id="street"
-                  name="street"
-                  value={addressInfo.street}
-                  onChange={(e) =>
-                    setAddressInfo({ ...addressInfo, street: e.target.value })
-                  }
                 />
+                {errors.street && (
+                  <span className="text-red-500">Street is required</span>
+                )}
               </div>
 
               <div className="flex flex-col w-full">
@@ -202,21 +225,22 @@ export const SignUp = () => {
                   Municipality:
                 </label>
                 <select
-                  className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
-                  id="municipality"
-                  name="municipality"
-                  value={addressInfo.municipality}
+                  {...register("municipality", { required: true })}
+                  className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
+                    errors.municipality ? "border-red-500" : ""
+                  }`}
                   onChange={handleChangeMunicipality}
                 >
-                  <option value="" disabled>
-                    Select Municipality
-                  </option>
+                  <option value="">Select Municipality</option>
                   {municipalities.map((municipality, index) => (
                     <option key={index} value={municipality.name}>
                       {municipality.name}
                     </option>
                   ))}
                 </select>
+                {errors.municipality && (
+                  <span className="text-red-500">Municipality is required</span>
+                )}
               </div>
 
               <div className="flex flex-col w-full">
@@ -224,48 +248,44 @@ export const SignUp = () => {
                   Barangay:
                 </label>
                 <select
-                  className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
-                  id="barangay"
-                  name="barangay"
-                  value={addressInfo.barangay}
-                  onChange={(e) =>
-                    setAddressInfo({ ...addressInfo, barangay: e.target.value })
-                  }
+                  {...register("barangay", { required: true })}
+                  className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
+                    errors.barangay ? "border-red-500" : ""
+                  }`}
                 >
-                  <option value="" disabled>
-                    Select Barangay
-                  </option>
+                  <option value="">Select Barangay</option>
                   {barangays.map((barangay, index) => (
                     <option key={index} value={barangay.name}>
                       {barangay.name}
                     </option>
                   ))}
                 </select>
+                {errors.barangay && (
+                  <span className="text-red-500">Barangay is required</span>
+                )}
               </div>
 
               <div className="flex justify-between gap-5">
                 <div className="flex flex-col w-full">
                   <label className="font-semibold text-xl" htmlFor="province">
-                    Province:
+                    Province:{" "}
                   </label>
                   <input
+                    {...register("province")}
                     className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
                     type="text"
-                    id="province"
-                    name="province"
                     value={addressInfo.province}
                     readOnly
                   />
                 </div>
-                <div className="  flex flex-col w-full">
+                <div className="flex flex-col w-full">
                   <label className="font-semibold text-xl" htmlFor="zipCode">
                     Zip Code:
                   </label>
                   <input
+                    {...register("zipCode")}
                     className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
                     type="text"
-                    id="zipCode"
-                    name="zipCode"
                     value={addressInfo.zipCode}
                     readOnly
                   />
@@ -280,41 +300,38 @@ export const SignUp = () => {
                   User Role:
                 </label>
                 <select
-                  id="userRole"
-                  name="userRole"
-                  value={accountInfo.userRole}
-                  onChange={(e) =>
-                    setAccountInfo({
-                      ...accountInfo,
-                      userRole: e.target.value,
-                    })
-                  }
-                  className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                  {...register("userRole", { required: true })}
+                  className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
+                    errors.userRole ? "border-red-500" : ""
+                  }`}
                 >
-                  <option value="" disabled>
-                    Select a role
-                  </option>
+                  <option value="">Select a role</option>
                   <option value="customer">Customer</option>
                   <option value="retailer">Retailer</option>
                   <option value="distributor">Distributor</option>
                   <option value="manufacturer">Manufacturer</option>
                 </select>
+                {errors.userRole && (
+                  <span className="text-red-500">User role is required</span>
+                )}
               </div>
 
               <div className="flex flex-col w-full">
-                <label className="font-semibold text-xl" htmlFor="emailAdd">
+                <label className="font-semibold text-xl" htmlFor="email">
                   Email Address:
                 </label>
                 <input
+                  {...register("email", { required: true })}
                   type="email"
-                  id="emailAdd"
-                  name="emailAdd"
-                  value={accountInfo.email}
-                  onChange={(e) =>
-                    setAccountInfo({ ...accountInfo, email: e.target.value })
-                  }
-                  className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                  className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
+                    errors.email ? "border-red-500" : ""
+                  }`}
                 />
+                {errors.email && (
+                  <span className="text-red-500">
+                    Email address is required
+                  </span>
+                )}
               </div>
 
               <div className="flex flex-col w-full">
@@ -322,15 +339,15 @@ export const SignUp = () => {
                   Phone:
                 </label>
                 <input
+                  {...register("phone", { required: true })}
                   type="tel"
-                  id="phone"
-                  name="phone"
-                  value={accountInfo.phone}
-                  onChange={(e) =>
-                    setAccountInfo({ ...accountInfo, phone: e.target.value })
-                  }
-                  className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                  className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
+                    errors.phone ? "border-red-500" : ""
+                  }`}
                 />
+                {errors.phone && (
+                  <span className="text-red-500">Phone number is required</span>
+                )}
               </div>
 
               <div className="flex justify-between gap-5">
@@ -339,18 +356,15 @@ export const SignUp = () => {
                     Password:
                   </label>
                   <input
+                    {...register("password", { required: true })}
                     type="password"
-                    id="password"
-                    name="password"
-                    value={accountInfo.password}
-                    onChange={(e) =>
-                      setAccountInfo({
-                        ...accountInfo,
-                        password: e.target.value,
-                      })
-                    }
-                    className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                    className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
+                      errors.password ? "border-red-500" : ""
+                    }`}
                   />
+                  {errors.password && (
+                    <span className="text-red-500">Password is required</span>
+                  )}
                 </div>
 
                 <div className="flex flex-col w-full">
@@ -361,59 +375,67 @@ export const SignUp = () => {
                     Confirm Password:
                   </label>
                   <input
+                    {...register("confirmPassword", {
+                      required: true,
+                      validate: (value) => value === watch("password"),
+                    })}
                     type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={accountInfo.confirmPassword}
-                    onChange={(e) =>
-                      setAccountInfo({
-                        ...accountInfo,
-                        confirmPassword: e.target.value,
-                      })
-                    }
-                    className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                    className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
+                      errors.confirmPassword ? "border-red-500" : ""
+                    }`}
                   />
+                  {errors.confirmPassword &&
+                    errors.confirmPassword.type === "required" && (
+                      <span className="text-red-500">
+                        Confirm password is required
+                      </span>
+                    )}
+                  {errors.confirmPassword &&
+                    errors.confirmPassword.type === "validate" && (
+                      <span className="text-red-500">Passwords must match</span>
+                    )}
                 </div>
               </div>
             </div>
           )}
-        </form>
+          <div className="w-full mt-10 flex flex-col items-center justify-center gap-10">
+            <div className="w-full flex justify-around font-bold">
+              {currentStep > 1 && (
+                <button
+                  onClick={handleBackStep}
+                  type="button"
+                  className="text-lg px-3 py-1 rounded-md border-2 bg-white w-40 text-purple-200 border-purple-200 hover:bg-purple-200 duration-300 hover:text-white ease-in-out"
+                >
+                  Back
+                </button>
+              )}
+              {currentStep >= 1 && currentStep <= 2 && (
+                <button
+                  type="button"
+                  onClick={handleNextStep}
+                  className="text-lg px-3 py-1 rounded-md border-2 bg-purple-200 w-40 text-white border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                >
+                  Next
+                </button>
+              )}
+              {currentStep === 3 && (
+                <button
+                  type="submit"
+                  className="text-lg px-3 py-1 rounded-md border-2 bg-purple-200 w-40 text-white border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                >
+                  Sign Up
+                </button>
+              )}
+            </div>
 
-        <div className="w-full mt-10 flex flex-col items-center justify-center gap-10">
-          <div className="w-full flex justify-around font-bold">
-            {currentStep > 1 && (
-              <button
-                onClick={handleBackStep}
-                className="text-lg px-3 py-1 rounded-md border-2 bg-white w-40 text-purple-200 border-purple-200 hover:bg-purple-200 duration-300 hover:text-white ease-in-out"
-              >
-                Back
-              </button>
-            )}
-            {currentStep >= 1 && currentStep <= 2 && (
-              <button
-                onClick={handleNextStep}
-                className="text-lg px-3 py-1 rounded-md border-2 bg-purple-200 w-40 text-white border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
-              >
-                Next
-              </button>
-            )}
-            {currentStep === 3 && (
-              <button
-                onClick={handleSignUp}
-                className="text-lg px-3 py-1 rounded-md border-2 bg-purple-200 w-40 text-white border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
-              >
-                Sign Up
-              </button>
-            )}
+            <p className="text-lg text-gray-200">
+              Already have an account?{" "}
+              <span className="font-bold text-purple-200 cursor-pointer">
+                Sign In
+              </span>
+            </p>
           </div>
-
-          <p className="text-lg text-gray-200">
-            Already have an account?{" "}
-            <span className="font-bold text-purple-200 cursor-pointer">
-              Sign In
-            </span>
-          </p>
-        </div>
+        </form>
       </div>
     </>
   );

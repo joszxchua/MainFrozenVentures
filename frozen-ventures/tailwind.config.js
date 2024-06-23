@@ -11,7 +11,7 @@ export default {
         white: '#FFFFFF',
 
         gray: {
-          100: '#D9D9D9',
+          100: '#ECECEC',
           200:'#737373',
         },
 

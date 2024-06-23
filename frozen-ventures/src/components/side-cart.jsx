@@ -52,7 +52,7 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
           <div className="py-4 flex justify-between text-lg">
             <p>Php 120.00</p>
 
-            <div className="flex gap-7 items-center">
+            <div className="flex gap-100 items-center">
               <FontAwesomeIcon
                 icon={faMinus}
                 className="text-xl cursor-pointer"

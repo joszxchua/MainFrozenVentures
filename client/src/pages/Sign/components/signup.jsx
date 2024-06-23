@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import municipalitiesInBataan from "../../../municipalities";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 export const SignUp = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedMunicipality, setSelectedMunicipality] = useState("");
   const [selectedBarangay, setSelectedBarangay] = useState("");
   const [barangays, setBarangays] = useState([]);
-
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const {
     register,
     handleSubmit,
@@ -32,6 +35,14 @@ export const SignUp = () => {
       confirmPassword: "",
     },
   });
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible((prev) => !prev);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setConfirmPasswordVisible((prev) => !prev);
+  };
 
   const handleBackStep = () => {
     setCurrentStep(currentStep - 1);
@@ -81,11 +92,11 @@ export const SignUp = () => {
     setSelectedBarangay("");
     setValue("barangay", "");
     setValue("zipCode", "");
-  
+
     const selectedMunicipalityObj = municipalitiesInBataan.find(
       (municipality) => municipality.name === selectedMunicipalityName
     );
-  
+
     if (selectedMunicipalityObj) {
       setBarangays(
         selectedMunicipalityObj.barangays.map((barangay) => barangay.name)
@@ -345,13 +356,18 @@ export const SignUp = () => {
               </div>
 
               <div className="flex justify-between gap-5">
-                <div className="flex flex-col w-full">
+                <div className="relative flex flex-col w-full">
+                  <FontAwesomeIcon
+                    icon={passwordVisible ? faEyeSlash : faEye}
+                    className="absolute top-0 right-0 text-xl p-2 cursor-pointer text-gray-200"
+                    onClick={togglePasswordVisibility}
+                  />
                   <label className="font-semibold text-xl" htmlFor="password">
                     Password:
                   </label>
                   <input
                     {...register("password", { required: true })}
-                    type="password"
+                    type={passwordVisible ? "text" : "password"}
                     className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
                       errors.password ? "border-red-500" : ""
                     }`}
@@ -361,7 +377,12 @@ export const SignUp = () => {
                   )}
                 </div>
 
-                <div className="flex flex-col w-full">
+                <div className="relative flex flex-col w-full">
+                  <FontAwesomeIcon
+                    icon={confirmPasswordVisible ? faEyeSlash : faEye}
+                    className="absolute top-0 right-0 text-xl p-2 cursor-pointer text-gray-200"
+                    onClick={toggleConfirmPasswordVisibility}
+                  />
                   <label
                     className="font-semibold text-xl"
                     htmlFor="confirmPassword"
@@ -373,7 +394,7 @@ export const SignUp = () => {
                       required: true,
                       validate: (value) => value === watch("password"),
                     })}
-                    type="password"
+                    type={confirmPasswordVisible ? "text" : "password"}
                     className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
                       errors.confirmPassword ? "border-red-500" : ""
                     }`}

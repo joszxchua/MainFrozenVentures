@@ -16,6 +16,13 @@ export const SignUp = () => {
     province: "Bataan",
     zipCode: "",
   });
+  const [accountInfo, setAccountInfo] = useState({
+    userRole: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [selectedMunicipality, setSelectedMunicipality] = useState("");
   const [barangays, setBarangays] = useState([]);
 
@@ -80,13 +87,15 @@ export const SignUp = () => {
 
   const handleSignUp = (e) => {
     e.preventDefault();
+    
+    console.log("Signing up with:", personalInfo, addressInfo, accountInfo);
   };
 
   return (
     <>
       <div className="w-full flex flex-col">
         <form action="" className="flex flex-col justify-center gap-10">
-          {currentStep == 1 && (
+          {currentStep === 1 && (
             <>
               <div className="flex justify-between gap-5">
                 <div className="flex flex-col w-full">
@@ -170,7 +179,7 @@ export const SignUp = () => {
               </div>
             </>
           )}
-          {currentStep == 2 && (
+          {currentStep === 2 && (
             <div className="flex flex-col gap-5">
               <div className="flex flex-col w-full">
                 <label className="font-semibold text-xl" htmlFor="street">
@@ -248,7 +257,7 @@ export const SignUp = () => {
                     readOnly
                   />
                 </div>
-                <div className="flex flex-col w-full">
+                <div className="  flex flex-col w-full">
                   <label className="font-semibold text-xl" htmlFor="zipCode">
                     Zip Code:
                   </label>
@@ -259,6 +268,110 @@ export const SignUp = () => {
                     name="zipCode"
                     value={addressInfo.zipCode}
                     readOnly
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          {currentStep === 3 && (
+            <div className="flex flex-col gap-5">
+              <div className="flex flex-col w-full">
+                <label className="font-semibold text-xl" htmlFor="userRole">
+                  User Role:
+                </label>
+                <select
+                  id="userRole"
+                  name="userRole"
+                  value={accountInfo.userRole}
+                  onChange={(e) =>
+                    setAccountInfo({
+                      ...accountInfo,
+                      userRole: e.target.value,
+                    })
+                  }
+                  className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                >
+                  <option value="" disabled>
+                    Select a role
+                  </option>
+                  <option value="customer">Customer</option>
+                  <option value="retailer">Retailer</option>
+                  <option value="distributor">Distributor</option>
+                  <option value="manufacturer">Manufacturer</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col w-full">
+                <label className="font-semibold text-xl" htmlFor="emailAdd">
+                  Email Address:
+                </label>
+                <input
+                  type="email"
+                  id="emailAdd"
+                  name="emailAdd"
+                  value={accountInfo.email}
+                  onChange={(e) =>
+                    setAccountInfo({ ...accountInfo, email: e.target.value })
+                  }
+                  className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                />
+              </div>
+
+              <div className="flex flex-col w-full">
+                <label className="font-semibold text-xl" htmlFor="phone">
+                  Phone:
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={accountInfo.phone}
+                  onChange={(e) =>
+                    setAccountInfo({ ...accountInfo, phone: e.target.value })
+                  }
+                  className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                />
+              </div>
+
+              <div className="flex justify-between gap-5">
+                <div className="flex flex-col w-full">
+                  <label className="font-semibold text-xl" htmlFor="password">
+                    Password:
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={accountInfo.password}
+                    onChange={(e) =>
+                      setAccountInfo({
+                        ...accountInfo,
+                        password: e.target.value,
+                      })
+                    }
+                    className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
+                  />
+                </div>
+
+                <div className="flex flex-col w-full">
+                  <label
+                    className="font-semibold text-xl"
+                    htmlFor="confirmPassword"
+                  >
+                    Confirm Password:
+                  </label>
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={accountInfo.confirmPassword}
+                    onChange={(e) =>
+                      setAccountInfo({
+                        ...accountInfo,
+                        confirmPassword: e.target.value,
+                      })
+                    }
+                    className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
                   />
                 </div>
               </div>
@@ -284,7 +397,7 @@ export const SignUp = () => {
                 Next
               </button>
             )}
-            {currentStep == 3 && (
+            {currentStep === 3 && (
               <button
                 onClick={handleSignUp}
                 className="text-lg px-3 py-1 rounded-md border-2 bg-purple-200 w-40 text-white border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"

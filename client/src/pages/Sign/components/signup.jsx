@@ -345,7 +345,7 @@ export const SignUp = () => {
                 </label>
                 <input
                   {...register("phone", { required: true })}
-                  type="tel"
+                  type="number"
                   className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
                     errors.phone ? "border-red-500" : ""
                   }`}

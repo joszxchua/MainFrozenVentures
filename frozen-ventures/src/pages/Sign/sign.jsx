@@ -48,8 +48,8 @@ export const Sign = () => {
         </div>
       </div>
 
-      <div className="flex flex-col items-center h-screen font-inter">
-        <div className="m-0 h-[25vh] flex items-center justify-between w-full font-bold text-4xl">
+      <div className="w-full h-screen flex flex-col items-center justify-center font-inter">
+        <div className="m-0 py-10 flex items-center justify-between w-full font-bold text-4xl">
           <h2
             onClick={handleSignInClick}
             className={`w-full text-right pr-20 cursor-pointer ${
@@ -58,6 +58,7 @@ export const Sign = () => {
           >
             Sign In
           </h2>
+          <p>|</p>
           <h2
             onClick={handleSignUpClick}
             className={`w-full text-left pl-20 cursor-pointer ${
@@ -68,7 +69,9 @@ export const Sign = () => {
           </h2>
         </div>
 
-        {signUp ? <SignUp /> : <SignIn />}
+        <div className="w-full px-40 flex justify-center">
+          {signUp ? <SignUp /> : <SignIn />}
+        </div>
       </div>
     </div>
   );

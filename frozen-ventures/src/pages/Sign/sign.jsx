@@ -52,13 +52,17 @@ export const Sign = () => {
         <div className="m-0 h-[25vh] flex items-center justify-between w-full font-bold text-4xl">
           <h2
             onClick={handleSignInClick}
-            className="w-full text-right pr-20 cursor-pointer"
+            className={`w-full text-right pr-20 cursor-pointer ${
+              !signUp ? "text-purple-200" : "text-gray-200"
+            }`}
           >
             Sign In
           </h2>
           <h2
             onClick={handleSignUpClick}
-            className="w-full text-left pl-20 cursor-pointer"
+            className={`w-full text-left pl-20 cursor-pointer ${
+              signUp ? "text-purple-200" : "text-gray-200"
+            }`}
           >
             Sign Up
           </h2>

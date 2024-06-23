@@ -130,7 +130,7 @@ router.post("/createAccount", async (req, res) => {
             const accountID = result.insertId;
 
             db.query(
-              "INSERT INTO personal_info (accountID, firstName, lastName, gender, birthdate, street, barangay, municipality, province, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+              "INSERT INTO personal_info (accountID, firstName, lastName, gender, birthdate, street, barangay, municipality, province, zipCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
               [
                 accountID,
                 accountInfo.firstName,

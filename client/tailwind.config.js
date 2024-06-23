@@ -18,6 +18,16 @@ export default {
         purple: {
           100: '#BDADFF',
           200: '#7B6AC2',
+        },
+
+        red: {
+          100: '#FF9797',
+          200: '#B00D0D'
+        },
+
+        green: {
+          100: '#ADFF97',
+          200: '#239205'
         }
       },
       fontFamily: {

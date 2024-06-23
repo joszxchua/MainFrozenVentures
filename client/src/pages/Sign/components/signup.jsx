@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 import municipalitiesInBataan from "../../../municipalities";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { ErrorMessage } from "../../../components/errormessage";
+import { SuccessMessage } from "../../../components/successmessage";
 
 export const SignUp = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -11,6 +14,8 @@ export const SignUp = () => {
   const [barangays, setBarangays] = useState([]);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
   const {
     register,
     handleSubmit,
@@ -123,11 +128,37 @@ export const SignUp = () => {
   };
 
   const handleSignUp = (data) => {
-    console.log("Signing up with:", data);
+    const backendUrl = "http://localhost:8081/account";
+
+    axios
+      .post(`${backendUrl}/createAccount`, data)
+      .then((response) => {
+        if (response.data.status === 1) {
+          setMessageTitle("Success");
+          setMessage(response.data.message);
+        } else {
+          setMessageTitle("Error");
+          setMessage(response.data.message);
+        }
+
+        setTimeout(() => {
+          setMessageTitle("");
+          setMessage("");
+        }, 2000);
+      })
+      .catch((error) => {
+        console.error("Sign-up error:", error);
+      });
   };
 
   return (
     <>
+      {messageTitle && messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle && messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
       <div className="w-full flex flex-col">
         <form
           onSubmit={handleSubmit(handleSignUp)}

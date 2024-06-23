@@ -18,12 +18,27 @@ router.get("/accountInfo", (req, res) => {
 router.post("/createAccount", async (req, res) => {
   const accountInfo = req.body;
 
-  const requiredAccountFields = ["email", "userRole", "password", "confirmPass", "phone"];
-  for (const field of requiredAccountFields) {
+  const requiredFields = [
+    "email",
+    "userRole",
+    "password",
+    "confirmPassword",
+    "phone",
+    "firstName",
+    "lastName",
+    "gender",
+    "birthdate",
+    "street",
+    "barangay",
+    "municipality",
+    "province",
+    "zipCode",
+  ];
+  for (const field of requiredFields) {
     if (!accountInfo[field]) {
       return res.json({
         status: 0,
-        message: `${field.charAt(0).toUpperCase() + field.slice(1)} cannot be empty`,
+        message: `Missing or invalid data on ${field}`,
       });
     }
   }
@@ -32,14 +47,19 @@ router.post("/createAccount", async (req, res) => {
     return res.json({ status: 0, message: "Invalid email format" });
   }
 
-  if (accountInfo.password.length < 8 || !/[A-Za-z]/.test(accountInfo.password) || !/\d/.test(accountInfo.password)) {
+  if (
+    accountInfo.password.length < 8 ||
+    !/[A-Za-z]/.test(accountInfo.password) ||
+    !/\d/.test(accountInfo.password)
+  ) {
     return res.json({
       status: 0,
-      message: "Password must have at least 8 characters and include both letters and numbers",
+      message:
+        "Password must have at least 8 characters and include both letters and numbers",
     });
   }
 
-  if (accountInfo.password !== accountInfo.confirmPass) {
+  if (accountInfo.password !== accountInfo.confirmPassword) {
     return res.json({
       status: 0,
       message: "Password and confirm password do not match",
@@ -53,65 +73,97 @@ router.post("/createAccount", async (req, res) => {
     });
   }
 
-  const requiredPersonalFields = ["firstName", "lastName", "gender", "birthdate", "address"];
-  for (const field of requiredPersonalFields) {
-    if (!accountInfo[field]) {
-      return res.json({
-        status: 0,
-        message: `${field.charAt(0).toUpperCase() + field.slice(1)} cannot be empty`,
-      });
-    }
-  }
-
-  if (!["Male", "Female", "Rather Not Say"].includes(accountInfo.gender)) {
+  if (!["male", "female", "prefer-not-to-say"].includes(accountInfo.gender)) {
     return res.json({ status: 0, message: "Invalid gender" });
   }
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(accountInfo.birthdate) || isNaN(new Date(accountInfo.birthdate).getTime())) {
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(accountInfo.birthdate) ||
+    isNaN(new Date(accountInfo.birthdate).getTime())
+  ) {
     return res.json({
       status: 0,
       message: "Invalid birthdate format. Use yyyy-mm-dd",
     });
   }
 
-  const { street = "", barangay = "", municipality = "", province = "", zipCode = "" } = accountInfo.address;
-
-  const hashedPassword = await bcrypt.hash(accountInfo.password, 10);
-
-  db.query("SELECT * FROM account_info WHERE email = ? OR phone = ?", [accountInfo.email, accountInfo.phone], (err, result) => {
-    if (err) return res.json({ status: 0, message: "Database query error" });
-
-    if (result.length > 0) {
-      const existingEmail = result.find(r => r.email === accountInfo.email);
-      const existingPhone = result.find(r => r.phone === accountInfo.phone);
-      if (existingEmail) {
-        return res.json({ status: 0, message: "Email already exists" });
-      }
-      if (existingPhone) {
-        return res.json({ status: 0, message: "Phone number already exists" });
-      }
-    }
+  try {
+    const hashedPassword = await bcrypt.hash(accountInfo.password, 10);
 
     db.query(
-      "INSERT INTO account_info (email, userRole, password, phone) VALUES (?, ?, ?, ?)",
-      [accountInfo.email, accountInfo.userRole, hashedPassword, accountInfo.phone],
+      "SELECT * FROM account_info WHERE email = ? OR phone = ?",
+      [accountInfo.email, accountInfo.phone],
       (err, result) => {
-        if (err) return res.json({ status: 0, message: "Database insert error" });
+        if (err)
+          return res.json({ status: 0, message: "Database query error" });
 
-        const accountID = result.insertId;
+        if (result.length > 0) {
+          const existingEmail = result.find(
+            (r) => r.email === accountInfo.email
+          );
+          const existingPhone = result.find(
+            (r) => r.phone === accountInfo.phone
+          );
+          if (existingEmail) {
+            return res.json({ status: 0, message: "Email already exists" });
+          }
+          if (existingPhone) {
+            return res.json({
+              status: 0,
+              message: "Phone number already exists",
+            });
+          }
+        }
 
         db.query(
-          "INSERT INTO personal_info (accountID, firstName, lastName, gender, birthdate, street, barangay, municipality, province, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-          [accountID, accountInfo.firstName, accountInfo.lastName, accountInfo.gender, accountInfo.birthdate, street, barangay, municipality, province, zipCode],
+          "INSERT INTO account_info (email, userRole, password, phone) VALUES (?, ?, ?, ?)",
+          [
+            accountInfo.email,
+            accountInfo.userRole,
+            hashedPassword,
+            accountInfo.phone,
+          ],
           (err, result) => {
-            if (err) return res.json({ status: 0, message: "Database insert error" });
+            if (err)
+              return res.json({ status: 0, message: "Database insert error" });
 
-            res.json({ status: 1, message: "Account created successfully" });
+            const accountID = result.insertId;
+
+            db.query(
+              "INSERT INTO personal_info (accountID, firstName, lastName, gender, birthdate, street, barangay, municipality, province, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+              [
+                accountID,
+                accountInfo.firstName,
+                accountInfo.lastName,
+                accountInfo.gender,
+                accountInfo.birthdate,
+                accountInfo.street,
+                accountInfo.barangay,
+                accountInfo.municipality,
+                accountInfo.province,
+                accountInfo.zipCode,
+              ],
+              (err, result) => {
+                if (err)
+                  return res.json({
+                    status: 0,
+                    message: "Database insert error",
+                  });
+
+                res.json({
+                  status: 1,
+                  message: "Account created successfully",
+                });
+              }
+            );
           }
         );
       }
     );
-  });
+  } catch (error) {
+    console.error("Error creating account:", error);
+    res.json({ status: 0, message: "Error creating account" });
+  }
 });
 
 module.exports = router;

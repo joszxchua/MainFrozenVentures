@@ -16,11 +16,13 @@ export const SignUp = () => {
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [isSigningUp, setIsSigningUp] = useState(false);
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -128,6 +130,7 @@ export const SignUp = () => {
   };
 
   const handleSignUp = (data) => {
+    setIsSigningUp(true);
     const backendUrl = "http://localhost:8081/account";
 
     axios
@@ -136,6 +139,7 @@ export const SignUp = () => {
         if (response.data.status === 1) {
           setMessageTitle("Success");
           setMessage(response.data.message);
+          reset();
         } else {
           setMessageTitle("Error");
           setMessage(response.data.message);
@@ -148,6 +152,9 @@ export const SignUp = () => {
       })
       .catch((error) => {
         console.error("Sign-up error:", error);
+      })
+      .finally(() => {
+        setIsSigningUp(false);
       });
   };
 
@@ -372,7 +379,7 @@ export const SignUp = () => {
 
               <div className="flex flex-col w-full">
                 <label className="font-semibold text-xl" htmlFor="phone">
-                  Phone:
+                  Phone Number:
                 </label>
                 <input
                   {...register("phone", { required: true })}
@@ -467,9 +474,10 @@ export const SignUp = () => {
               {currentStep === 3 && (
                 <button
                   type="submit"
+                  disabled={isSigningUp}
                   className="text-lg px-3 py-1 rounded-md border-2 bg-purple-200 w-40 text-white border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
                 >
-                  Sign Up
+                  {isSigningUp ? "Signing Up..." : "Sign Up"}
                 </button>
               )}
             </div>

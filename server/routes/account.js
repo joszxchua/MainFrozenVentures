@@ -4,7 +4,7 @@ const db = require("../db");
 
 const router = express.Router();
 
-router.get("/accountInfo", (req, res) => {
+router.get("/accountSignIn", (req, res) => {
   const sql = "SELECT * FROM account_info";
   db.query(sql, (err, data) => {
     if (err) {

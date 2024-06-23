@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Blueberry from "../assets/flavors/Blueberry.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -8,14 +9,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 export const Products = () => {
+  const navigate = useNavigate();
+
+  const handleProductClick = () => {
+    navigate("/product-details");
+  };
+
   return (
-    <div className="flex flex-col w-fit">
+    <div onClick={handleProductClick} className="flex flex-col w-fit">
       <div className="relative">
-        <img
-          src={Blueberry}
-          alt="Product"
-          className="w-[300px] rounded-2xl"
-        />
+        <img src={Blueberry} alt="Product" className="w-[300px] rounded-2xl" />
         <FontAwesomeIcon
           icon={faCartPlus}
           className="absolute bottom-5 right-5 text-xl bg-white p-2 rounded-sm cursor-pointer"

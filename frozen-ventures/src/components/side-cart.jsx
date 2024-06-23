@@ -77,7 +77,7 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
           >
             View Cart
           </button>
-          <button className="text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">
+          <button className="font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">
             <strong>Checkout:</strong> Php 240.00
           </button>
         </div>

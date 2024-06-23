@@ -46,11 +46,13 @@ export const Shop = () => {
         </button>
       </div>
 
-			<div className="px-20 pb-20 flex justify-between">
+			<div className="px-20 pb-20 flex justify-between flex-wrap gap-10">
 				<Products />
 				<Products />
 				<Products />
 				<Products />
+        <Products />
+        <Products />
 			</div>
     </div>
   );

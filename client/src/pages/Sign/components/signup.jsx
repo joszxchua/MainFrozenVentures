@@ -3,9 +3,15 @@ import { useForm } from "react-hook-form";
 import municipalitiesInBataan from "../../../municipalities";
 
 export const SignUp = () => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedMunicipality, setSelectedMunicipality] = useState("");
+  const [selectedBarangay, setSelectedBarangay] = useState("");
+  const [barangays, setBarangays] = useState([]);
+
   const {
     register,
     handleSubmit,
+    setValue,
     watch,
     formState: { errors },
   } = useForm({
@@ -18,7 +24,7 @@ export const SignUp = () => {
       municipality: "",
       barangay: "",
       province: "Bataan",
-      zipCode: "",
+      zipCode: "", // zipCode is now managed by react-hook-form
       userRole: "",
       email: "",
       phone: "",
@@ -26,12 +32,6 @@ export const SignUp = () => {
       confirmPassword: "",
     },
   });
-
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedMunicipality, setSelectedMunicipality] = useState("");
-  const [selectedBarangay, setSelectedBarangay] = useState("");
-  const [barangays, setBarangays] = useState([]);
-  const [zipCode, setZipCode] = useState("");
 
   const handleBackStep = () => {
     setCurrentStep(currentStep - 1);
@@ -69,7 +69,8 @@ export const SignUp = () => {
           (barangay) => barangay.name === selectedBarangay
         );
         if (selectedBarangayObj) {
-          setZipCode(selectedBarangayObj.zipCode);
+          // set zipCode via setValue for react-hook-form
+          setValue("zipCode", selectedBarangayObj.zipCode);
         }
       }
     }
@@ -79,7 +80,7 @@ export const SignUp = () => {
     const selectedMunicipalityName = e.target.value;
     setSelectedMunicipality(selectedMunicipalityName);
     setSelectedBarangay("");
-    setZipCode("");
+
     const selectedMunicipalityObj = municipalitiesInBataan.find(
       (municipality) => municipality.name === selectedMunicipalityName
     );
@@ -94,6 +95,20 @@ export const SignUp = () => {
   const handleChangeBarangay = (e) => {
     const selectedBarangayName = e.target.value;
     setSelectedBarangay(selectedBarangayName);
+
+    const selectedMunicipalityObj = municipalitiesInBataan.find(
+      (municipality) => municipality.name === selectedMunicipality
+    );
+
+    if (selectedMunicipalityObj) {
+      const selectedBarangayObj = selectedMunicipalityObj.barangays.find(
+        (barangay) => barangay.name === selectedBarangayName
+      );
+      if (selectedBarangayObj) {
+        // set zipCode via setValue for react-hook-form
+        setValue("zipCode", selectedBarangayObj.zipCode);
+      }
+    }
   };
 
   const handleSignUp = (data) => {
@@ -266,7 +281,6 @@ export const SignUp = () => {
                     {...register("zipCode")}
                     className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
                     type="text"
-                    value={zipCode}
                     readOnly
                   />
                 </div>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
-export const SignIn = () => {
+export const SignIn = ({ createClick }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -51,7 +51,7 @@ export const SignIn = () => {
           </button>
 
           <p className="text-lg text-gray-200">
-            Don't have an account? <span className="font-bold text-purple-200 cursor-pointer">Create your account</span>
+            Don't have an account? <span onClick={createClick} className="font-bold text-purple-200 cursor-pointer">Create your account</span>
           </p>
         </div>
       </div>

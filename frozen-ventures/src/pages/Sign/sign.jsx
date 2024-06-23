@@ -21,6 +21,10 @@ export const Sign = () => {
     setSignUp(true);
   };
 
+  const handleCreateClick = () => {
+    setSignUp(true);
+  };
+
   return (
     <div className="grid grid-cols-2">
       <div className="relative w-[50vw] h-screen grid place-items-center">
@@ -70,7 +74,7 @@ export const Sign = () => {
         </div>
 
         <div className="w-full px-40 flex justify-center">
-          {signUp ? <SignUp /> : <SignIn />}
+          {signUp ? <SignUp /> : <SignIn createClick={handleCreateClick} />}
         </div>
       </div>
     </div>

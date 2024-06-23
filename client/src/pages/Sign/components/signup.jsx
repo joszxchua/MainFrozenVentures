@@ -6,7 +6,6 @@ export const SignUp = () => {
   const {
     register,
     handleSubmit,
-    setValue,
     watch,
     formState: { errors },
   } = useForm({
@@ -29,15 +28,10 @@ export const SignUp = () => {
   });
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [addressInfo, setAddressInfo] = useState({
-    street: "",
-    barangay: "",
-    municipality: "",
-    province: "Bataan",
-    zipCode: "",
-  });
   const [selectedMunicipality, setSelectedMunicipality] = useState("");
+  const [selectedBarangay, setSelectedBarangay] = useState("");
   const [barangays, setBarangays] = useState([]);
+  const [zipCode, setZipCode] = useState("");
 
   const handleBackStep = () => {
     setCurrentStep(currentStep - 1);
@@ -66,56 +60,40 @@ export const SignUp = () => {
   }));
 
   useEffect(() => {
-    if (selectedMunicipality) {
+    if (selectedMunicipality && selectedBarangay) {
       const selectedMunicipalityObj = municipalitiesInBataan.find(
         (municipality) => municipality.name === selectedMunicipality
       );
       if (selectedMunicipalityObj) {
-        setBarangays(
-          selectedMunicipalityObj.barangays.map((barangay) => ({
-            name: barangay.name,
-            zipCode: barangay.zipCode,
-          }))
+        const selectedBarangayObj = selectedMunicipalityObj.barangays.find(
+          (barangay) => barangay.name === selectedBarangay
         );
+        if (selectedBarangayObj) {
+          setZipCode(selectedBarangayObj.zipCode);
+        }
       }
     }
-  }, [selectedMunicipality]);
-
-  useEffect(() => {
-    const selectedBarangay = barangays.find(
-      (barangay) => barangay.name === addressInfo.barangay
-    );
-    if (selectedBarangay) {
-      setAddressInfo((prevAddress) => ({
-        ...prevAddress,
-        zipCode: selectedBarangay.zipCode,
-      }));
-      setValue("zipCode", selectedBarangay.zipCode);
-    }
-  }, [addressInfo.barangay, barangays, setValue]);
+  }, [selectedMunicipality, selectedBarangay]);
 
   const handleChangeMunicipality = (e) => {
     const selectedMunicipalityName = e.target.value;
     setSelectedMunicipality(selectedMunicipalityName);
-
+    setSelectedBarangay("");
+    setZipCode("");
     const selectedMunicipalityObj = municipalitiesInBataan.find(
       (municipality) => municipality.name === selectedMunicipalityName
     );
 
     if (selectedMunicipalityObj) {
-      setAddressInfo({
-        ...addressInfo,
-        municipality: selectedMunicipalityName,
-        barangay: "",
-      });
-
       setBarangays(
-        selectedMunicipalityObj.barangays.map((barangay) => ({
-          name: barangay.name,
-          zipCode: barangay.zipCode,
-        }))
+        selectedMunicipalityObj.barangays.map((barangay) => barangay.name)
       );
     }
+  };
+
+  const handleChangeBarangay = (e) => {
+    const selectedBarangayName = e.target.value;
+    setSelectedBarangay(selectedBarangayName);
   };
 
   const handleSignUp = (data) => {
@@ -252,11 +230,12 @@ export const SignUp = () => {
                   className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
                     errors.barangay ? "border-red-500" : ""
                   }`}
+                  onChange={handleChangeBarangay}
                 >
                   <option value="">Select Barangay</option>
                   {barangays.map((barangay, index) => (
-                    <option key={index} value={barangay.name}>
-                      {barangay.name}
+                    <option key={index} value={barangay}>
+                      {barangay}
                     </option>
                   ))}
                 </select>
@@ -268,16 +247,17 @@ export const SignUp = () => {
               <div className="flex justify-between gap-5">
                 <div className="flex flex-col w-full">
                   <label className="font-semibold text-xl" htmlFor="province">
-                    Province:{" "}
+                    Province:
                   </label>
                   <input
                     {...register("province")}
                     className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
                     type="text"
-                    value={addressInfo.province}
+                    value="Bataan"
                     readOnly
                   />
                 </div>
+
                 <div className="flex flex-col w-full">
                   <label className="font-semibold text-xl" htmlFor="zipCode">
                     Zip Code:
@@ -286,7 +266,7 @@ export const SignUp = () => {
                     {...register("zipCode")}
                     className="mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none"
                     type="text"
-                    value={addressInfo.zipCode}
+                    value={zipCode}
                     readOnly
                   />
                 </div>

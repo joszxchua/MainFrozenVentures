@@ -1,27 +1,61 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { ErrorMessage } from "../../../components/errormessage";
+import { SuccessMessage } from "../../../components/successmessage";
 
 export const SignIn = ({ createClick }) => {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSigningIn, setIsSigningIn] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
   };
 
   const onSubmit = (data) => {
-    console.log(data);
-    
+    axios
+      .post("http://localhost:8081/account/accountSignIn", data)
+      .then((response) => {
+        if (response.data.status === 1) {
+          setMessageTitle("Success");
+          setMessage(response.data.message);
+          reset();
+        } else {
+          setMessageTitle("Error");
+          setMessage(response.data.message);
+        }
+
+        setTimeout(() => {
+          setMessageTitle("");
+          setMessage("");
+        }, 2000);
+      })
+      .catch((error) => {
+        console.error("Sign-up error:", error);
+      })
+      .finally(() => {
+        setIsSigningIn(false);
+      });
   };
 
   return (
     <>
+      {" "}
+      {messageTitle && messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle && messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
       <div className="w-full flex flex-col">
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -73,9 +107,10 @@ export const SignIn = ({ createClick }) => {
 
             <button
               type="submit"
-              className="bg-purple-200 w-40 text-white font-inter font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+              disabled={isSigningIn}
+              className="text-lg px-3 py-1 rounded-md border-2 bg-purple-200 w-40 text-white border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
             >
-              Sign In
+              {isSigningIn ? "Signing In..." : "Sign In"}
             </button>
 
             <p className="text-lg text-gray-200">

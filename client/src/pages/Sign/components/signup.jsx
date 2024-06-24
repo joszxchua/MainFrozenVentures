@@ -131,10 +131,8 @@ export const SignUp = () => {
 
   const handleSignUp = (data) => {
     setIsSigningUp(true);
-    const backendUrl = "http://localhost:8081/account";
-
     axios
-      .post(`${backendUrl}/createAccount`, data)
+      .post("http://localhost:8081/account/createAccount", data)
       .then((response) => {
         if (response.data.status === 1) {
           setMessageTitle("Success");

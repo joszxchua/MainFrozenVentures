@@ -22,7 +22,7 @@ export const Profile = () => {
               type="text"
               name="firstName"
               id="firstName"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-purple-200"
+              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
             />
           </div>
 
@@ -34,7 +34,7 @@ export const Profile = () => {
               type="text"
               name="lastName"
               id="lastName"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-purple-200"
+              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
             />
           </div>
 
@@ -46,7 +46,7 @@ export const Profile = () => {
               type="text"
               name="gender"
               id="gender"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-purple-200"
+              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
             />
           </div>
 
@@ -58,7 +58,7 @@ export const Profile = () => {
               type="date"
               name="birthdate"
               id="birthdate"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-purple-200"
+              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
             />
           </div>
         </form>
@@ -87,7 +87,7 @@ export const Profile = () => {
               type="text"
               name="street"
               id="street"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-purple-200"
+              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
             />
           </div>
 
@@ -99,7 +99,7 @@ export const Profile = () => {
               type="text"
               name="municipality"
               id="municipality"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-purple-200"
+              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
             />
           </div>
 
@@ -111,7 +111,7 @@ export const Profile = () => {
               type="text"
               name="barangay"
               id="barangay"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-purple-200"
+              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
             />
           </div>
 
@@ -123,7 +123,7 @@ export const Profile = () => {
               type="text"
               name="province"
               id="province"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-purple-200"
+              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
               readOnly
             />
           </div>
@@ -136,7 +136,7 @@ export const Profile = () => {
               type="text"
               name="zipCode"
               id="zipCode"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-purple-200"
+              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
               readOnly
             />
           </div>

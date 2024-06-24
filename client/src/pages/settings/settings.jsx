@@ -46,7 +46,7 @@ export const Settings = () => {
           <div>
             <h2 className="text-4xl font-bold">Settings</h2>
             <p className="text-lg text-gray-200">
-              Customize your profile and other actions
+              Manage your profile, security, and history
             </p>
           </div>
 

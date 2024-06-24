@@ -12,17 +12,21 @@ export const Profile = () => {
     register: registerPersonal,
     handleSubmit: handleSubmitPersonal,
     setValue: setValuePersonal,
+    getValues: getValuesPersonal,
   } = useForm();
   const {
     register: registerAddress,
     handleSubmit: handleSubmitAddress,
     setValue: setValueAddress,
+    getValues: getValuesAddress,
   } = useForm();
   const [selectedMunicipality, setSelectedMunicipality] = useState("");
   const [selectedBarangay, setSelectedBarangay] = useState("");
   const [barangays, setBarangays] = useState([]);
   const [isEditingPersonal, setIsEditingPersonal] = useState(false);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [initialPersonalValues, setInitialPersonalValues] = useState({});
+  const [initialAddressValues, setInitialAddressValues] = useState({});
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
 
@@ -42,6 +46,21 @@ export const Profile = () => {
             const birthdate = new Date(userData.birthdate)
               .toISOString()
               .split("T")[0];
+
+            setInitialPersonalValues({
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              gender: userData.gender,
+              birthdate: birthdate,
+            });
+
+            setInitialAddressValues({
+              street: userData.street,
+              municipality: userData.municipality,
+              barangay: userData.barangay,
+              province: userData.province,
+              zipCode: userData.zipCode,
+            });
 
             setValuePersonal("firstName", userData.firstName);
             setValuePersonal("lastName", userData.lastName);
@@ -146,6 +165,10 @@ export const Profile = () => {
   };
 
   const handleCancelEditPersonal = () => {
+    setValuePersonal("firstName", initialPersonalValues.firstName);
+    setValuePersonal("lastName", initialPersonalValues.lastName);
+    setValuePersonal("gender", initialPersonalValues.gender);
+    setValuePersonal("birthdate", initialPersonalValues.birthdate);
     setIsEditingPersonal(false);
   };
 
@@ -154,6 +177,13 @@ export const Profile = () => {
   };
 
   const handleCancelEditAddress = () => {
+    setValueAddress("street", initialAddressValues.street);
+    setValueAddress("municipality", initialAddressValues.municipality);
+    setValueAddress("barangay", initialAddressValues.barangay);
+    setValueAddress("province", initialAddressValues.province);
+    setValueAddress("zipCode", initialAddressValues.zipCode);
+    setSelectedMunicipality(initialAddressValues.municipality);
+    setSelectedBarangay(initialAddressValues.barangay);
     setIsEditingAddress(false);
   };
 
@@ -169,6 +199,7 @@ export const Profile = () => {
       if (response.data.status === "success") {
         setMessageTitle("Success");
         setMessage(response.data.message);
+        setInitialPersonalValues(data);
       } else {
         setMessageTitle("Error");
         setMessage(response.data.message);
@@ -197,6 +228,7 @@ export const Profile = () => {
       if (response.data.status === "success") {
         setMessageTitle("Success");
         setMessage(response.data.message);
+        setInitialAddressValues(data);
       } else {
         setMessageTitle("Error");
         setMessage(response.data.message);

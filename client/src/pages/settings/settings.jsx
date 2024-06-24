@@ -1,4 +1,4 @@
-import React, { act, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { UserContext } from "../../context/user-context";
 import { Profile } from "./components/profile";
 import { Security } from "./components/security";
@@ -17,6 +17,7 @@ export const Settings = () => {
   const { user, clearUser } = useContext(UserContext);
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditingPicture, setIsEditingPicture] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
@@ -44,8 +45,19 @@ export const Settings = () => {
     setIsEditingPicture(true);
   };
 
-  const handleCancelEditPicture = () => {
+  const handleSelectPicture = () => {
+    document.getElementById("fileInput").click();
+  };
+
+  const handleCancelEditPicture = (e) => {
+    e.preventDefault();
     setIsEditingPicture(false);
+    setSelectedImage(null);
+  };
+
+  const handleSavePicture = () => {
+    setIsEditingPicture(false);
+    setSelectedImage(null);
   };
 
   return (
@@ -117,35 +129,59 @@ export const Settings = () => {
       <div className="col-span-1 h-full px-5">
         <div className="bg-gray-100 p-8 rounded-lg flex flex-col items-center gap-5">
           <h3 className="font-bold text-4xl">Profile Picture</h3>
-          <FontAwesomeIcon icon={faCircleUser} className="text-[250px]" />
-          {activeTab === "profile" && (
-            <>
-              {isEditingPicture ? (
-                <div className="w-full flex justify-around">
+          {selectedImage ? (
+            <img
+              onClick={isEditingPicture ? handleSelectPicture : null}
+              src={URL.createObjectURL(selectedImage)}
+              alt="Selected Profile"
+              className="rounded-full w-60 object-cover"
+            />
+          ) : (
+            <FontAwesomeIcon
+              onClick={isEditingPicture ? handleSelectPicture : null}
+              icon={faCircleUser}
+              className="text-[250px]"
+            />
+          )}
+          <form action="" className="w-full flex justify-around">
+            <input
+              id="fileInput"
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={(e) => setSelectedImage(e.target.files[0])}
+            />
+
+            {activeTab === "profile" && (
+              <>
+                {isEditingPicture ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleCancelEditPicture}
+                      className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      onClick={handleSavePicture}
+                      className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                    >
+                      Save
+                    </button>
+                  </>
+                ) : (
                   <button
-                    type="button"
-                    onClick={handleCancelEditPicture}
-                    className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
+                    onClick={handleEditPicture}
                     className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
                   >
-                    Save
+                    Change Profile Picture
                   </button>
-                </div>
-              ) : (
-                <button
-                  onClick={handleEditPicture}
-                  className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
-                >
-                  Change profile picture
-                </button>
-              )}
-            </>
-          )}
+                )}
+              </>
+            )}
+          </form>
         </div>
       </div>
     </div>

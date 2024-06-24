@@ -16,6 +16,7 @@ import {
 export const Settings = () => {
   const { user, clearUser } = useContext(UserContext);
   const [activeTab, setActiveTab] = useState("profile");
+  const [isEditingPicture, setIsEditingPicture] = useState(false);
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
@@ -37,6 +38,14 @@ export const Settings = () => {
   const handleSignOutClick = () => {
     clearUser();
     navigate("/");
+  };
+
+  const handleEditPicture = () => {
+    setIsEditingPicture(true);
+  };
+
+  const handleCancelEditPicture = () => {
+    setIsEditingPicture(false);
   };
 
   return (
@@ -110,9 +119,32 @@ export const Settings = () => {
           <h3 className="font-bold text-4xl">Profile Picture</h3>
           <FontAwesomeIcon icon={faCircleUser} className="text-[250px]" />
           {activeTab === "profile" && (
-            <button className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
-              Change profile picture
-            </button>
+            <>
+              {isEditingPicture ? (
+                <div className="w-full flex justify-around">
+                  <button
+                    type="button"
+                    onClick={handleCancelEditPicture}
+                    className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                  >
+                    Save
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={handleEditPicture}
+                  className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                >
+                  Change profile picture
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>

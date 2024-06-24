@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import { UserContext } from "../../../context/user-context";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { ErrorMessage } from "../../../components/errormessage";
 import { SuccessMessage } from "../../../components/successmessage";
 
 export const SignIn = ({ createClick }) => {
+  const { addUser } = useContext(UserContext);
+  const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -22,22 +26,27 @@ export const SignIn = ({ createClick }) => {
   };
 
   const onSubmit = (data) => {
+    setIsSigningIn(true);
     axios
       .post("http://localhost:8081/account/accountSignIn", data)
       .then((response) => {
         if (response.data.status === 1) {
           setMessageTitle("Success");
           setMessage(response.data.message);
-          reset();
+          addUser(
+            response.data.user.accountID,
+            response.data.user?.shopID,
+            response.data.user.userRole,
+            response.data.user?.isVerified
+          );
+          
+          setTimeout(() => {
+            navigate("/");
+          }, 3000);
         } else {
           setMessageTitle("Error");
           setMessage(response.data.message);
         }
-
-        setTimeout(() => {
-          setMessageTitle("");
-          setMessage("");
-        }, 2000);
       })
       .catch((error) => {
         console.error("Sign-up error:", error);
@@ -45,11 +54,15 @@ export const SignIn = ({ createClick }) => {
       .finally(() => {
         setIsSigningIn(false);
       });
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
   };
 
   return (
     <>
-      {" "}
       {messageTitle && messageTitle === "Error" && (
         <ErrorMessage title={messageTitle} message={message} />
       )}

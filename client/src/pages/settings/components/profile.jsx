@@ -185,8 +185,31 @@ export const Profile = () => {
     setIsEditingPersonal(false);
   };
 
-  const onSubmitAddress = (data) => {
-    console.log("Address Info:", data);
+  const onSubmitAddress = async (data) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8081/account/addressUpdate",
+        {
+          ...data,
+          accountId: user.accountId,
+        }
+      );
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+      } else {
+        setMessageTitle("Error");
+        setMessage(response.data.message);
+      }
+    } catch (error) {
+      setMessageTitle("Error");
+      setMessage("Something went wrong");
+    }
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
     setIsEditingAddress(false);
   };
 

@@ -100,6 +100,102 @@ router.post("/personalUpdate", (req, res) => {
   });
 });
 
+router.post("/addressUpdate", (req, res) => {
+  const { accountId, street, barangay, municipality, zipCode } = req.body;
+
+  const fields = { accountId, street, barangay, municipality, zipCode };
+  const missingFields = [];
+
+  for (const [key, value] of Object.entries(fields)) {
+    if (!value) {
+      missingFields.push(key);
+    }
+  }
+
+  if (missingFields.length > 0) {
+    return res.status(200).json({
+      status: "error",
+      message: "All fields are required",
+      missingFields: missingFields,
+    });
+  }
+
+  const sqlFetch = "SELECT * FROM personal_info WHERE accountID = ?";
+  db.query(sqlFetch, [accountId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        status: "error",
+        message: "Database error",
+        error: err,
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "No personal info found for the account ID",
+      });
+    }
+
+    const existingPersonalInfo = results[0];
+
+    let updateRequired = false;
+    const updatedFields = {};
+
+    if (street && street !== existingPersonalInfo.street) {
+      updatedFields.street = street;
+      updateRequired = true;
+    }
+    if (barangay && barangay !== existingPersonalInfo.barangay) {
+      updatedFields.barangay = barangay;
+      updateRequired = true;
+    }
+    if (municipality && municipality !== existingPersonalInfo.municipality) {
+      updatedFields.municipality = municipality;
+      updateRequired = true;
+    }
+    if (zipCode && zipCode !== existingPersonalInfo.zipCode) {
+      updatedFields.zipCode = zipCode;
+      updateRequired = true;
+    }
+
+    if (!updateRequired) {
+      return res.status(200).json({
+        status: "success",
+        message: "No changes detected in address information",
+      });
+    }
+
+    const sqlUpdate =
+      "UPDATE personal_info SET street=?, barangay=?, municipality=?, zipCode=? WHERE accountID=?";
+
+    db.query(
+      sqlUpdate,
+      [
+        updatedFields.street || existingPersonalInfo.street,
+        updatedFields.barangay || existingPersonalInfo.barangay,
+        updatedFields.municipality || existingPersonalInfo.municipality,
+        updatedFields.zipCode || existingPersonalInfo.zipCode,
+        accountId,
+      ],
+      (err, result) => {
+        if (err) {
+          return res.status(500).json({
+            status: "error",
+            message: "Error updating address information",
+            error: err,
+          });
+        }
+
+        res.status(200).json({
+          status: "success",
+          message: "Address information updated successfully",
+        });
+      }
+    );
+  });
+});
+
 router.post("/accountFetch", (req, res) => {
   const { accountId } = req.body;
 

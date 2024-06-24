@@ -3,7 +3,6 @@ import axios from "axios";
 import { UserContext } from "../context/user-context";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SideCart } from "./side-cart";
-import { Menu } from "../pages/menu/menu";
 import logo from "../assets/logo.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
@@ -12,9 +11,7 @@ export const Navbar = () => {
   const { user } = useContext(UserContext);
   const [accountInfo, setAccountInfo] = useState(null);
   const [showSideCart, setShowSideCart] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
   const sideCartRef = useRef(null);
-  const menuRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -49,8 +46,8 @@ export const Navbar = () => {
     navigate("/cart");
   };
 
-  const toggleMenu = () => {
-    setShowMenu((prevState) => !prevState);
+  const handleProfileClick = () => {
+    navigate("/settings")
   };
 
   useEffect(() => {
@@ -93,7 +90,7 @@ export const Navbar = () => {
   }
 
   return (
-    <div className="fixed top-0 left-0 p-5 bg-white w-full flex justify-between z-50">
+    <div className="fixed top-0 left-0 p-2 bg-white w-full flex justify-between z-50">
       {showSideCart && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30 backdrop-blur-sm">
           <SideCart
@@ -132,11 +129,11 @@ export const Navbar = () => {
             Sign In
           </button>
         ) : (
-          <div onClick={toggleMenu} className="relative flex items-center gap-3 font-inter cursor-pointer p-2 rounded-lg hover:bg-purple-200 hover:text-white duration-300 ease-in-out">
+          <div onClick={handleProfileClick} className="relative flex items-center gap-3 font-inter cursor-pointer p-2 rounded-lg hover:bg-purple-200 hover:text-white duration-300 ease-in-out">
             {!accountInfo?.profileImage ? (
               <FontAwesomeIcon icon={faUserCircle} className="text-4xl" />
             ) : (
-              <div>IBAHIN TO GAWING PROFILE PICTURE</div>
+              <img src={accountInfo.profileImage} alt="Profile" className="w-9 h-9 rounded-full" />
             )}
             <div>
               <p className="font-bold text-sm">
@@ -144,8 +141,6 @@ export const Navbar = () => {
               </p>
               <p className="text-sm">{accountInfo?.userRole}</p>
             </div>
-
-            {showMenu && <Menu ref={menuRef} />}
           </div>
         )}
       </div>

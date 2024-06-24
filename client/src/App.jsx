@@ -5,6 +5,7 @@ import { Navbar } from "./components/navbar";
 import { Footer } from "./components/footer";
 import { Home } from "./pages/home";
 import { Sign } from "./pages/Sign/sign";
+import { Settings } from "./pages/settings";
 import { Shop } from "./pages/shop";
 import { Cart } from "./pages/cart";
 import { ProductDetails } from "./pages/product-details";
@@ -18,6 +19,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/sign" element={<Sign />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/product-details" element={<ProductDetails />} />

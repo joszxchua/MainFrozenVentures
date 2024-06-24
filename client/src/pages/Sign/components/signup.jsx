@@ -4,6 +4,7 @@ import axios from "axios";
 import municipalitiesInBataan from "../../../municipalities";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { CodeGenerator } from "../../../components/codegenerator";
 import { ErrorMessage } from "../../../components/errormessage";
 import { SuccessMessage } from "../../../components/successmessage";
 
@@ -14,6 +15,8 @@ export const SignUp = () => {
   const [barangays, setBarangays] = useState([]);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [code, setCode] = useState("");
+  const [inputCode, setInputCode] = useState("");
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
   const [isSigningUp, setIsSigningUp] = useState(false);
@@ -42,6 +45,8 @@ export const SignUp = () => {
       confirmPassword: "",
     },
   });
+
+  const inputEmail = watch("email");
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
@@ -131,29 +136,35 @@ export const SignUp = () => {
 
   const handleSignUp = (data) => {
     setIsSigningUp(true);
-    axios
-      .post("http://localhost:8081/account/createAccount", data)
-      .then((response) => {
-        if (response.data.status === 1) {
-          setMessageTitle("Success");
-          setMessage(response.data.message);
-          reset();
-        } else {
-          setMessageTitle("Error");
-          setMessage(response.data.message);
-        }
-
-        setTimeout(() => {
-          setMessageTitle("");
-          setMessage("");
-        }, 2000);
-      })
-      .catch((error) => {
-        console.error("Sign-up error:", error);
-      })
-      .finally(() => {
-        setIsSigningUp(false);
-      });
+    if (code === inputCode) {
+      axios
+        .post("http://localhost:8081/account/createAccount", data)
+        .then((response) => {
+          if (response.data.status === 1) {
+            setMessageTitle("Success");
+            setMessage(response.data.message);
+            reset();
+          } else {
+            setMessageTitle("Error");
+            setMessage(response.data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Sign-up error:", error);
+        })
+        .finally(() => {
+          setIsSigningUp(false);
+        });
+    } else {
+      setMessageTitle("Error");
+      setMessage("Invalid verification code");
+    }
+    
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+      isSigningUp(false);
+    }, 3000);
   };
 
   return (
@@ -449,6 +460,36 @@ export const SignUp = () => {
               </div>
             </div>
           )}
+          {currentStep === 4 && (
+            <div className="form-step">
+              <div className="input-container">
+                {code && (
+                  <div className="text-center text-xl">
+                    <h3>Verification code has been sent to this email:</h3>
+                    <p className="font-bold">{inputEmail}</p>
+                  </div>
+                )}
+                <div className="input-group code-container">
+                  <div className="flex flex-col w-full">
+                    <label className="font-semibold text-xl" htmlFor="code">
+                      Code:
+                    </label>
+                    <input
+                      className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none`}
+                      type="number"
+                      value={inputCode}
+                      onChange={(e) => setInputCode(e.target.value)}
+                    />
+                  </div>
+                  <CodeGenerator
+                    inputEmail={inputEmail}
+                    code={code}
+                    setCode={setCode}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
           <div className="w-full mt-10 flex flex-col items-center justify-center gap-10">
             <div className="w-full flex justify-around font-bold">
               {currentStep > 1 && (
@@ -460,7 +501,7 @@ export const SignUp = () => {
                   Back
                 </button>
               )}
-              {currentStep >= 1 && currentStep <= 2 && (
+              {currentStep >= 1 && currentStep <= 3 && (
                 <button
                   type="button"
                   onClick={handleNextStep}
@@ -469,7 +510,7 @@ export const SignUp = () => {
                   Next
                 </button>
               )}
-              {currentStep === 3 && (
+              {currentStep === 4 && (
                 <button
                   type="submit"
                   disabled={isSigningUp}

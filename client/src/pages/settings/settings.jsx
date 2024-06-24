@@ -85,7 +85,7 @@ export const Settings = () => {
             </li>
             <li
               onClick={handleSignOutClick}
-              className="mt-20 text-2xl cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out"
+              className="mt-20 text-2xl cursor-pointer hover:bg-red-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out"
             >
               <FontAwesomeIcon
                 icon={faArrowRightFromBracket}
@@ -110,7 +110,7 @@ export const Settings = () => {
           <h3 className="font-bold text-4xl">Profile Picture</h3>
           <FontAwesomeIcon icon={faCircleUser} className="text-[250px]" />
           {activeTab === "profile" && (
-            <button className="bg-purple-200 text-white font-inter font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
+            <button className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
               Change profile picture
             </button>
           )}

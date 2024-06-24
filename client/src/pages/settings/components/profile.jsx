@@ -2,10 +2,23 @@ import React, { useContext, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { UserContext } from "../../../context/user-context";
+import municipalitiesInBataan from "../../../municipalities";
 
 export const Profile = () => {
   const { user } = useContext(UserContext);
-  const { register, handleSubmit, setValue } = useForm();
+  const {
+    register: registerPersonal,
+    handleSubmit: handleSubmitPersonal,
+    setValue: setValuePersonal,
+  } = useForm();
+  const {
+    register: registerAddress,
+    handleSubmit: handleSubmitAddress,
+    setValue: setValueAddress,
+  } = useForm();
+  const [selectedMunicipality, setSelectedMunicipality] = useState("");
+  const [selectedBarangay, setSelectedBarangay] = useState("");
+  const [barangays, setBarangays] = useState([]);
   const [isEditingPersonal, setIsEditingPersonal] = useState(false);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
 
@@ -26,15 +39,18 @@ export const Profile = () => {
               .toISOString()
               .split("T")[0];
 
-            setValue("firstName", userData.firstName);
-            setValue("lastName", userData.lastName);
-            setValue("gender", userData.gender);
-            setValue("birthdate", birthdate);
-            setValue("street", userData.street);
-            setValue("municipality", userData.municipality);
-            setValue("barangay", userData.barangay);
-            setValue("province", userData.province);
-            setValue("zipCode", userData.zipCode);
+            setValuePersonal("firstName", userData.firstName);
+            setValuePersonal("lastName", userData.lastName);
+            setValuePersonal("gender", userData.gender);
+            setValuePersonal("birthdate", birthdate);
+
+            setValueAddress("street", userData.street);
+            setValueAddress("municipality", userData.municipality);
+            setValueAddress("barangay", userData.barangay);
+            setValueAddress("province", userData.province);
+            setValueAddress("zipCode", userData.zipCode);
+            setSelectedMunicipality(userData.municipality);
+            setSelectedBarangay(userData.barangay);
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -43,7 +59,83 @@ export const Profile = () => {
     };
 
     fetchUserData();
-  }, [user.accountId, setValue]);
+  }, [user.accountId, setValuePersonal, setValueAddress]);
+
+  useEffect(() => {
+    const selectedMunicipalityObj = municipalitiesInBataan.find(
+      (municipality) => municipality.name === selectedMunicipality
+    );
+
+    if (selectedMunicipalityObj) {
+      setBarangays(
+        selectedMunicipalityObj.barangays.map((barangay) => barangay.name)
+      );
+    } else {
+      setBarangays([]);
+    }
+  }, [selectedMunicipality]);
+
+  useEffect(() => {
+    if (selectedMunicipality && selectedBarangay) {
+      const selectedMunicipalityObj = municipalitiesInBataan.find(
+        (municipality) => municipality.name === selectedMunicipality
+      );
+      if (selectedMunicipalityObj) {
+        const selectedBarangayObj = selectedMunicipalityObj.barangays.find(
+          (barangay) => barangay.name === selectedBarangay
+        );
+        if (selectedBarangayObj) {
+          setValueAddress("zipCode", selectedBarangayObj.zipCode);
+        }
+      }
+    }
+  }, [selectedMunicipality, selectedBarangay, setValueAddress]);
+
+  const handleChangeMunicipality = (e) => {
+    const selectedMunicipalityName = e.target.value;
+    setSelectedMunicipality(selectedMunicipalityName);
+    setSelectedBarangay("");
+    setValueAddress("barangay", "");
+    setValueAddress("zipCode", "");
+
+    const selectedMunicipalityObj = municipalitiesInBataan.find(
+      (municipality) => municipality.name === selectedMunicipalityName
+    );
+
+    if (selectedMunicipalityObj) {
+      setBarangays(
+        selectedMunicipalityObj.barangays.map((barangay) => barangay.name)
+      );
+    }
+  };
+
+  const handleChangeBarangay = (e) => {
+    const selectedBarangayName = e.target.value;
+    setSelectedBarangay(selectedBarangayName);
+
+    const selectedMunicipalityObj = municipalitiesInBataan.find(
+      (municipality) => municipality.name === selectedMunicipality
+    );
+
+    if (selectedMunicipalityObj) {
+      const selectedBarangayObj = selectedMunicipalityObj.barangays.find(
+        (barangay) => barangay.name === selectedBarangayName
+      );
+      if (selectedBarangayObj) {
+        setValueAddress("zipCode", selectedBarangayObj.zipCode);
+      }
+    }
+  };
+
+  const getMaxDate = () => {
+    const today = new Date();
+    const maxYear = today.getFullYear() - 13;
+    const maxMonth = today.getMonth() + 1;
+    const maxDay = today.getDate();
+    return `${maxYear}-${String(maxMonth).padStart(2, "0")}-${String(
+      maxDay
+    ).padStart(2, "0")}`;
+  };
 
   const handleEditPersonalInfo = () => {
     setIsEditingPersonal(true);
@@ -77,11 +169,16 @@ export const Profile = () => {
 
       <div className="mt-3">
         <div className="flex items-center">
-          <p className="w-60 font-semibold text-gray-200">Personal Information</p>
+          <p className="w-60 font-semibold text-gray-200">
+            Personal Information
+          </p>
           <div className="w-full border-t-2"></div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmitPersonal)} className="flex flex-col items-center gap-5 py-5">
+        <form
+          onSubmit={handleSubmitPersonal(onSubmitPersonal)}
+          className="flex flex-col items-center gap-5 py-5"
+        >
           <div className="w-[60%] flex flex-col gap-2">
             <label htmlFor="firstName" className="text-lg font-medium">
               First Name:
@@ -91,7 +188,7 @@ export const Profile = () => {
               name="firstName"
               id="firstName"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
-              {...register("firstName")}
+              {...registerPersonal("firstName")}
               disabled={!isEditingPersonal}
             />
           </div>
@@ -105,7 +202,7 @@ export const Profile = () => {
               name="lastName"
               id="lastName"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
-              {...register("lastName")}
+              {...registerPersonal("lastName")}
               disabled={!isEditingPersonal}
             />
           </div>
@@ -114,14 +211,16 @@ export const Profile = () => {
             <label htmlFor="gender" className="text-lg font-medium">
               Gender:
             </label>
-            <input
-              type="text"
-              name="gender"
-              id="gender"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
-              {...register("gender")}
+            <select
+              className="text-lg px-2 py-2 rounded-lg border-2 border-black outline-purple-200"
+              {...registerPersonal("gender")}
               disabled={!isEditingPersonal}
-            />
+            >
+              <option value="">Select your gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="prefer-not-to-say">Prefer not to say</option>
+            </select>
           </div>
 
           <div className="w-[60%] flex flex-col gap-2">
@@ -133,7 +232,8 @@ export const Profile = () => {
               name="birthdate"
               id="birthdate"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
-              {...register("birthdate")}
+              {...registerPersonal("birthdate")}
+              max={getMaxDate()}
               disabled={!isEditingPersonal}
             />
           </div>
@@ -170,11 +270,16 @@ export const Profile = () => {
 
       <div className="mt-20">
         <div className="flex items-center">
-          <p className="w-60 font-semibold text-gray-200">Address Information</p>
+          <p className="w-60 font-semibold text-gray-200">
+            Address Information
+          </p>
           <div className="w-full border-t-2"></div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmitAddress)} className="flex flex-col items-center gap-5 py-5">
+        <form
+          onSubmit={handleSubmitAddress(onSubmitAddress)}
+          className="flex flex-col items-center gap-5 py-5"
+        >
           <div className="w-[60%] flex flex-col gap-2">
             <label htmlFor="street" className="text-lg font-medium">
               Street:
@@ -184,7 +289,7 @@ export const Profile = () => {
               name="street"
               id="street"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
-              {...register("street")}
+              {...registerAddress("street")}
               disabled={!isEditingAddress}
             />
           </div>
@@ -193,28 +298,39 @@ export const Profile = () => {
             <label htmlFor="municipality" className="text-lg font-medium">
               Municipality:
             </label>
-            <input
-              type="text"
-              name="municipality"
-              id="municipality"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
-              {...register("municipality")}
+            <select
+              className="text-lg px-2 py-2 rounded-lg border-2 border-black outline-purple-200"
+              {...registerAddress("municipality")}
               disabled={!isEditingAddress}
-            />
+              onChange={handleChangeMunicipality}
+            >
+              <option value="">Select Municipality</option>
+              {municipalitiesInBataan.map((municipality, index) => (
+                <option key={index} value={municipality.name}>
+                  {municipality.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="w-[60%] flex flex-col gap-2">
             <label htmlFor="barangay" className="text-lg font-medium">
               Barangay:
             </label>
-            <input
-              type="text"
-              name="barangay"
-              id="barangay"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
-              {...register("barangay")}
+            <select
+              className="text-lg px-2 py-2 rounded-lg border-2 border-black outline-purple-200"
+              {...registerAddress("barangay")}
               disabled={!isEditingAddress}
-            />
+              value={selectedBarangay}
+              onChange={handleChangeBarangay}
+            >
+              <option value="">Select Barangay</option>
+              {barangays.map((barangay, index) => (
+                <option key={index} value={barangay}>
+                  {barangay}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="w-[60%] flex flex-col gap-2">
@@ -226,7 +342,7 @@ export const Profile = () => {
               name="province"
               id="province"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
-              {...register("province")}
+              {...registerAddress("province")}
               disabled={!isEditingAddress}
             />
           </div>
@@ -240,7 +356,7 @@ export const Profile = () => {
               name="zipCode"
               id="zipCode"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
-              {...register("zipCode")}
+              {...registerAddress("zipCode")}
               disabled={!isEditingAddress}
             />
           </div>

@@ -4,59 +4,95 @@ const db = require("../db");
 
 const router = express.Router();
 
-router.post("/accountSignIn", (req, res) => {
-    const { username, password } = req.body;
-  
-    if (!username || !password) {
+router.post("/accountFetch", (req, res) => {
+  const { accountId } = req.body;
+
+  if (!accountId) {
+    return res.json({
+      status: 0,
+      message: "Account ID is required",
+    });
+  }
+
+  const sql = "SELECT * FROM account_info WHERE accountID = ?";
+
+  db.query(sql, [accountId], (err, results) => {
+    if (err) {
+      return res.json({ status: 0, message: "Database error", error: err });
+    }
+
+    if (results.length === 0) {
       return res.json({
         status: 0,
-        message: "Email/phone and password are required",
+        message: "No account found with the provided account ID",
       });
     }
-  
-    const sql = `
+
+    const account = results[0];
+    return res.json({
+      status: 1,
+      message: "Account information fetched successfully",
+      account: account,
+    });
+  });
+});
+
+router.post("/accountSignIn", (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.json({
+      status: 0,
+      message: "Email/phone and password are required",
+    });
+  }
+
+  const sql = `
       SELECT ai.accountID, ai.userRole, ai.email, ai.phone, ai.password, si.shopID, si.isVerified
       FROM account_info ai
       LEFT JOIN shop_info si ON ai.accountID = si.accountID
       WHERE ai.email = ? OR ai.phone = ?
     `;
-  
-    db.query(sql, [username, username], (err, results) => {
+
+  db.query(sql, [username, username], (err, results) => {
+    if (err) {
+      return res.json({ status: 0, message: "Database error", error: err });
+    }
+
+    if (results.length === 0) {
+      return res.json({
+        status: 0,
+        message: "Invalid email/phone or password",
+      });
+    }
+
+    const user = results[0];
+
+    bcrypt.compare(password, user.password, (err, isMatch) => {
       if (err) {
-        return res.json({ status: 0, message: "Database error", error: err });
+        return res.json({
+          status: 0,
+          message: "Error verifying password",
+          error: err,
+        });
       }
-  
-      if (results.length === 0) {
+
+      if (isMatch) {
+        const { password, ...userWithoutPassword } = user;
+        return res.json({
+          status: 1,
+          message: "Signed in successfully",
+          user: userWithoutPassword,
+        });
+      } else {
         return res.json({
           status: 0,
           message: "Invalid email/phone or password",
         });
       }
-  
-      const user = results[0];
-  
-      bcrypt.compare(password, user.password, (err, isMatch) => {
-        if (err) {
-          return res.json({
-            status: 0,
-            message: "Error verifying password",
-            error: err,
-          });
-        }
-  
-        if (isMatch) {
-          const { password, ...userWithoutPassword } = user;
-          return res.json({ status: 1, message: "Signed in successfully", user: userWithoutPassword });
-        } else {
-          return res.json({
-            status: 0,
-            message: "Invalid email/phone or password",
-          });
-        }
-      });
     });
   });
-  
+});
 
 router.post("/createAccount", async (req, res) => {
   const accountInfo = req.body;

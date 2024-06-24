@@ -1,4 +1,5 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
+import axios from "axios";
 import { UserContext } from "../context/user-context";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SideCart } from "./side-cart";

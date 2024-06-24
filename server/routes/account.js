@@ -14,7 +14,10 @@ router.post("/accountFetch", (req, res) => {
     });
   }
 
-  const sql = "SELECT * FROM account_info WHERE accountID = ?";
+  const sql = `SELECT ai.*, pi.*
+              FROM account_info ai
+              LEFT JOIN personal_info pi ON ai.accountID = pi.accountID
+              WHERE ai.accountID = ?`;
 
   db.query(sql, [accountId], (err, results) => {
     if (err) {

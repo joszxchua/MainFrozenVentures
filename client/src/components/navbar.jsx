@@ -3,14 +3,18 @@ import axios from "axios";
 import { UserContext } from "../context/user-context";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SideCart } from "./side-cart";
+import { Menu } from "../pages/menu/menu";
 import logo from "../assets/logo.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleUser, faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 
 export const Navbar = () => {
   const { user } = useContext(UserContext);
+  const [accountInfo, setAccountInfo] = useState(null);
   const [showSideCart, setShowSideCart] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const sideCartRef = useRef(null);
+  const menuRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,6 +49,10 @@ export const Navbar = () => {
     navigate("/cart");
   };
 
+  const toggleMenu = () => {
+    setShowMenu((prevState) => !prevState);
+  };
+
   useEffect(() => {
     if (showSideCart) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -56,6 +64,29 @@ export const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showSideCart]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user?.accountId) {
+        try {
+          const response = await axios.post(
+            "http://localhost:8081/account/accountFetch",
+            {
+              accountId: user.accountId,
+            }
+          );
+          if (response.data.status === 1) {
+            const userData = response.data.account;
+            setAccountInfo(userData);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [user?.accountId]);
 
   if (location.pathname === "/sign") {
     return null;
@@ -101,12 +132,20 @@ export const Navbar = () => {
             Sign In
           </button>
         ) : (
-          <div className="flex items-center gap-3 font-inter ">
-            <FontAwesomeIcon icon={faUserCircle} className="text-4xl" />
+          <div onClick={toggleMenu} className="relative flex items-center gap-3 font-inter cursor-pointer p-2 rounded-lg hover:bg-purple-200 hover:text-white duration-300 ease-in-out">
+            {!accountInfo?.profileImage ? (
+              <FontAwesomeIcon icon={faUserCircle} className="text-4xl" />
+            ) : (
+              <div>IBAHIN TO GAWING PROFILE PICTURE</div>
+            )}
             <div>
-              <p className="font-bold text-sm">{user?.accountId}</p>
-              <p className="text-sm">{user?.userRole}</p>
+              <p className="font-bold text-sm">
+                {accountInfo?.firstName} {accountInfo?.lastName}
+              </p>
+              <p className="text-sm">{accountInfo?.userRole}</p>
             </div>
+
+            {showMenu && <Menu ref={menuRef} />}
           </div>
         )}
       </div>

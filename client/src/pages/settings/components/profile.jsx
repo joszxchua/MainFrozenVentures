@@ -6,7 +6,8 @@ import { UserContext } from "../../../context/user-context";
 export const Profile = () => {
   const { user } = useContext(UserContext);
   const { register, handleSubmit, setValue } = useForm();
-  const [isEditingPersonal, setIsEditingPersonal] = useState(null);
+  const [isEditingPersonal, setIsEditingPersonal] = useState(false);
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -44,18 +45,30 @@ export const Profile = () => {
     fetchUserData();
   }, [user.accountId, setValue]);
 
-  const handleEditPersonalInfo = (e) => {
-    e.preventDefault();
+  const handleEditPersonalInfo = () => {
     setIsEditingPersonal(true);
   };
 
-  const handleCancelEdit = () => {
+  const handleCancelEditPersonal = () => {
     setIsEditingPersonal(false);
   };
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const handleEditAddressInfo = () => {
+    setIsEditingAddress(true);
+  };
+
+  const handleCancelEditAddress = () => {
+    setIsEditingAddress(false);
+  };
+
+  const onSubmitPersonal = (data) => {
+    console.log("Personal Info:", data);
     setIsEditingPersonal(false);
+  };
+
+  const onSubmitAddress = (data) => {
+    console.log("Address Info:", data);
+    setIsEditingAddress(false);
   };
 
   return (
@@ -64,16 +77,11 @@ export const Profile = () => {
 
       <div className="mt-3">
         <div className="flex items-center">
-          <p className="w-60 font-semibold text-gray-200">
-            Personal Information
-          </p>
+          <p className="w-60 font-semibold text-gray-200">Personal Information</p>
           <div className="w-full border-t-2"></div>
         </div>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col items-center gap-5 py-5"
-        >
+        <form onSubmit={handleSubmit(onSubmitPersonal)} className="flex flex-col items-center gap-5 py-5">
           <div className="w-[60%] flex flex-col gap-2">
             <label htmlFor="firstName" className="text-lg font-medium">
               First Name:
@@ -134,7 +142,7 @@ export const Profile = () => {
             <div className="w-full flex justify-around">
               <button
                 type="button"
-                onClick={handleCancelEdit}
+                onClick={handleCancelEditPersonal}
                 className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
               >
                 Cancel
@@ -162,16 +170,11 @@ export const Profile = () => {
 
       <div className="mt-20">
         <div className="flex items-center">
-          <p className="w-60 font-semibold text-gray-200">
-            Address Information
-          </p>
+          <p className="w-60 font-semibold text-gray-200">Address Information</p>
           <div className="w-full border-t-2"></div>
         </div>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col items-center gap-5 py-5"
-        >
+        <form onSubmit={handleSubmit(onSubmitAddress)} className="flex flex-col items-center gap-5 py-5">
           <div className="w-[60%] flex flex-col gap-2">
             <label htmlFor="street" className="text-lg font-medium">
               Street:
@@ -182,7 +185,7 @@ export const Profile = () => {
               id="street"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
               {...register("street")}
-              readOnly
+              disabled={!isEditingAddress}
             />
           </div>
 
@@ -196,7 +199,7 @@ export const Profile = () => {
               id="municipality"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
               {...register("municipality")}
-              readOnly
+              disabled={!isEditingAddress}
             />
           </div>
 
@@ -210,7 +213,7 @@ export const Profile = () => {
               id="barangay"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
               {...register("barangay")}
-              readOnly
+              disabled={!isEditingAddress}
             />
           </div>
 
@@ -224,7 +227,7 @@ export const Profile = () => {
               id="province"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
               {...register("province")}
-              readOnly
+              disabled={!isEditingAddress}
             />
           </div>
 
@@ -238,18 +241,37 @@ export const Profile = () => {
               id="zipCode"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
               {...register("zipCode")}
-              readOnly
+              disabled={!isEditingAddress}
             />
           </div>
 
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
-            >
-              Edit Address Information
-            </button>
-          </div>
+          {isEditingAddress ? (
+            <div className="w-full flex justify-around">
+              <button
+                type="button"
+                onClick={handleCancelEditAddress}
+                className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+              >
+                Save
+              </button>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={handleEditAddressInfo}
+                className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+              >
+                Edit Address Information
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </>

@@ -1,9 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
-import logo from "../assets/logo.jpg";
+import React, { useContext, useState, useRef, useEffect } from "react";
+import { UserContext } from "../context/user-context";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SideCart } from "./side-cart";
+import logo from "../assets/logo.jpg";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleUser, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 
 export const Navbar = () => {
+  const { user } = useContext(UserContext);
   const [showSideCart, setShowSideCart] = useState(false);
   const sideCartRef = useRef(null);
   const navigate = useNavigate();
@@ -88,12 +92,22 @@ export const Navbar = () => {
         >
           Cart
         </p>
-        <button
-          onClick={handleSignClick}
-          className="bg-purple-200 text-white font-inter font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
-        >
-          Sign In
-        </button>
+        {!user?.accountId ? (
+          <button
+            onClick={handleSignClick}
+            className="bg-purple-200 text-white font-inter font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+          >
+            Sign In
+          </button>
+        ) : (
+          <div className="flex items-center gap-3 font-inter ">
+            <FontAwesomeIcon icon={faUserCircle} className="text-4xl" />
+            <div>
+              <p className="font-bold text-sm">{user?.accountId}</p>
+              <p className="text-sm">{user?.userRole}</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

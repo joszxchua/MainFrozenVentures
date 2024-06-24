@@ -1,6 +1,63 @@
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import { UserContext } from "../../../context/user-context";
 
 export const Profile = () => {
+  const { user } = useContext(UserContext);
+  const { register, handleSubmit, setValue } = useForm();
+  const [isEditingPersonal, setIsEditingPersonal] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user.accountId) {
+        try {
+          const response = await axios.post(
+            "http://localhost:8081/account/accountFetch",
+            {
+              accountId: user.accountId,
+            }
+          );
+          if (response.data.status === 1) {
+            const userData = response.data.account;
+
+            const birthdate = new Date(userData.birthdate)
+              .toISOString()
+              .split("T")[0];
+
+            setValue("firstName", userData.firstName);
+            setValue("lastName", userData.lastName);
+            setValue("gender", userData.gender);
+            setValue("birthdate", birthdate);
+            setValue("street", userData.street);
+            setValue("municipality", userData.municipality);
+            setValue("barangay", userData.barangay);
+            setValue("province", userData.province);
+            setValue("zipCode", userData.zipCode);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [user.accountId, setValue]);
+
+  const handleEditPersonalInfo = (e) => {
+    e.preventDefault();
+    setIsEditingPersonal(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingPersonal(false);
+  };
+
+  const onSubmit = (data) => {
+    console.log(data);
+    setIsEditingPersonal(false);
+  };
+
   return (
     <>
       <h2 className="text-4xl font-bold">Profile</h2>
@@ -13,7 +70,10 @@ export const Profile = () => {
           <div className="w-full border-t-2"></div>
         </div>
 
-        <form className="flex flex-col items-center gap-5 py-5">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col items-center gap-5 py-5"
+        >
           <div className="w-[60%] flex flex-col gap-2">
             <label htmlFor="firstName" className="text-lg font-medium">
               First Name:
@@ -23,6 +83,8 @@ export const Profile = () => {
               name="firstName"
               id="firstName"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              {...register("firstName")}
+              disabled={!isEditingPersonal}
             />
           </div>
 
@@ -35,6 +97,8 @@ export const Profile = () => {
               name="lastName"
               id="lastName"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              {...register("lastName")}
+              disabled={!isEditingPersonal}
             />
           </div>
 
@@ -47,6 +111,8 @@ export const Profile = () => {
               name="gender"
               id="gender"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              {...register("gender")}
+              disabled={!isEditingPersonal}
             />
           </div>
 
@@ -59,15 +125,39 @@ export const Profile = () => {
               name="birthdate"
               id="birthdate"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              {...register("birthdate")}
+              disabled={!isEditingPersonal}
             />
           </div>
-        </form>
 
-        <div className="flex justify-center">
-          <button className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
-            Edit Personal Information
-          </button>
-        </div>
+          {isEditingPersonal ? (
+            <div className="w-full flex justify-around">
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+              >
+                Save
+              </button>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={handleEditPersonalInfo}
+                className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+              >
+                Edit Personal Information
+              </button>
+            </div>
+          )}
+        </form>
       </div>
 
       <div className="mt-20">
@@ -78,7 +168,10 @@ export const Profile = () => {
           <div className="w-full border-t-2"></div>
         </div>
 
-        <form className="flex flex-col items-center gap-5 py-5">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col items-center gap-5 py-5"
+        >
           <div className="w-[60%] flex flex-col gap-2">
             <label htmlFor="street" className="text-lg font-medium">
               Street:
@@ -88,6 +181,8 @@ export const Profile = () => {
               name="street"
               id="street"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              {...register("street")}
+              readOnly
             />
           </div>
 
@@ -100,6 +195,8 @@ export const Profile = () => {
               name="municipality"
               id="municipality"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              {...register("municipality")}
+              readOnly
             />
           </div>
 
@@ -112,6 +209,8 @@ export const Profile = () => {
               name="barangay"
               id="barangay"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              {...register("barangay")}
+              readOnly
             />
           </div>
 
@@ -124,6 +223,7 @@ export const Profile = () => {
               name="province"
               id="province"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              {...register("province")}
               readOnly
             />
           </div>
@@ -137,16 +237,20 @@ export const Profile = () => {
               name="zipCode"
               id="zipCode"
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              {...register("zipCode")}
               readOnly
             />
           </div>
-        </form>
 
-        <div className="flex justify-center">
-          <button className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
-            Edit Address Information
-          </button>
-        </div>
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+            >
+              Edit Address Information
+            </button>
+          </div>
+        </form>
       </div>
     </>
   );

@@ -203,6 +203,10 @@ export const Profile = () => {
       } else {
         setMessageTitle("Error");
         setMessage(response.data.message);
+        setValuePersonal("firstName", initialPersonalValues.firstName);
+        setValuePersonal("lastName", initialPersonalValues.lastName);
+        setValuePersonal("gender", initialPersonalValues.gender);
+        setValuePersonal("birthdate", initialPersonalValues.birthdate);
       }
     } catch (error) {
       setMessageTitle("Error");
@@ -232,6 +236,13 @@ export const Profile = () => {
       } else {
         setMessageTitle("Error");
         setMessage(response.data.message);
+        setValueAddress("street", initialAddressValues.street);
+        setValueAddress("municipality", initialAddressValues.municipality);
+        setValueAddress("barangay", initialAddressValues.barangay);
+        setValueAddress("province", initialAddressValues.province);
+        setValueAddress("zipCode", initialAddressValues.zipCode);
+        setSelectedMunicipality(initialAddressValues.municipality);
+        setSelectedBarangay(initialAddressValues.barangay);
       }
     } catch (error) {
       setMessageTitle("Error");

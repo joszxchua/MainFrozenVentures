@@ -5,8 +5,8 @@ import municipalitiesInBataan from "../../../municipalities";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { CodeGenerator } from "../../../components/codegenerator";
-import { ErrorMessage } from "../../../components/errormessage";
-import { SuccessMessage } from "../../../components/successmessage";
+import { ErrorMessage } from "../../../components/error-message";
+import { SuccessMessage } from "../../../components/success-message";
 
 export const SignUp = () => {
   const [currentStep, setCurrentStep] = useState(1);

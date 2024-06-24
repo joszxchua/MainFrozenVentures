@@ -5,8 +5,8 @@ import { UserContext } from "../../../context/user-context";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { ErrorMessage } from "../../../components/errormessage";
-import { SuccessMessage } from "../../../components/successmessage";
+import { ErrorMessage } from "../../../components/error-message";
+import { SuccessMessage } from "../../../components/success-message";
 
 export const SignIn = ({ createClick }) => {
   const { addUser } = useContext(UserContext);

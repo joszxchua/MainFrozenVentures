@@ -5,10 +5,11 @@ import { Navbar } from "./components/navbar";
 import { Footer } from "./components/footer";
 import { Home } from "./pages/home";
 import { Sign } from "./pages/Sign/sign";
-import { Settings } from "./pages/settings";
+import { Settings } from "./pages/settings/settings";
 import { Shop } from "./pages/shop";
 import { Cart } from "./pages/cart";
 import { ProductDetails } from "./pages/product-details";
+import { PurchaseHistory } from "./pages/purchase-history";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/shop" element={<Shop />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/product-details" element={<ProductDetails />} />
+            <Route path="/purchase-history" element={<PurchaseHistory />} />
           </Routes>
           <Footer />
         </Router>

@@ -90,7 +90,7 @@ export const Navbar = () => {
   }
 
   return (
-    <div className="fixed top-0 left-0 p-2 bg-white w-full flex justify-between z-50">
+    <div className={`fixed top-0 left-0 ${user?.accountId ? 'p-2' : 'p-5'} bg-white w-full flex justify-between z-50`}>
       {showSideCart && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30 backdrop-blur-sm">
           <SideCart

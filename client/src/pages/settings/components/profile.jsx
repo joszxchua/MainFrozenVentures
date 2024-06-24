@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { UserContext } from "../../../context/user-context";
 import municipalitiesInBataan from "../../../municipalities";
+import { SuccessMessage } from "../../../components/success-message";
+import { ErrorMessage } from "../../../components/error-message";
 
 export const Profile = () => {
   const { user } = useContext(UserContext);
@@ -21,6 +23,8 @@ export const Profile = () => {
   const [barangays, setBarangays] = useState([]);
   const [isEditingPersonal, setIsEditingPersonal] = useState(false);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -153,8 +157,31 @@ export const Profile = () => {
     setIsEditingAddress(false);
   };
 
-  const onSubmitPersonal = (data) => {
-    console.log("Personal Info:", data);
+  const onSubmitPersonal = async (data) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8081/account/personalUpdate",
+        {
+          ...data,
+          accountId: user.accountId,
+        }
+      );
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+      } else {
+        setMessageTitle("Error");
+        setMessage(response.data.message);
+      }
+    } catch (error) {
+      setMessageTitle("Error");
+      setMessage("Something went wrong");
+    }
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
     setIsEditingPersonal(false);
   };
 
@@ -165,6 +192,12 @@ export const Profile = () => {
 
   return (
     <>
+      {messageTitle && messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle && messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
       <h2 className="text-4xl font-bold">Profile</h2>
 
       <div className="mt-3">

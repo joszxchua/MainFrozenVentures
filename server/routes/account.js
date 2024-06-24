@@ -4,6 +4,102 @@ const db = require("../db");
 
 const router = express.Router();
 
+router.post("/personalUpdate", (req, res) => {
+  const { accountId, firstName, lastName, gender, birthdate } = req.body;
+
+  const fields = { accountId, firstName, lastName, gender, birthdate };
+  const missingFields = [];
+
+  for (const [key, value] of Object.entries(fields)) {
+    if (!value) {
+      missingFields.push(key);
+    }
+  }
+
+  if (missingFields.length > 0) {
+    return res.status(200).json({
+      status: "error",
+      message: "All fields are required",
+      missingFields: missingFields,
+    });
+  }
+
+  const sqlFetch = "SELECT * FROM personal_info WHERE accountID = ?";
+  db.query(sqlFetch, [accountId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        status: "error",
+        message: "Database error",
+        error: err,
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "No personal info found for the account ID",
+      });
+    }
+
+    const existingPersonalInfo = results[0];
+
+    let updateRequired = false;
+    const updatedFields = {};
+
+    if (firstName && firstName !== existingPersonalInfo.firstName) {
+      updatedFields.firstName = firstName;
+      updateRequired = true;
+    }
+    if (lastName && lastName !== existingPersonalInfo.lastName) {
+      updatedFields.lastName = lastName;
+      updateRequired = true;
+    }
+    if (gender && gender !== existingPersonalInfo.gender) {
+      updatedFields.gender = gender;
+      updateRequired = true;
+    }
+    if (birthdate && birthdate !== existingPersonalInfo.birthdate) {
+      updatedFields.birthdate = birthdate;
+      updateRequired = true;
+    }
+
+    if (!updateRequired) {
+      return res.status(200).json({
+        status: "success",
+        message: "No changes made in personal information",
+      });
+    }
+
+    const sqlUpdate =
+      "UPDATE personal_info SET firstName=?, lastName=?, gender=?, birthdate=? WHERE accountID=?";
+
+    db.query(
+      sqlUpdate,
+      [
+        updatedFields.firstName || existingPersonalInfo.firstName,
+        updatedFields.lastName || existingPersonalInfo.lastName,
+        updatedFields.gender || existingPersonalInfo.gender,
+        updatedFields.birthdate || existingPersonalInfo.birthdate,
+        accountId,
+      ],
+      (err, result) => {
+        if (err) {
+          return res.status(500).json({
+            status: "error",
+            message: "Error updating personal information",
+            error: err,
+          });
+        }
+
+        res.status(200).json({
+          status: "success",
+          message: "Personal information updated successfully",
+        });
+      }
+    );
+  });
+});
+
 router.post("/accountFetch", (req, res) => {
   const { accountId } = req.body;
 

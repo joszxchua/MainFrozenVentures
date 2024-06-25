@@ -40,15 +40,67 @@ router.post(
         return;
       }
 
-      res
-        .status(200)
-        .json({
-          status: "success",
-          message: "Profile picture updated successfully",
-        });
+      res.status(200).json({
+        status: "success",
+        message: "Profile picture updated successfully",
+      });
     });
   }
 );
+
+router.post("/changeEmail", (req, res) => {
+  const { accountId, email } = req.body;
+
+  console.log(accountId, email);
+
+  if (!accountId || !email) {
+    return res.status(400).json({
+      status: "error",
+      message: "AccountId and Email are required.",
+    });
+  }
+
+  const sqlFetch = "SELECT email FROM account_info WHERE accountID = ?";
+  db.query(sqlFetch, [accountId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        status: "error",
+        message: "Database error",
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Account not found.",
+      });
+    }
+
+    const currentEmail = results[0].email;
+
+    if (currentEmail === email) {
+      return res.status(200).json({
+        status: "success",
+        message: "Nothing has changed.",
+      });
+    }
+
+    const sqlUpdate = "UPDATE account_info SET email = ? WHERE accountID = ?";
+    db.query(sqlUpdate, [email, accountId], (err, updateResults) => {
+      if (err) {
+        return res.status(500).json({
+          status: "error",
+          message: "Database error",
+        });
+      }
+
+      return res.status(200).json({
+        status: "success",
+        message: "Email updated successfully",
+      });
+    });
+  });
+});
 
 router.post("/personalUpdate", (req, res) => {
   const { accountId, firstName, lastName, gender, birthdate } = req.body;

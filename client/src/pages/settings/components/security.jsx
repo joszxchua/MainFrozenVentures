@@ -7,11 +7,13 @@ import { ErrorMessage } from "../../../components/error-message";
 
 export const Security = () => {
   const { user } = useContext(UserContext);
-  const [accountInfo, setAccountInfo] = useState([]);
   const [isChangingEmail, setIsChangingEmail] = useState(false);
   const [code, setCode] = useState("");
   const [inputCode, setInputCode] = useState("");
+  const [email, setEmail] = useState("");
   const [inputEmail, setInputEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [inputPhone, setInputPhone] = useState("");
   const [showCode, setShowCode] = useState(false);
   const [isChangingPhone, setIsChangingPhone] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -30,7 +32,8 @@ export const Security = () => {
           );
           if (response.data.status === 1) {
             const userData = response.data.account;
-            setAccountInfo(userData);
+            setEmail(userData.email);
+            setPhone(userData.phone);
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -121,6 +124,39 @@ export const Security = () => {
     setIsChangingPhone(false);
   };
 
+  const handleSaveChangePhone = async () => {
+    try {
+      const formData = {
+        accountId: user.accountId,
+        phone: inputPhone,
+      };
+
+      const response = await axios.post(
+        "http://localhost:8081/account/changePhone",
+        formData
+      );
+
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+        setPhone(inputPhone);
+      } else {
+        setMessageTitle("Error");
+        setMessage(response.data.message);
+      }
+    } catch (error) {
+      setMessageTitle("Error");
+      setMessage("An error occurred. Please try again.");
+    }
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+      setInputPhone("")
+      setIsChangingPhone(false);
+    }, 3000);
+  };
+
   const handleChangePassword = () => {
     setIsChangingEmail(false);
     setIsChangingPhone(false);
@@ -151,7 +187,7 @@ export const Security = () => {
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-medium">Current Email:</h3>
             <p className="text-2xl text-black font-semibold">
-              {accountInfo.email}
+              {email}
             </p>
           </div>
 
@@ -261,7 +297,7 @@ export const Security = () => {
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-medium">Current Phone:</h3>
             <p className="text-2xl text-black font-semibold">
-              {accountInfo.phone}
+              {phone}
             </p>
           </div>
 
@@ -272,9 +308,11 @@ export const Security = () => {
               </label>
               <input
                 type="number"
-                name="oldPhone"
-                id="oldPhone"
+                name="newPhone"
+                id="newPhone"
                 className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+                value={inputPhone}
+                onChange={(e) => setInputPhone(e.target.value)}
               />
             </div>
           )}
@@ -291,6 +329,7 @@ export const Security = () => {
             </button>
             <button
               type="button"
+              onClick={handleSaveChangePhone}
               className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
             >
               Save

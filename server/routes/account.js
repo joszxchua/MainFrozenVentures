@@ -48,10 +48,91 @@ router.post(
   }
 );
 
+router.post("/changePhone", (req, res) => {
+  const { accountId, phone } = req.body;
+
+  if (!accountId || !phone) {
+    return res.status(400).json({
+      status: "error",
+      message: "AccountId and Phone are required.",
+    });
+  }
+
+  if (phone.length !== 11) {
+    return res.json({
+      status: "error",
+      message: "Phone number must be 11 characters long",
+    });
+  }
+
+  if (!phone.startsWith("09")) {
+    return res.status(200).json({
+      status: "error",
+      message: "Phone number must start with 09",
+    });
+  }
+
+  const sqlFetch = "SELECT phone FROM account_info WHERE accountID = ?";
+  db.query(sqlFetch, [accountId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        status: "error",
+        message: "Database error",
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Account not found.",
+      });
+    }
+
+    const currentPhone = results[0].phone;
+
+    if (currentPhone === phone) {
+      return res.status(200).json({
+        status: "error",
+        message: "Nothing has changed.",
+      });
+    }
+
+    const sqlCheckPhone = "SELECT phone FROM account_info WHERE phone = ?";
+    db.query(sqlCheckPhone, [phone], (err, phoneResults) => {
+      if (err) {
+        return res.status(500).json({
+          status: "error",
+          message: "Database error",
+        });
+      }
+
+      if (phoneResults.length > 0) {
+        return res.status(409).json({
+          status: "error",
+          message: "Phone number already exists.",
+        });
+      }
+
+      const sqlUpdate = "UPDATE account_info SET phone = ? WHERE accountID = ?";
+      db.query(sqlUpdate, [phone, accountId], (err, updateResults) => {
+        if (err) {
+          return res.status(500).json({
+            status: "error",
+            message: "Database error",
+          });
+        }
+
+        return res.status(200).json({
+          status: "success",
+          message: "Phone number updated successfully",
+        });
+      });
+    });
+  });
+});
+
 router.post("/changeEmail", (req, res) => {
   const { accountId, email } = req.body;
-
-  console.log(accountId, email);
 
   if (!accountId || !email) {
     return res.status(400).json({
@@ -80,13 +161,13 @@ router.post("/changeEmail", (req, res) => {
 
     if (currentEmail === email) {
       return res.status(200).json({
-        status: "success",
+        status: "error",
         message: "Nothing has changed.",
       });
     }
 
-    const sqlUpdate = "UPDATE account_info SET email = ? WHERE accountID = ?";
-    db.query(sqlUpdate, [email, accountId], (err, updateResults) => {
+    const sqlCheckEmail = "SELECT email FROM account_info WHERE email = ?";
+    db.query(sqlCheckEmail, [email], (err, emailResults) => {
       if (err) {
         return res.status(500).json({
           status: "error",
@@ -94,9 +175,26 @@ router.post("/changeEmail", (req, res) => {
         });
       }
 
-      return res.status(200).json({
-        status: "success",
-        message: "Email updated successfully",
+      if (emailResults.length > 0) {
+        return res.status(409).json({
+          status: "error",
+          message: "Email already exists.",
+        });
+      }
+
+      const sqlUpdate = "UPDATE account_info SET email = ? WHERE accountID = ?";
+      db.query(sqlUpdate, [email, accountId], (err, updateResults) => {
+        if (err) {
+          return res.status(500).json({
+            status: "error",
+            message: "Database error",
+          });
+        }
+
+        return res.status(200).json({
+          status: "success",
+          message: "Email updated successfully",
+        });
       });
     });
   });

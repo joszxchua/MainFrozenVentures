@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import axios from "axios";
 import { UserContext } from "../../context/user-context";
 import { Profile } from "./components/profile";
 import { Security } from "./components/security";
@@ -17,7 +18,7 @@ export const Settings = () => {
   const { user, clearUser } = useContext(UserContext);
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditingPicture, setIsEditingPicture] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [profilePicture, setProfilePicture] = useState();
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
@@ -49,15 +50,34 @@ export const Settings = () => {
     document.getElementById("fileInput").click();
   };
 
-  const handleCancelEditPicture = (e) => {
-    e.preventDefault();
+  const handleCancelEditPicture = () => {
     setIsEditingPicture(false);
-    setSelectedImage(null);
+    setProfilePicture(null);
   };
 
-  const handleSavePicture = () => {
+  const handleSavePicture = async () => {
+    if (!profilePicture) {
+      console.log("No picture selected");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("accountId", user.accountId);
+      formData.append("profilePicture", profilePicture);
+
+      const response = await axios.post(
+        "http://localhost:8081/account/uploadProfilePicture",
+        formData
+      ).then(response => {
+        if (response.data.status === "success") {
+          
+        }
+      })
+    } catch (error) {
+      console.error(error);
+    }
     setIsEditingPicture(false);
-    setSelectedImage(null);
   };
 
   return (
@@ -129,11 +149,11 @@ export const Settings = () => {
       <div className="col-span-1 h-full px-5">
         <div className="bg-gray-100 p-8 rounded-lg flex flex-col items-center gap-5">
           <h3 className="font-bold text-4xl">Profile Picture</h3>
-          {selectedImage ? (
+          {profilePicture ? (
             <img
               onClick={isEditingPicture ? handleSelectPicture : null}
-              src={URL.createObjectURL(selectedImage)}
-              alt="Selected Profile"
+              src={URL.createObjectURL(profilePicture)}
+              alt="Profile Picture"
               className="rounded-full w-60 object-cover"
             />
           ) : (
@@ -143,45 +163,44 @@ export const Settings = () => {
               className="text-[250px]"
             />
           )}
-          <form action="" className="w-full flex justify-around">
-            <input
-              id="fileInput"
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={(e) => setSelectedImage(e.target.files[0])}
-            />
 
-            {activeTab === "profile" && (
-              <>
-                {isEditingPicture ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={handleCancelEditPicture}
-                      className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      onClick={handleSavePicture}
-                      className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
-                    >
-                      Save
-                    </button>
-                  </>
-                ) : (
+          <input
+            id="fileInput"
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={(e) => setProfilePicture(e.target.files[0])}
+          />
+
+          {activeTab === "profile" && (
+            <>
+              {isEditingPicture ? (
+                <div className="w-full flex justify-around">
                   <button
-                    onClick={handleEditPicture}
+                    type="button"
+                    onClick={handleCancelEditPicture}
+                    className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSavePicture}
                     className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
                   >
-                    Change Profile Picture
+                    Save
                   </button>
-                )}
-              </>
-            )}
-          </form>
+                </div>
+              ) : (
+                <button
+                  onClick={handleEditPicture}
+                  className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                >
+                  Change Profile Picture
+                </button>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>

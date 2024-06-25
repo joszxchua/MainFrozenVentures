@@ -1,8 +1,54 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+const multer = require("multer");
+const path = require("path");
 const db = require("../db");
 
 const router = express.Router();
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/profileImages");
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      file.fieldname + "_" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+const upload = multer({
+  storage: storage,
+});
+
+router.post(
+  "/uploadProfilePicture",
+  upload.single("profilePicture"),
+  (req, res) => {
+    const profilePicture = req.file.filename;
+    const { accountId } = req.body;
+
+    const sql =
+      "UPDATE personal_info SET profilePicture = ? WHERE accountID = ?";
+    db.query(sql, [profilePicture, accountId], (err, result) => {
+      if (err) {
+        res.status(200).json({
+          status: "error",
+          message: "Failed to update profile picture",
+        });
+        return;
+      }
+
+      res
+        .status(200)
+        .json({
+          status: "success",
+          message: "Profile picture updated successfully",
+        });
+    });
+  }
+);
 
 router.post("/personalUpdate", (req, res) => {
   const { accountId, firstName, lastName, gender, birthdate } = req.body;

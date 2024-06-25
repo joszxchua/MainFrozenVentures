@@ -47,7 +47,7 @@ export const Navbar = () => {
   };
 
   const handleProfileClick = () => {
-    navigate("/settings")
+    navigate("/settings");
   };
 
   useEffect(() => {
@@ -85,12 +85,21 @@ export const Navbar = () => {
     fetchUserData();
   }, [user?.accountId]);
 
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
+
   if (location.pathname === "/sign") {
     return null;
   }
 
   return (
-    <div className={`fixed top-0 left-0 ${user?.accountId ? 'p-2' : 'p-5'} bg-white w-full flex justify-between z-40`}>
+    <div
+      className={`fixed top-0 left-0 ${
+        user?.accountId ? "p-2" : "p-5"
+      } bg-white w-full flex justify-between z-40`}
+    >
       {showSideCart && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30 backdrop-blur-sm">
           <SideCart
@@ -129,17 +138,24 @@ export const Navbar = () => {
             Sign In
           </button>
         ) : (
-          <div onClick={handleProfileClick} className="relative flex items-center gap-3 font-inter cursor-pointer p-2 rounded-lg hover:bg-purple-200 hover:text-white duration-300 ease-in-out">
-            {!accountInfo?.profileImage ? (
+          <div
+            onClick={handleProfileClick}
+            className="relative flex items-center gap-3 font-inter cursor-pointer p-2 rounded-lg hover:bg-purple-200 hover:text-white duration-300 ease-in-out"
+          >
+            {!accountInfo?.profilePicture ? (
               <FontAwesomeIcon icon={faUserCircle} className="text-4xl" />
             ) : (
-              <img src={accountInfo.profileImage} alt="Profile" className="w-9 h-9 rounded-full" />
+              <img
+                src={`http://localhost:8081/profileImages/${accountInfo.profilePicture}`}
+                alt="Profile"
+                className="w-9 h-9 rounded-full"
+              />
             )}
             <div>
               <p className="font-bold text-sm">
                 {accountInfo?.firstName} {accountInfo?.lastName}
               </p>
-              <p className="text-sm">{accountInfo?.userRole}</p>
+              <p className="text-sm">{capitalizeFirstLetter(accountInfo?.userRole)}</p>
             </div>
           </div>
         )}

@@ -162,6 +162,7 @@ export const Profile = () => {
 
   const handleEditPersonalInfo = () => {
     setIsEditingPersonal(true);
+    setIsEditingAddress(false);
   };
 
   const handleCancelEditPersonal = () => {
@@ -174,6 +175,7 @@ export const Profile = () => {
 
   const handleEditAddressInfo = () => {
     setIsEditingAddress(true);
+    setIsEditingPersonal(false);
   };
 
   const handleCancelEditAddress = () => {

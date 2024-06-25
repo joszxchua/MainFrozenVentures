@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { UserContext } from "../../../context/user-context";
 
 export const Security = () => {
+  const { user } = useContext(UserContext);
   const [isChangingEmail, setIsChangingEmail] = useState(false);
   const [isChangingPhone, setIsChangingPhone] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { UserContext } from "../../context/user-context";
 import { Profile } from "./components/profile";
@@ -20,6 +20,29 @@ export const Settings = () => {
   const [isEditingPicture, setIsEditingPicture] = useState(false);
   const [profilePicture, setProfilePicture] = useState();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user.accountId) {
+        try {
+          const response = await axios.post(
+            "http://localhost:8081/account/accountFetch",
+            {
+              accountId: user.accountId,
+            }
+          );
+          if (response.data.status === 1) {
+            const userData = response.data.account;
+            setProfilePicture(userData.profilePicture);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [user.accountId]);
 
   const handleProfileClick = () => {
     setActiveTab("profile");
@@ -66,14 +89,12 @@ export const Settings = () => {
       formData.append("accountId", user.accountId);
       formData.append("profilePicture", profilePicture);
 
-      const response = await axios.post(
-        "http://localhost:8081/account/uploadProfilePicture",
-        formData
-      ).then(response => {
-        if (response.data.status === "success") {
-          
-        }
-      })
+      const response = await axios
+        .post("http://localhost:8081/account/uploadProfilePicture", formData)
+        .then((response) => {
+          if (response.data.status === "success") {
+          }
+        });
     } catch (error) {
       console.error(error);
     }
@@ -152,7 +173,7 @@ export const Settings = () => {
           {profilePicture ? (
             <img
               onClick={isEditingPicture ? handleSelectPicture : null}
-              src={URL.createObjectURL(profilePicture)}
+              src={`http://localhost:8081/profileImages/${profilePicture}`}
               alt="Profile Picture"
               className="rounded-full w-60 object-cover"
             />

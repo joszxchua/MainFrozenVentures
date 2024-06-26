@@ -48,6 +48,80 @@ router.post(
   }
 );
 
+router.post("/changePassword", (req, res) => {
+  const { accountId, currentPassword, newPassword, confirmPassword } = req.body;
+
+  const query = "SELECT password FROM account_info WHERE accountID = ?";
+  db.query(query, [accountId], async (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        status: "error",
+        message: "Database error",
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Account not found",
+      });
+    }
+
+    const fetchedPassword = results[0].password;
+
+    const match = await bcrypt.compare(currentPassword, fetchedPassword);
+    if (!match) {
+      return res.status(200).json({
+        status: "error",
+        message: "Incorrect current password",
+      });
+    }
+
+    if (
+      newPassword.length < 8 ||
+      !/[A-Za-z]/.test(newPassword) ||
+      !/\d/.test(newPassword)
+    ) {
+      return res.json({
+        status: "error",
+        message:
+          "New password must have at least 8 characters and include both letters and numbers",
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.json({
+        status: "error",
+        message: "New password and confirm password do not match",
+      });
+    }
+
+    if (currentPassword == confirmPassword) {
+      return res.json({
+        status: "error",
+        message: "You have entered your current password",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const updateQuery =
+      "UPDATE account_info SET password = ? WHERE accountID = ?";
+    db.query(updateQuery, [hashedPassword, accountId], (err, results) => {
+      if (err) {
+        return res.status(500).json({
+          status: "error",
+          message: "Database error",
+        });
+      }
+      return res.status(200).json({
+        status: "success",
+        message: "Password changed successfully",
+      });
+    });
+  });
+});
+
 router.post("/changePhone", (req, res) => {
   const { accountId, phone } = req.body;
 

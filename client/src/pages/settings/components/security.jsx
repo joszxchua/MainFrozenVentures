@@ -16,9 +16,13 @@ export const Security = () => {
   const [inputPhone, setInputPhone] = useState("");
   const [showCode, setShowCode] = useState(false);
   const [isChangingPhone, setIsChangingPhone] = useState(false);
+  const [inputCurrentPassword, setInputCurrentPassword] = useState("");
+  const [inputNewPassword, setInputNewPassword] = useState("");
+  const [inputConfirmPassword, setInputConfirmPassword] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -76,6 +80,7 @@ export const Security = () => {
 
   const handleConfirmChangeEmail = async () => {
     if (inputCode === code) {
+      setIsLoading(true);
       try {
         const formData = {
           accountId: user.accountId,
@@ -97,6 +102,8 @@ export const Security = () => {
       } catch (error) {
         setMessageTitle("Error");
         setMessage("An error occurred. Please try again.");
+      } finally {
+        setIsLoading(false);
       }
     } else {
       setMessageTitle("Error");
@@ -125,6 +132,7 @@ export const Security = () => {
   };
 
   const handleSaveChangePhone = async () => {
+    setIsLoading(true);
     try {
       const formData = {
         accountId: user.accountId,
@@ -147,12 +155,14 @@ export const Security = () => {
     } catch (error) {
       setMessageTitle("Error");
       setMessage("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
 
     setTimeout(() => {
       setMessageTitle("");
       setMessage("");
-      setInputPhone("")
+      setInputPhone("");
       setIsChangingPhone(false);
     }, 3000);
   };
@@ -164,7 +174,51 @@ export const Security = () => {
   };
 
   const handleCancelChangePassword = () => {
+    setInputCurrentPassword("");
+    setInputNewPassword("");
+    setInputConfirmPassword("");
     setIsChangingPassword(false);
+  };
+
+  const handleSaveChangePassword = async () => {
+    setIsLoading(true);
+    try {
+      const formData = {
+        accountId: user.accountId,
+        currentPassword: inputCurrentPassword,
+        newPassword: inputNewPassword,
+        confirmPassword: inputConfirmPassword,
+      };
+
+      const response = await axios.post(
+        "http://localhost:8081/account/changePassword",
+        formData
+      );
+
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+        setPhone(inputPhone);
+        setInputCurrentPassword("");
+        setInputNewPassword("");
+        setInputConfirmPassword("");
+      } else {
+        setMessageTitle("Error");
+        setMessage(response.data.message);
+      }
+    } catch (error) {
+      setMessageTitle("Error");
+      setMessage("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+      setInputPhone("");
+      setIsChangingPhone(false);
+    }, 3000);
   };
 
   return (
@@ -186,9 +240,7 @@ export const Security = () => {
         <div className="flex flex-col items-center gap-5 py-5">
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-medium">Current Email:</h3>
-            <p className="text-2xl text-black font-semibold">
-              {email}
-            </p>
+            <p className="text-2xl text-black font-semibold">{email}</p>
           </div>
 
           {isChangingEmail && (
@@ -239,6 +291,7 @@ export const Security = () => {
                           type="button"
                           onClick={handleCancelChangeEmail}
                           className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
+                          disabled={isLoading}
                         >
                           Cancel
                         </button>
@@ -246,8 +299,9 @@ export const Security = () => {
                           type="button"
                           onClick={handleConfirmChangeEmail}
                           className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                          disabled={isLoading}
                         >
-                          Confirm
+                          {isLoading ? "Confirming..." : "Confirm"}
                         </button>
                       </div>
                     </div>
@@ -264,6 +318,7 @@ export const Security = () => {
               type="button"
               onClick={handleCancelChangeEmail}
               className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
+              disabled={isLoading}
             >
               Cancel
             </button>
@@ -271,8 +326,9 @@ export const Security = () => {
               type="button"
               onClick={handleSaveChangeEmail}
               className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+              disabled={isLoading}
             >
-              Save
+              {isLoading ? "Saving..." : "Save"}
             </button>
           </div>
         ) : (
@@ -296,9 +352,7 @@ export const Security = () => {
         <form className="flex flex-col items-center gap-5 py-5">
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-medium">Current Phone:</h3>
-            <p className="text-2xl text-black font-semibold">
-              {phone}
-            </p>
+            <p className="text-2xl text-black font-semibold">{phone}</p>
           </div>
 
           {isChangingPhone && (
@@ -324,6 +378,7 @@ export const Security = () => {
               type="button"
               onClick={handleCancelChangePhone}
               className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
+              disabled={isLoading}
             >
               Cancel
             </button>
@@ -331,8 +386,9 @@ export const Security = () => {
               type="button"
               onClick={handleSaveChangePhone}
               className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+              disabled={isLoading}
             >
-              Save
+              {isLoading ? "Saving..." : "Save"}
             </button>
           </div>
         ) : (
@@ -362,7 +418,10 @@ export const Security = () => {
               type="password"
               name="currentPassword"
               id="currentPassword"
+              disabled={!isChangingPassword}
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              value={inputCurrentPassword}
+              onChange={(e) => setInputCurrentPassword(e.target.value)}
             />
           </div>
 
@@ -374,7 +433,10 @@ export const Security = () => {
               type="password"
               name="newPassword"
               id="newPassword"
+              disabled={!isChangingPassword}
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              value={inputNewPassword}
+              onChange={(e) => setInputNewPassword(e.target.value)}
             />
           </div>
 
@@ -386,7 +448,10 @@ export const Security = () => {
               type="password"
               name="confirmPassword"
               id="confirmPassword"
+              disabled={!isChangingPassword}
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              value={inputConfirmPassword}
+              onChange={(e) => setInputConfirmPassword(e.target.value)}
             />
           </div>
         </form>
@@ -397,14 +462,17 @@ export const Security = () => {
               type="button"
               onClick={handleCancelChangePassword}
               className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
+              disabled={isLoading}
             >
               Cancel
             </button>
             <button
               type="button"
+              onClick={handleSaveChangePassword}
               className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+              disabled={isLoading}
             >
-              Save
+              {isLoading ? "Saving..." : "Save"}
             </button>
           </div>
         ) : (

@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
+import { UserContext } from "../context/user-context";
 import Bg from "../assets/home-bg.jpg";
 import MoreFlavors from "../assets/MoreFlavors.png";
 import { Products } from "../components/products";
 import { useNavigate } from "react-router-dom";
 
 export const Home = () => {
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user?.userRole && user.userRole !== "customer") {
+      navigate("/home-seller");
+    }
+  }, [user, navigate]);
 
   const handleShopClick = () => {
     navigate("/shop");
@@ -13,7 +21,6 @@ export const Home = () => {
 
   return (
     <div className="mt-20 overflow-hidden">
-      {/* HERO SECTION */}
       <div className="relative">
         <img
           src={Bg}
@@ -37,7 +44,6 @@ export const Home = () => {
         </div>
       </div>
 
-      {/* FEATURED SECTION */}
       <div className="py-20">
         <div className="flex flex-col items-center">
           <h2 className="font-inter font-bold text-5xl">Featured Products</h2>
@@ -54,7 +60,6 @@ export const Home = () => {
         </div>
       </div>
 
-      {/* MORE FLAVORS SECTION */}
       <div className="relative flex flex-col justify-center h-[60vh] pt-20">
         <div className="font-inter bg-purple-200 text-white py-[120px] pl-40">
           <h2 className="font-bold text-5xl">Need More Flavors?</h2>
@@ -77,7 +82,6 @@ export const Home = () => {
         />
       </div>
 
-      {/* HOW IT WORKS SECTION */}
       <div className="py-20 px-40 flex flex-col items-center font-inter">
         <div className="text-center">
           <h2 className="font-bold text-5xl">How It Works</h2>

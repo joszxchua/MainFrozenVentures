@@ -10,6 +10,7 @@ import { Shop } from "./pages/shop";
 import { Cart } from "./pages/cart";
 import { ProductDetails } from "./pages/product-details";
 import { PurchaseHistory } from "./pages/purchase-history";
+import { HomeSeller } from "./pages/home-seller";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/product-details" element={<ProductDetails />} />
             <Route path="/purchase-history" element={<PurchaseHistory />} />
+            <Route path="/home-seller" element={<HomeSeller />} />
           </Routes>
           <Footer />
         </Router>

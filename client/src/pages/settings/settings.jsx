@@ -112,10 +112,10 @@ export const Settings = () => {
             </p>
           </div>
 
-          <ul className="flex flex-col gap-4 pt-10 font-bold">
+          <ul className="flex flex-col gap-4 pt-10 font-bold text-2xl">
             <li
               onClick={handleProfileClick}
-              className={`text-2xl ${
+              className={`${
                 activeTab === "profile" ? "text-purple-200" : "text-gray-900"
               } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
             >
@@ -124,7 +124,7 @@ export const Settings = () => {
             </li>
             <li
               onClick={handleSecurityClick}
-              className={`text-2xl ${
+              className={`${
                 activeTab === "security" ? "text-purple-200" : "text-gray-900"
               } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
             >
@@ -133,14 +133,14 @@ export const Settings = () => {
             </li>
             <li
               onClick={handlePurchaseHistoryClick}
-              className="text-2xl cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out"
+              className="cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out"
             >
               <FontAwesomeIcon icon={faClockRotateLeft} className="mr-3" />
               Purchase History
             </li>
             <li
               onClick={handleReportProblemClick}
-              className={`text-2xl ${
+              className={`${
                 activeTab === "reportProblem" ? "text-purple-200" : "text-gray-900"
               } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
             >
@@ -149,7 +149,7 @@ export const Settings = () => {
             </li>
             <li
               onClick={handleSignOutClick}
-              className="mt-20 text-2xl cursor-pointer hover:bg-red-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out"
+              className="mt-20 cursor-pointer hover:bg-red-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out"
             >
               <FontAwesomeIcon
                 icon={faArrowRightFromBracket}

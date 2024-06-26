@@ -10,7 +10,7 @@ import { Shop } from "./pages/shop";
 import { Cart } from "./pages/cart";
 import { ProductDetails } from "./pages/product-details";
 import { PurchaseHistory } from "./pages/purchase-history";
-import { HomeSeller } from "./pages/home-seller";
+import { HomeSeller } from "./pages/seller/home-seller";
 
 function App() {
   return (

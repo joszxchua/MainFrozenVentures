@@ -140,7 +140,9 @@ export const Settings = () => {
             </li>
             <li
               onClick={handleReportProblemClick}
-              className="text-2xl cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out"
+              className={`text-2xl ${
+                activeTab === "reportProblem" ? "text-purple-200" : "text-gray-900"
+              } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
             >
               <FontAwesomeIcon icon={faCircleExclamation} className="mr-3" />
               Report A Problem

@@ -1,12 +1,17 @@
 import React, { useContext, useState } from "react";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { UserContext } from "../../../context/user-context";
+import { SuccessMessage } from "../../../components/success-message";
+import { ErrorMessage } from "../../../components/error-message";
 
 export const ReportProblem = () => {
   const { user } = useContext(UserContext);
   const { register, handleSubmit, reset } = useForm();
   const [isReportingProblem, setIsReportingProblem] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
 
   const aboutOptions = [
     { label: "Select A Problem", value: "" },
@@ -23,15 +28,47 @@ export const ReportProblem = () => {
   const handleCancelReportProblem = () => {
     setIsReportingProblem(false);
     reset();
-  }
+  };
 
-  const onSubmit = (data) => {
-    console.log(data);
-    // handle form submission here
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8081/account/reportProblem",
+        { ...data, accountId: user.accountId }
+      );
+
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+      } else {
+        setMessageTitle("Error");
+        setMessage(response.data.message);
+      }
+    } catch (error) {
+      setMessageTitle("Error");
+      setMessage("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+      reset();
+      setIsReportingProblem(false);
+    }, 3000);
   };
 
   return (
     <>
+      {messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
       <h2 className="text-4xl font-bold">Report A Problem</h2>
 
       <div className="mt-3">

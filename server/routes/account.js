@@ -710,4 +710,64 @@ router.post("/createAccount", async (req, res) => {
   }
 });
 
+router.post("/reportProblem", async (req, res) => {
+  const { accountId, about, description } = req.body;
+
+  if (!about || !description) {
+    return res.status(200).json({
+      status: "error",
+      message: "About and Description are required fields",
+    });
+  }
+
+  if (description.length > 255) {
+    return res.status(200).json({
+      status: "error",
+      message: "Description must be 255 characters or less",
+    });
+  }
+
+  try {
+    const sqlFetch = "SELECT * FROM account_info WHERE accountID = ?";
+    db.query(sqlFetch, [accountId], (err, result) => {
+      if (err) {
+        console.error("Error fetching account:", err);
+        return res.status(500).json({
+          status: "error",
+          message: "Database error",
+        });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({
+          status: "error",
+          message: "Account not found",
+        });
+      }
+
+      const sqlInsert = "INSERT INTO report_problem (accountID, about, description) VALUES (?, ?, ?)";
+      db.query(sqlInsert, [accountId, about, description], (err, result) => {
+        if (err) {
+          console.error("Error inserting problem report:", err);
+          return res.status(500).json({
+            status: "error",
+            message: "Database insert error",
+          });
+        }
+
+        return res.status(200).json({
+          status: "success",
+          message: "Report problem submitted successfully.",
+        });
+      });
+    });
+  } catch (error) {
+    console.error("Error reporting problem:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Error reporting problem",
+    });
+  }
+});
+
 module.exports = router;

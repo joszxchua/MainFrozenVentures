@@ -38,8 +38,8 @@ export const HomeSeller = () => {
 
   return (
     <div className="mt-20 grid grid-cols-[25%_75%] font-inter">
-      <div className="relative h-[90vh] p-5">
-        <div className="h-full rounded-lg bg-gray-100 p-8">
+      <div className="p-5">
+        <div className="rounded-lg bg-gray-100 p-8">
           <div>
             <h2 className="text-4xl font-bold">Menu</h2>
             <p className="text-lg text-gray-200">
@@ -64,7 +64,7 @@ export const HomeSeller = () => {
               } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
             >
               <FontAwesomeIcon icon={faShop} className="mr-3" />
-              My Shopp
+              My Shop
             </li>
             <li
               onClick={handleMyProductsClick}
@@ -100,11 +100,13 @@ export const HomeSeller = () => {
       </div>
 
       <div className="p-5">
-        {activeTab === "dashboard" && <Dashboard />}
-        {activeTab === "myShop" && <MyShop />}
-        {activeTab === "myProducts" && <MyProducts />}
-        {activeTab === "myInventory" && <MyInventory />}
-        {activeTab === "inbox" && <Inbox />}
+        <div className="rounded-lg bg-gray-100 p-8">
+          {activeTab === "dashboard" && <Dashboard />}
+          {activeTab === "myShop" && <MyShop />}
+          {activeTab === "myProducts" && <MyProducts />}
+          {activeTab === "myInventory" && <MyInventory />}
+          {activeTab === "inbox" && <Inbox />}
+        </div>
       </div>
     </div>
   );

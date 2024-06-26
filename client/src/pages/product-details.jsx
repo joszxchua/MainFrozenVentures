@@ -83,7 +83,7 @@ export const ProductDetails = () => {
       <div className="mt-12 px-10">
         <h3 className="font-bold text-4xl">Other Products</h3>
 
-        <div className="mt-5 flex justify-between flex-wrap gap-10">
+        <div className="mt-5 flex flex-wrap gap-10">
           <Products />
           <Products />
           <Products />

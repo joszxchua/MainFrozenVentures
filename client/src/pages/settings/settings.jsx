@@ -104,7 +104,7 @@ export const Settings = () => {
   return (
     <div className="mt-20 mb-10 grid grid-cols-4 font-inter">
       <div className="col-span-1 h-full px-5">
-        <div className="bg-gray-100 p-8 rounded-lg">
+        <div className="shadow-2xl p-8 rounded-lg">
           <div>
             <h2 className="text-4xl font-bold">Settings</h2>
             <p className="text-lg text-gray-200">
@@ -141,7 +141,9 @@ export const Settings = () => {
             <li
               onClick={handleReportProblemClick}
               className={`${
-                activeTab === "reportProblem" ? "text-purple-200" : "text-gray-900"
+                activeTab === "reportProblem"
+                  ? "text-purple-200"
+                  : "text-gray-900"
               } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
             >
               <FontAwesomeIcon icon={faCircleExclamation} className="mr-3" />
@@ -162,7 +164,7 @@ export const Settings = () => {
       </div>
 
       <div className="col-span-2 h-full">
-        <div className="bg-gray-100 p-8 rounded-lg">
+        <div className="shadow-2xl p-8 rounded-lg">
           {activeTab === "profile" && <Profile />}
           {activeTab === "security" && <Security />}
           {activeTab === "reportProblem" && <ReportProblem />}
@@ -170,7 +172,7 @@ export const Settings = () => {
       </div>
 
       <div className="col-span-1 h-full px-5">
-        <div className="bg-gray-100 p-8 rounded-lg flex flex-col items-center gap-5">
+        <div className="shadow-2xl p-8 rounded-lg flex flex-col items-center gap-5">
           <h3 className="font-bold text-4xl">Profile Picture</h3>
           {profilePicture ? (
             <img

@@ -1,7 +1,15 @@
 import React, { useState } from "react";
+import { Dashboard } from "./components/dashboard";
+import { MyShop } from "./components/my-shop";
+import { MyProducts } from "./components/my-products";
+import { MyInventory } from "./components/my-inventory";
+import { Inbox } from "./components/inbox";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faChevronCircleRight,
+  faChevronCircleLeft,
   faChartLine,
+  faShop,
   faIceCream,
   faCubes,
   faComment,
@@ -12,6 +20,10 @@ export const HomeSeller = () => {
 
   const handleDashboardClick = () => {
     setActiveTab("dashboard");
+  };
+
+  const handleMyShopClick = () => {
+    setActiveTab("myShop");
   };
 
   const handleMyProductsClick = () => {
@@ -28,7 +40,15 @@ export const HomeSeller = () => {
 
   return (
     <div className="mt-20 grid grid-cols-[25%_75%] font-inter">
-      <div className="h-[75vh] p-5">
+      <div className="relative h-[90vh] p-5">
+        <FontAwesomeIcon
+          icon={faChevronCircleRight}
+          className="absolute right-0 top-[50%] translate-y-[-50%] text-4xl"
+        />
+        <FontAwesomeIcon
+          icon={faChevronCircleLeft}
+          className="absolute right-0 top-[50%] translate-y-[-50%] text-4xl"
+        />
         <div className="h-full rounded-lg bg-gray-100 p-8">
           <div>
             <h2 className="text-4xl font-bold">Menu</h2>
@@ -46,6 +66,15 @@ export const HomeSeller = () => {
             >
               <FontAwesomeIcon icon={faChartLine} className="mr-3" />
               Dashboard
+            </li>
+            <li
+              onClick={handleMyShopClick}
+              className={`${
+                activeTab === "myShop" ? "text-purple-200" : "text-gray-900"
+              } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
+            >
+              <FontAwesomeIcon icon={faShop} className="mr-3" />
+              My Shopp
             </li>
             <li
               onClick={handleMyProductsClick}
@@ -80,7 +109,13 @@ export const HomeSeller = () => {
         </div>
       </div>
 
-      <div className="p-5"></div>
+      <div className="p-5">
+        {activeTab === "dashboard" && <Dashboard />}
+        {activeTab === "myShop" && <MyShop />}
+        {activeTab === "myProducts" && <MyProducts />}
+        {activeTab === "myInventory" && <MyInventory />}
+        {activeTab === "inbox" && <Inbox />}
+      </div>
     </div>
   );
 };

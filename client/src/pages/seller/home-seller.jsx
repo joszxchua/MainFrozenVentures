@@ -39,7 +39,7 @@ export const HomeSeller = () => {
   return (
     <div className="mt-20 grid grid-cols-[25%_75%] font-inter">
       <div className="p-5">
-        <div className="rounded-lg bg-gray-100 p-8">
+        <div className="rounded-lg shadow-2xl p-8">
           <div>
             <h2 className="text-4xl font-bold">Menu</h2>
             <p className="text-lg text-gray-200">
@@ -100,7 +100,7 @@ export const HomeSeller = () => {
       </div>
 
       <div className="p-5">
-        <div className="rounded-lg bg-gray-100 p-8">
+        <div className="rounded-lg shadow-2xl p-8">
           {activeTab === "dashboard" && <Dashboard />}
           {activeTab === "myShop" && <MyShop />}
           {activeTab === "myProducts" && <MyProducts />}

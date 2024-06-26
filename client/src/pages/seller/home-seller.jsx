@@ -6,8 +6,6 @@ import { MyInventory } from "./components/my-inventory";
 import { Inbox } from "./components/inbox";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faChevronCircleRight,
-  faChevronCircleLeft,
   faChartLine,
   faShop,
   faIceCream,
@@ -41,14 +39,6 @@ export const HomeSeller = () => {
   return (
     <div className="mt-20 grid grid-cols-[25%_75%] font-inter">
       <div className="relative h-[90vh] p-5">
-        <FontAwesomeIcon
-          icon={faChevronCircleRight}
-          className="absolute right-0 top-[50%] translate-y-[-50%] text-4xl"
-        />
-        <FontAwesomeIcon
-          icon={faChevronCircleLeft}
-          className="absolute right-0 top-[50%] translate-y-[-50%] text-4xl"
-        />
         <div className="h-full rounded-lg bg-gray-100 p-8">
           <div>
             <h2 className="text-4xl font-bold">Menu</h2>

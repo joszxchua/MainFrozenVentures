@@ -3,7 +3,7 @@ import axios from "axios";
 import { UserContext } from "../context/user-context";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SideCart } from "./side-cart";
-import logo from "../assets/logo.jpg";
+import logo from "/logo.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 

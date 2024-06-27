@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { UserContext } from "../../../context/user-context";
@@ -18,6 +18,33 @@ export const SetUpShop = () => {
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user.accountId) {
+        try {
+          const response = await axios.post(
+            "http://localhost:8081/account/shopFetch",
+            {
+              accountId: user.accountId,
+            }
+          );
+          if (response.data.status === 1) {
+            const shopData = response.data.account;
+            console.log(shopLogo);
+            setShopLogo(shopData.shopLogo);
+            setShopLogoPreview(
+              `http://localhost:8081/shopLogos/${shopData.shopLogo}`
+            );
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [user.accountId]);
+
   const handleSetUpShop = () => {
     setIsSettingUpShop(true);
   };
@@ -34,6 +61,8 @@ export const SetUpShop = () => {
   };
 
   const handleSaveSetUpShop = async (data) => {
+    setIsLoading(true);
+
     if (!shopLogo) {
       console.log("No picture selected");
       return;
@@ -51,9 +80,22 @@ export const SetUpShop = () => {
         formData
       );
       if (response.data.status === "success") {
-       
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+      } else if (response.data.status === "error") {
+        setMessageTitle("Error");
+        setMessage(response.data.message);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+      setIsSettingUpShop(false);
+      setIsLoading(false);
+    }, 3000);
   };
 
   const handleFileChange = (e) => {

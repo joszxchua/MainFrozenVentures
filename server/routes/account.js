@@ -38,12 +38,53 @@ const uploadLogo = multer({
   storage: storageLogo,
 });
 
+router.post("/shopFetch", (req, res) => {
+  const { accountId } = req.body;
+  if (!accountId) {
+    return res.json({
+      status: 0,
+      message: "Account ID is required",
+    });
+  }
+
+  const sql = `SELECT *
+              FROM shop_info
+              WHERE accountID = ?`;
+
+  db.query(sql, [accountId], (err, results) => {
+    if (err) {
+      return res.json({ status: 0, message: "Database error", error: err });
+    }
+
+    if (results.length === 0) {
+      return res.json({
+        status: 0,
+        message: "No account found with the provided account ID",
+      });
+    }
+
+    const account = results[0];
+    return res.json({
+      status: 1,
+      message: "Account information fetched successfully",
+      account: account,
+    });
+  });
+});
+
 router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
   const shopLogo = req.file ? req.file.filename : null;
   const { accountId, shopName, shopDescription } = req.body;
 
+  if (!shopLogo) {
+    return res.status(200).json({
+      status: "error",
+      message: "Shop logo cannot be empty",
+    });
+  }
+
   if (!shopName || !shopDescription) {
-    return res.status(400).json({
+    return res.status(200).json({
       status: "error",
       message: "Shop name and description cannot be empty",
     });
@@ -66,7 +107,7 @@ router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
         [accountId, shopLogo, shopName, shopDescription, 1],
         (insertErr, insertResult) => {
           if (insertErr) {
-            return res.status(500).json({
+            return res.status(200).json({
               status: "error",
               message: "Failed to set up shop",
             });
@@ -86,7 +127,7 @@ router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
         [shopLogo, shopName, shopDescription, accountId],
         (updateErr, updateResult) => {
           if (updateErr) {
-            return res.status(500).json({
+            return res.status(200).json({
               status: "error",
               message: "Failed to update shop",
             });

@@ -33,13 +33,27 @@ export const SetUpShop = () => {
     fileInputRef.current.click();
   };
 
-  const handleSaveSetUpShop = (data) => {
+  const handleSaveSetUpShop = async (data) => {
     if (!shopLogo) {
       console.log("No picture selected");
       return;
     }
 
-    console.log(data);
+    try {
+      const formData = new FormData();
+      formData.append("accountId", user.accountId);
+      formData.append("shopLogo", shopLogo);
+      formData.append("shopName", data.shopName);
+      formData.append("shopDescription", data.shopDescription);
+
+      const response = await axios.post(
+        "http://localhost:8081/account/setUpShop",
+        formData
+      );
+      if (response.data.status === "success") {
+       
+      }
+    } catch (error) {}
   };
 
   const handleFileChange = (e) => {

@@ -22,6 +22,86 @@ const upload = multer({
   storage: storage,
 });
 
+const storageLogo = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/shopLogos");
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      file.fieldname + "_" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+const uploadLogo = multer({
+  storage: storageLogo,
+});
+
+router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
+  const shopLogo = req.file ? req.file.filename : null;
+  const { accountId, shopName, shopDescription } = req.body;
+
+  if (!shopName || !shopDescription) {
+    return res.status(400).json({
+      status: "error",
+      message: "Shop name and description cannot be empty",
+    });
+  }
+
+  const selectSql = "SELECT * FROM shop_info WHERE accountID = ?";
+  db.query(selectSql, [accountId], (selectErr, selectResult) => {
+    if (selectErr) {
+      return res.status(500).json({
+        status: "error",
+        message: "Database query error",
+      });
+    }
+
+    if (selectResult.length === 0) {
+      const insertSql =
+        "INSERT INTO shop_info (accountID, shopLogo, shopName, shopDescription, status) VALUES (?, ?, ?, ?, ?)";
+      db.query(
+        insertSql,
+        [accountId, shopLogo, shopName, shopDescription, 1],
+        (insertErr, insertResult) => {
+          if (insertErr) {
+            return res.status(500).json({
+              status: "error",
+              message: "Failed to set up shop",
+            });
+          }
+
+          res.status(200).json({
+            status: "success",
+            message: "Shop setup successful",
+          });
+        }
+      );
+    } else {
+      const updateSql =
+        "UPDATE shop_info SET shopLogo = ?, shopName = ?, shopDescription = ? WHERE accountID = ?";
+      db.query(
+        updateSql,
+        [shopLogo, shopName, shopDescription, accountId],
+        (updateErr, updateResult) => {
+          if (updateErr) {
+            return res.status(500).json({
+              status: "error",
+              message: "Failed to update shop",
+            });
+          }
+
+          res.status(200).json({
+            status: "success",
+            message: "Shop update successful",
+          });
+        }
+      );
+    }
+  });
+});
+
 router.post(
   "/uploadProfilePicture",
   upload.single("profilePicture"),
@@ -745,7 +825,8 @@ router.post("/reportProblem", async (req, res) => {
         });
       }
 
-      const sqlInsert = "INSERT INTO report_problem (accountID, about, description) VALUES (?, ?, ?)";
+      const sqlInsert =
+        "INSERT INTO report_problem (accountID, about, description) VALUES (?, ?, ?)";
       db.query(sqlInsert, [accountId, about, description], (err, result) => {
         if (err) {
           console.error("Error inserting problem report:", err);

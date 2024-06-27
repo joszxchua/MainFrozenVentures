@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const accountRoutes = require("./routes/account");
+const productRoutes = require("./routes/product");
 
 const app = express();
 
@@ -10,6 +11,7 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 
 app.use("/account", accountRoutes);
+app.use("/product", productRoutes);
 
 app.get("/", (req, res) => {
   return res.json("From backend side");

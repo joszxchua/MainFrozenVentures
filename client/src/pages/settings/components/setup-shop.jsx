@@ -1,5 +1,4 @@
 import React, { useContext, useState, useRef } from "react";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { UserContext } from "../../../context/user-context";
 import { SuccessMessage } from "../../../components/success-message";
@@ -13,6 +12,7 @@ export const SetUpShop = () => {
   const { register, handleSubmit, reset } = useForm();
   const [isSettingUpShop, setIsSettingUpShop] = useState(false);
   const [shopLogo, setShopLogo] = useState();
+  const [shopLogoPreview, setShopLogoPreview] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -24,11 +24,12 @@ export const SetUpShop = () => {
   const handleCancelSetUpShop = () => {
     setIsSettingUpShop(false);
     setShopLogo(null);
+    setShopLogoPreview(null);
     reset();
   };
 
   const handleSelectPicture = () => {
-    document.getElementById("fileInput").click();
+    fileInputRef.current.click();
   };
 
   const handleSaveSetUpShop = (data) => {
@@ -37,7 +38,15 @@ export const SetUpShop = () => {
       return;
     }
 
-    console.log(data)
+    console.log(data);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setShopLogo(file);
+      setShopLogoPreview(URL.createObjectURL(file));
+    }
   };
 
   return (
@@ -64,19 +73,19 @@ export const SetUpShop = () => {
           className="flex flex-col items-center gap-5 py-5"
         >
           <div className="w-full flex gap-10">
-            <div className="flex flex-col gap-5 items-center justify-center">
-              {shopLogo ? (
+            <div className="w-full flex flex-col gap-5 items-center justify-center">
+              {shopLogoPreview ? (
                 <img
                   onClick={isSettingUpShop ? handleSelectPicture : null}
-                  src={`http://localhost:8081/profileImages/${shopLogo}`}
+                  src={shopLogoPreview}
                   alt="Shop Logo"
-                  className="rounded-lg w-60 object-cover"
+                  className="rounded-lg w-60 h-60 object-cover"
                 />
               ) : (
                 <FontAwesomeIcon
                   onClick={isSettingUpShop ? handleSelectPicture : null}
                   icon={faShop}
-                  className="text-[250px]"
+                  className="text-[200px]"
                 />
               )}
 
@@ -85,7 +94,8 @@ export const SetUpShop = () => {
                 type="file"
                 accept="image/*"
                 style={{ display: "none" }}
-                onChange={(e) => setShopLogo(e.target.files[0])}
+                ref={fileInputRef}
+                onChange={handleFileChange}
               />
 
               {isSettingUpShop && (

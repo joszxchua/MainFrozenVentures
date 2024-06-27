@@ -21,6 +21,7 @@ export const Settings = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditingPicture, setIsEditingPicture] = useState(false);
   const [profilePicture, setProfilePicture] = useState();
+  const [profilePicturePreview, setProfilePicturePreview] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,6 +37,9 @@ export const Settings = () => {
           if (response.data.status === 1) {
             const userData = response.data.account;
             setProfilePicture(userData.profilePicture);
+            setProfilePicturePreview(
+              `http://localhost:8081/profileImages/${userData.profilePicture}`
+            );
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -82,6 +86,7 @@ export const Settings = () => {
   const handleCancelEditPicture = () => {
     setIsEditingPicture(false);
     setProfilePicture(null);
+    setProfilePicturePreview(null);
   };
 
   const handleSavePicture = async () => {
@@ -95,16 +100,25 @@ export const Settings = () => {
       formData.append("accountId", user.accountId);
       formData.append("profilePicture", profilePicture);
 
-      const response = await axios
-        .post("http://localhost:8081/account/uploadProfilePicture", formData)
-        .then((response) => {
-          if (response.data.status === "success") {
-          }
-        });
+      const response = await axios.post(
+        "http://localhost:8081/account/uploadProfilePicture",
+        formData
+      );
+
+      if (response.data.status === "success") {
+        setIsEditingPicture(false);
+      }
     } catch (error) {
       console.error(error);
     }
-    setIsEditingPicture(false);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfilePicture(file);
+      setProfilePicturePreview(URL.createObjectURL(file));
+    }
   };
 
   return (
@@ -144,15 +158,19 @@ export const Settings = () => {
               <FontAwesomeIcon icon={faClockRotateLeft} className="mr-3" />
               Purchase History
             </li>
-            {user.userRole !== "customer" && <li
-              onClick={handleSetUpShopClick}
-              className={`${
-                activeTab === "setUpShop" ? "text-purple-200" : "text-gray-900"
-              } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
-            >
-              <FontAwesomeIcon icon={faShop} className="mr-3" />
-              Set Up Shop
-            </li>}
+            {user.userRole !== "customer" && (
+              <li
+                onClick={handleSetUpShopClick}
+                className={`${
+                  activeTab === "setUpShop"
+                    ? "text-purple-200"
+                    : "text-gray-900"
+                } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
+              >
+                <FontAwesomeIcon icon={faShop} className="mr-3" />
+                Set Up Shop
+              </li>
+            )}
             <li
               onClick={handleReportProblemClick}
               className={`${
@@ -190,12 +208,12 @@ export const Settings = () => {
       <div className="col-span-1 h-full px-5">
         <div className="shadow-2xl p-8 rounded-lg flex flex-col items-center gap-5">
           <h3 className="font-bold text-4xl">Profile Picture</h3>
-          {profilePicture ? (
+          {profilePicturePreview ? (
             <img
               onClick={isEditingPicture ? handleSelectPicture : null}
-              src={`http://localhost:8081/profileImages/${profilePicture}`}
+              src={profilePicturePreview}
               alt="Profile Picture"
-              className="rounded-full w-60 object-cover"
+              className="rounded-full w-60 h-60 object-cover"
             />
           ) : (
             <FontAwesomeIcon
@@ -210,7 +228,7 @@ export const Settings = () => {
             type="file"
             accept="image/*"
             style={{ display: "none" }}
-            onChange={(e) => setProfilePicture(e.target.files[0])}
+            onChange={handleFileChange}
           />
 
           {activeTab === "profile" && (

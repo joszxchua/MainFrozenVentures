@@ -5,6 +5,8 @@ import { UserContext } from "../../../context/user-context";
 import municipalitiesInBataan from "../../../municipalities";
 import { SuccessMessage } from "../../../components/success-message";
 import { ErrorMessage } from "../../../components/error-message";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 
 export const Profile = () => {
   const { user } = useContext(UserContext);
@@ -266,7 +268,10 @@ export const Profile = () => {
       {messageTitle && messageTitle === "Success" && (
         <SuccessMessage title={messageTitle} message={message} />
       )}
-      <h2 className="text-4xl font-bold">Profile</h2>
+       <div className="flex text-4xl font-bold">
+        <FontAwesomeIcon icon={faUserCircle} className="mr-3" />
+        <h2>Profile</h2>
+      </div>
 
       <div className="mt-3">
         <div className="flex items-center">

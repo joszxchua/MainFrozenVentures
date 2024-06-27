@@ -4,6 +4,8 @@ import { UserContext } from "../../../context/user-context";
 import { CodeGenerator } from "../../../components/codegenerator";
 import { SuccessMessage } from "../../../components/success-message";
 import { ErrorMessage } from "../../../components/error-message";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLock } from "@fortawesome/free-solid-svg-icons";
 
 export const Security = () => {
   const { user } = useContext(UserContext);
@@ -229,7 +231,10 @@ export const Security = () => {
       {messageTitle === "Success" && (
         <SuccessMessage title={messageTitle} message={message} />
       )}
-      <h2 className="text-4xl font-bold">Security</h2>
+      <div className="flex text-4xl font-bold">
+        <FontAwesomeIcon icon={faLock} className="mr-3" />
+        <h2>Security</h2>
+      </div>
 
       <div className="mt-3">
         <div className="flex items-center">

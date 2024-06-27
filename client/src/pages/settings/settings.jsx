@@ -3,6 +3,7 @@ import axios from "axios";
 import { UserContext } from "../../context/user-context";
 import { Profile } from "./components/profile";
 import { Security } from "./components/security";
+import { SetUpShop } from "./components/setup-shop";
 import { ReportProblem } from "./components/report-problem";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,6 +13,7 @@ import {
   faClockRotateLeft,
   faCircleExclamation,
   faArrowRightFromBracket,
+  faShop,
 } from "@fortawesome/free-solid-svg-icons";
 
 export const Settings = () => {
@@ -54,6 +56,10 @@ export const Settings = () => {
 
   const handlePurchaseHistoryClick = () => {
     navigate("/purchase-history");
+  };
+
+  const handleSetUpShopClick = () => {
+    setActiveTab("setUpShop");
   };
 
   const handleReportProblemClick = () => {
@@ -138,6 +144,15 @@ export const Settings = () => {
               <FontAwesomeIcon icon={faClockRotateLeft} className="mr-3" />
               Purchase History
             </li>
+            {user.userRole !== "customer" && <li
+              onClick={handleSetUpShopClick}
+              className={`${
+                activeTab === "setUpShop" ? "text-purple-200" : "text-gray-900"
+              } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
+            >
+              <FontAwesomeIcon icon={faShop} className="mr-3" />
+              Set Up Shop
+            </li>}
             <li
               onClick={handleReportProblemClick}
               className={`${
@@ -167,6 +182,7 @@ export const Settings = () => {
         <div className="shadow-2xl p-8 rounded-lg">
           {activeTab === "profile" && <Profile />}
           {activeTab === "security" && <Security />}
+          {activeTab === "setUpShop" && <SetUpShop />}
           {activeTab === "reportProblem" && <ReportProblem />}
         </div>
       </div>

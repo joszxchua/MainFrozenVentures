@@ -10,7 +10,7 @@ import { faShop } from "@fortawesome/free-solid-svg-icons";
 export const SetUpShop = () => {
   const { user } = useContext(UserContext);
   const fileInputRef = useRef(null);
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, setValue } = useForm();
   const [isSettingUpShop, setIsSettingUpShop] = useState(false);
   const [shopLogo, setShopLogo] = useState();
   const [shopLogoPreview, setShopLogoPreview] = useState();
@@ -30,7 +30,9 @@ export const SetUpShop = () => {
           );
           if (response.data.status === 1) {
             const shopData = response.data.account;
-            console.log(shopLogo);
+            console.log(shopData);
+            setValue("shopName", shopData.shopName);
+            setValue("shopDescription", shopData.shopDescription);
             setShopLogo(shopData.shopLogo);
             setShopLogoPreview(
               `http://localhost:8081/shopLogos/${shopData.shopLogo}`
@@ -43,7 +45,7 @@ export const SetUpShop = () => {
     };
 
     fetchUserData();
-  }, [user.accountId]);
+  }, [user.accountId, setValue]);
 
   const handleSetUpShop = () => {
     setIsSettingUpShop(true);
@@ -65,6 +67,7 @@ export const SetUpShop = () => {
 
     if (!shopLogo) {
       console.log("No picture selected");
+      setIsLoading(false);
       return;
     }
 
@@ -74,6 +77,10 @@ export const SetUpShop = () => {
       formData.append("shopLogo", shopLogo);
       formData.append("shopName", data.shopName);
       formData.append("shopDescription", data.shopDescription);
+
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
 
       const response = await axios.post(
         "http://localhost:8081/account/setUpShop",

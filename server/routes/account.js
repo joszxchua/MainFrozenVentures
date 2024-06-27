@@ -76,6 +76,7 @@ router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
   const shopLogo = req.file ? req.file.filename : null;
   const { accountId, shopName, shopDescription } = req.body;
 
+  console.log(shopLogo)
   if (!shopLogo) {
     return res.status(200).json({
       status: "error",

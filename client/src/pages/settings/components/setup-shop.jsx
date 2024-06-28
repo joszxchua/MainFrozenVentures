@@ -11,7 +11,6 @@ export const SetUpShop = () => {
   const { user } = useContext(UserContext);
   const fileInputRef = useRef(null);
   const { register, handleSubmit, reset, setValue } = useForm();
-  const [shopData, setShopData] = useState([]);
   const [isSettingUpShop, setIsSettingUpShop] = useState(false);
   const [shopLogo, setShopLogo] = useState();
   const [shopLogoPreview, setShopLogoPreview] = useState();
@@ -21,26 +20,24 @@ export const SetUpShop = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (user.accountId) {
-        try {
-          const response = await axios.post(
-            "http://localhost:8081/account/shopFetch",
-            {
-              accountId: user.accountId,
-            }
-          );
-          if (response.data.status === 1) {
-            setShopData(response.data.account);
-            setValue("shopName", shopData.shopName);
-            setValue("shopDescription", shopData.shopDescription);
-            setShopLogo(shopData.shopLogo);
-            setShopLogoPreview(
-              `http://localhost:8081/shopLogos/${shopData.shopLogo}`
-            );
+      try {
+        const response = await axios.post(
+          "http://localhost:8081/account/shopFetch",
+          {
+            accountId: user.accountId,
           }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
+        );
+        if (response.data.status === "success") {
+          const accountData = response.data.account;
+          setValue("shopName", accountData.shopName);
+          setValue("shopDescription", accountData.shopDescription);
+          setShopLogo(accountData.shopLogo);
+          setShopLogoPreview(
+            `http://localhost:8081/shopLogos/${accountData.shopLogo}`
+          );
         }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
       }
     };
 

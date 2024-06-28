@@ -58,14 +58,14 @@ router.post("/shopFetch", (req, res) => {
 
     if (results.length === 0) {
       return res.json({
-        status: 0,
+        status: "error",
         message: "No account found with the provided account ID",
       });
     }
 
     const account = results[0];
     return res.json({
-      status: 1,
+      status: "success",
       message: "Account information fetched successfully",
       account: account,
     });
@@ -76,7 +76,6 @@ router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
   const shopLogo = req.file ? req.file.filename : null;
   const { accountId, shopName, shopDescription } = req.body;
 
-  console.log(shopLogo)
   if (!shopLogo) {
     return res.status(200).json({
       status: "error",

@@ -125,7 +125,8 @@ export const Settings = () => {
         setMessage(response.data.message);
       }
     } catch (error) {
-      console.error(error);
+      setMessageTitle("Error");
+        setMessage("Something went wrong");
     }
 
     setTimeout(() => {

@@ -127,7 +127,7 @@ export const Settings = () => {
     } catch (error) {
       console.error(error);
     }
-    
+
     setTimeout(() => {
       setMessageTitle("");
       setMessage("");
@@ -234,7 +234,7 @@ export const Settings = () => {
       <div className="col-span-1 h-full px-5">
         <div className="shadow-2xl p-8 rounded-lg flex flex-col items-center gap-5">
           <h3 className="font-bold text-4xl">Profile Picture</h3>
-          {profilePicturePreview ? (
+          {profilePicture ? (
             <img
               onClick={isEditingPicture ? handleSelectPicture : null}
               src={profilePicturePreview}

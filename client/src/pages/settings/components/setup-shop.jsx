@@ -15,6 +15,9 @@ export const SetUpShop = () => {
   const [isSettingUpShop, setIsSettingUpShop] = useState(false);
   const [shopLogo, setShopLogo] = useState(null);
   const [shopLogoPreview, setShopLogoPreview] = useState(null);
+  const [isVerifyingShop, setIsVerifyingShop] = useState(false);
+  const [file, setFile] = useState(null);
+  const [fileContent, setFileContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -59,6 +62,14 @@ export const SetUpShop = () => {
 
   const handleSelectPicture = () => {
     fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setShopLogo(file);
+      setShopLogoPreview(URL.createObjectURL(file));
+    }
   };
 
   const handleSaveSetUpShop = async (data) => {
@@ -116,11 +127,40 @@ export const SetUpShop = () => {
     }, 3000);
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setShopLogo(file);
-      setShopLogoPreview(URL.createObjectURL(file));
+  const handleVerifyShop = () => {
+    setIsVerifyingShop(true);
+  };
+
+  const handleCancelVerifyShop = () => {
+    setIsVerifyingShop(false);
+  };
+
+  const handleDocumentChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      if (selectedFile.type !== "application/pdf") {
+        setMessageTitle("Error");
+        setMessage("Only PDF files are allowed");
+
+        setTimeout(() => {
+          setMessageTitle("");
+          setMessage("");
+        }, 3000);
+        return;
+      }
+      const reader = new FileReader();
+
+      reader.onload = (event) => {
+        setFile(selectedFile);
+        setFileContent(event.target.result);
+        console.log("File content:", event.target.result);
+      };
+
+      reader.onerror = (error) => {
+        console.error("Error reading file:", error);
+      };
+
+      reader.readAsText(selectedFile);
     }
   };
 
@@ -248,11 +288,38 @@ export const SetUpShop = () => {
             <div className="w-full border-t-2"></div>
           </div>
 
-          {isSettingUpShop ? (
+          <div className="mt-5 flex flex-col items-center">
+            <h4 className="font-bold text-xl">
+              Please insert the ff into a single PDF file:
+            </h4>
+            <ul className="mt-3 text-lg flex flex-col gap-2 text-left">
+              <li>1. Business Name Registration</li>
+              <li>2. Barangay Clearance</li>
+              <li>3. Mayor's Permit</li>
+              <li>4. Bureau of Internal Revenue</li>
+              <li>5. Food and Drug Administration</li>
+            </ul>
+          </div>
+
+          <div className="mt-5 flex flex-col gap-2 items-center text-xl">
+            <label className="font-semibold" htmlFor="shopImage">
+              Document:
+            </label>
+            <input
+              type="file"
+              id="shopImage"
+              name="shopImage"
+              accept=".pdf"
+              disabled={isVerifyingShop}
+              onChange={handleDocumentChange}
+            />
+          </div>
+
+          {isVerifyingShop ? (
             <div className="mt-10 w-full flex justify-around">
               <button
                 type="button"
-                onClick={handleCancelSetUpShop}
+                onClick={handleCancelVerifyShop}
                 className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
                 disabled={isLoading}
               >
@@ -270,7 +337,7 @@ export const SetUpShop = () => {
             <div className="mt-10 flex justify-center">
               <button
                 type="button"
-                onClick={handleSetUpShop}
+                onClick={handleVerifyShop}
                 className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
               >
                 Verify Shop

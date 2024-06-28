@@ -165,7 +165,9 @@ export const SetUpShop = () => {
     }
   };
 
-  const handleSubmitVerify = (e) => {
+  const handleSubmitVerify = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
     if (!document) {
       setMessageTitle("Error");
       setMessage("Please select your document");
@@ -174,6 +176,7 @@ export const SetUpShop = () => {
         setMessageTitle("");
         setMessage("");
         setDocument("");
+        setIsLoading(false);
       }, 3000);
       return;
     }
@@ -182,15 +185,15 @@ export const SetUpShop = () => {
     formData.append("shopDocument", document);
 
     try {
-      axios.post(
-        "http://localhost/prosen_bentures/api/uploadShopVerificationFiles.php",
+      const response = await axios.post(
+        "http://localhost:8081/account/uploadVerifyDocument",
         formData
       );
 
       if (response.data.status === "success") {
         setMessageTitle("Success");
         setMessage(response.data.message);
-        setIsEditingPicture(false);
+        setIsVerifyingShop(false);
       } else if (response.data.status === "error") {
         setMessageTitle("Error");
         setMessage(response.data.message);
@@ -203,7 +206,7 @@ export const SetUpShop = () => {
     setTimeout(() => {
       setMessageTitle("");
       setMessage("");
-      setIsVerifyingShop(false);
+      setDocument(null);
       setIsLoading(false);
     }, 2500);
   };
@@ -283,10 +286,11 @@ export const SetUpShop = () => {
               <div className="flex flex-col gap-2 text-xl">
                 <label className="font-semibold">Shop Description:</label>
                 <textarea
+                  rows="5"
                   name="shopDescription"
                   id="shopDescription"
                   disabled={!isSettingUpShop}
-                  className="h-[135px] text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+                  className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
                   {...register("shopDescription")}
                 />
               </div>
@@ -354,6 +358,7 @@ export const SetUpShop = () => {
               id="shopImage"
               name="shopImage"
               accept=".pdf"
+              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
               disabled={!isVerifyingShop}
               onChange={handleDocumentChange}
             />
@@ -371,6 +376,7 @@ export const SetUpShop = () => {
               </button>
               <button
                 type="submit"
+                onClick={handleSubmitVerify}
                 className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
                 disabled={isLoading}
               >

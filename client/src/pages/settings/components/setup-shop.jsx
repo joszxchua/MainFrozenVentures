@@ -193,7 +193,6 @@ export const SetUpShop = () => {
       if (response.data.status === "success") {
         setMessageTitle("Success");
         setMessage(response.data.message);
-        setIsVerifyingShop(false);
       } else if (response.data.status === "error") {
         setMessageTitle("Error");
         setMessage(response.data.message);
@@ -208,6 +207,7 @@ export const SetUpShop = () => {
       setMessage("");
       setDocument(null);
       setIsLoading(false);
+      setIsVerifyingShop(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }

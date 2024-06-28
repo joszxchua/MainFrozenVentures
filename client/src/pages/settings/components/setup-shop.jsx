@@ -11,6 +11,7 @@ export const SetUpShop = () => {
   const { user } = useContext(UserContext);
   const fileInputRef = useRef(null);
   const { register, handleSubmit, reset, setValue } = useForm();
+  const [shopData, setShopData] = useState([]);
   const [isSettingUpShop, setIsSettingUpShop] = useState(false);
   const [shopLogo, setShopLogo] = useState(null);
   const [shopLogoPreview, setShopLogoPreview] = useState(null);
@@ -29,6 +30,7 @@ export const SetUpShop = () => {
         );
         if (response.data.status === "success") {
           const accountData = response.data.account;
+          setShopData(accountData);
           setValue("shopName", accountData.shopName);
           setValue("shopDescription", accountData.shopDescription);
           setShopLogo(accountData.shopLogo);
@@ -239,42 +241,44 @@ export const SetUpShop = () => {
         </form>
       </div>
 
-      <div className="mt-3">
-        <div className="flex items-center">
-          <p className="w-28 font-semibold text-gray-200">Verify Shop</p>
-          <div className="w-full border-t-2"></div>
-        </div>
+      {shopData.isVerified === 0 && (
+        <div className="mt-3">
+          <div className="flex items-center">
+            <p className="w-28 font-semibold text-gray-200">Verify Shop</p>
+            <div className="w-full border-t-2"></div>
+          </div>
 
-        {isSettingUpShop ? (
-          <div className="mt-10 w-full flex justify-around">
-            <button
-              type="button"
-              onClick={handleCancelSetUpShop}
-              className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
-              disabled={isLoading}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
-              disabled={isLoading}
-            >
-              {isLoading ? "Verifying..." : "Verify"}
-            </button>
-          </div>
-        ) : (
-          <div className="mt-10 flex justify-center">
-            <button
-              type="button"
-              onClick={handleSetUpShop}
-              className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
-            >
-              Verify Shop
-            </button>
-          </div>
-        )}
-      </div>
+          {isSettingUpShop ? (
+            <div className="mt-10 w-full flex justify-around">
+              <button
+                type="button"
+                onClick={handleCancelSetUpShop}
+                className="bg-gray-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-gray-200 hover:bg-white duration-300 hover:text-gray-200 ease-in-out"
+                disabled={isLoading}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                disabled={isLoading}
+              >
+                {isLoading ? "Verifying..." : "Verify"}
+              </button>
+            </div>
+          ) : (
+            <div className="mt-10 flex justify-center">
+              <button
+                type="button"
+                onClick={handleSetUpShop}
+                className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+              >
+                Verify Shop
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 };

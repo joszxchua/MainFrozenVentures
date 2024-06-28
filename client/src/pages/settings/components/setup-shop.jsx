@@ -12,8 +12,8 @@ export const SetUpShop = () => {
   const fileInputRef = useRef(null);
   const { register, handleSubmit, reset, setValue } = useForm();
   const [isSettingUpShop, setIsSettingUpShop] = useState(false);
-  const [shopLogo, setShopLogo] = useState();
-  const [shopLogoPreview, setShopLogoPreview] = useState();
+  const [shopLogo, setShopLogo] = useState(null);
+  const [shopLogoPreview, setShopLogoPreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -77,7 +77,12 @@ export const SetUpShop = () => {
 
       const response = await axios.post(
         "http://localhost:8081/account/setUpShop",
-        formData
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       if (response.data.status === "success") {
         setMessageTitle("Success");
@@ -85,8 +90,8 @@ export const SetUpShop = () => {
       } else if (response.data.status === "error") {
         setMessageTitle("Error");
         setMessage(response.data.message);
-        setValue("shopName", shopData.shopName);
-        setValue("shopDescription", shopData.shopDescription);
+        setValue("shopName", data.shopName);
+        setValue("shopDescription", data.shopDescription);
       }
     } catch (error) {
       console.log(error);

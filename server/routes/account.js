@@ -73,6 +73,7 @@ router.post("/shopFetch", (req, res) => {
 });
 
 router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
+  console.log("File received:", req.file);
   const shopLogo = req.file ? req.file.filename : null;
   const { accountId, shopName, shopDescription } = req.body;
 
@@ -147,7 +148,8 @@ router.post(
   "/uploadProfilePicture",
   upload.single("profilePicture"),
   (req, res) => {
-    const profilePicture = req.file.filename;
+    console.log("File received:", req.file);
+    const profilePicture = req.file ? req.file.filename : null;
     const { accountId } = req.body;
 
     const sql =

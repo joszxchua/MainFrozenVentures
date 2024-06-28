@@ -61,13 +61,7 @@ export const SetUpShop = () => {
 
   const handleSaveSetUpShop = async (data) => {
     setIsLoading(true);
-
-    if (!shopLogo) {
-      console.log("No picture selected");
-      setIsLoading(false);
-      return;
-    }
-
+    
     try {
       const formData = new FormData();
       formData.append("accountId", user.accountId);

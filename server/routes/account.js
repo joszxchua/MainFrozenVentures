@@ -73,7 +73,6 @@ router.post("/shopFetch", (req, res) => {
 });
 
 router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
-  console.log("File received:", req.file);
   const shopLogo = req.file ? req.file.filename : null;
   const { accountId, shopName, shopDescription } = req.body;
 
@@ -94,10 +93,23 @@ router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
         });
       }
 
-      if (!shopName || !shopDescription) {
+      console.log(shopName);
+
+      if (!shopName || shopName === undefined || shopName === "") {
         return res.status(200).json({
           status: "error",
-          message: "Shop name and description cannot be empty",
+          message: "Shop name cannot be empty",
+        });
+      }
+
+      if (
+        !shopDescription ||
+        shopDescription === undefined ||
+        shopDescription === ""
+      ) {
+        return res.status(200).json({
+          status: "error",
+          message: "Shop description cannot be empty",
         });
       }
 

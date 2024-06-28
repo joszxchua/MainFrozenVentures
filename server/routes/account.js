@@ -77,20 +77,6 @@ router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
   const shopLogo = req.file ? req.file.filename : null;
   const { accountId, shopName, shopDescription } = req.body;
 
-  if (!shopLogo) {
-    return res.status(200).json({
-      status: "error",
-      message: "Shop logo cannot be empty",
-    });
-  }
-
-  if (!shopName || !shopDescription) {
-    return res.status(200).json({
-      status: "error",
-      message: "Shop name and description cannot be empty",
-    });
-  }
-
   const selectSql = "SELECT * FROM shop_info WHERE accountID = ?";
   db.query(selectSql, [accountId], (selectErr, selectResult) => {
     if (selectErr) {
@@ -101,6 +87,20 @@ router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
     }
 
     if (selectResult.length === 0) {
+      if (!shopLogo) {
+        return res.status(200).json({
+          status: "error",
+          message: "Shop logo cannot be empty",
+        });
+      }
+
+      if (!shopName || !shopDescription) {
+        return res.status(200).json({
+          status: "error",
+          message: "Shop name and description cannot be empty",
+        });
+      }
+
       const insertSql =
         "INSERT INTO shop_info (accountID, shopLogo, shopName, shopDescription, status) VALUES (?, ?, ?, ?, ?)";
       db.query(
@@ -121,12 +121,29 @@ router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
         }
       );
     } else {
-      const updateSql =
-        "UPDATE shop_info SET shopLogo = ?, shopName = ?, shopDescription = ? WHERE accountID = ?";
-      db.query(
-        updateSql,
-        [shopLogo, shopName, shopDescription, accountId],
-        (updateErr, updateResult) => {
+      let updateFields = [];
+      let updateValues = [];
+
+      if (shopLogo) {
+        updateFields.push("shopLogo = ?");
+        updateValues.push(shopLogo);
+      }
+      if (shopName) {
+        updateFields.push("shopName = ?");
+        updateValues.push(shopName);
+      }
+      if (shopDescription) {
+        updateFields.push("shopDescription = ?");
+        updateValues.push(shopDescription);
+      }
+
+      if (updateFields.length > 0) {
+        const updateSql = `UPDATE shop_info SET ${updateFields.join(
+          ", "
+        )} WHERE accountID = ?`;
+        updateValues.push(accountId);
+
+        db.query(updateSql, updateValues, (updateErr, updateResult) => {
           if (updateErr) {
             return res.status(200).json({
               status: "error",
@@ -138,8 +155,13 @@ router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
             status: "success",
             message: "Shop update successful",
           });
-        }
-      );
+        });
+      } else {
+        res.status(200).json({
+          status: "error",
+          message: "No fields to update",
+        });
+      }
     }
   });
 });
@@ -148,8 +170,7 @@ router.post(
   "/uploadProfilePicture",
   upload.single("profilePicture"),
   (req, res) => {
-    console.log("File received:", req.file);
-    const profilePicture = req.file ? req.file.filename : null;
+    const profilePicture = req.file.filename;
     const { accountId } = req.body;
 
     const sql =

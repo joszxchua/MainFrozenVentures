@@ -61,7 +61,22 @@ export const SetUpShop = () => {
 
   const handleSaveSetUpShop = async (data) => {
     setIsLoading(true);
-    
+
+    if (!data.shopName || !data.shopDescription) {
+      setMessageTitle("Error");
+      setMessage("Shop name and description cannot be empty.");
+      setIsLoading(false);
+
+      setTimeout(() => {
+        setMessageTitle("");
+        setMessage("");
+        setValue("shopName", data.shopName);
+        setValue("shopDescription", data.shopDescription);
+      }, 3000);
+
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("accountId", user.accountId);

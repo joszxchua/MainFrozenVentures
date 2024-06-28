@@ -16,8 +16,8 @@ export const SetUpShop = () => {
   const [shopLogo, setShopLogo] = useState(null);
   const [shopLogoPreview, setShopLogoPreview] = useState(null);
   const [isVerifyingShop, setIsVerifyingShop] = useState(false);
-  const [file, setFile] = useState(null);
-  const [fileContent, setFileContent] = useState("");
+  const [document, setDocument] = useState(null);
+  const [documentContent, setDocumentContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -136,32 +136,76 @@ export const SetUpShop = () => {
   };
 
   const handleDocumentChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      if (selectedFile.type !== "application/pdf") {
+    const selectedDocument = e.target.files[0];
+    if (selectedDocument) {
+      if (selectedDocument.type !== "application/pdf") {
         setMessageTitle("Error");
         setMessage("Only PDF files are allowed");
 
         setTimeout(() => {
           setMessageTitle("");
           setMessage("");
+          setDocument(null);
+          e.target.value = "";
         }, 3000);
         return;
       }
       const reader = new FileReader();
 
       reader.onload = (event) => {
-        setFile(selectedFile);
-        setFileContent(event.target.result);
-        console.log("File content:", event.target.result);
+        setDocument(selectedDocument);
+        setDocumentContent(event.target.result);
       };
 
       reader.onerror = (error) => {
         console.error("Error reading file:", error);
       };
 
-      reader.readAsText(selectedFile);
+      reader.readAsText(selectedDocument);
     }
+  };
+
+  const handleSubmitVerify = (e) => {
+    if (!document) {
+      setMessageTitle("Error");
+      setMessage("Please select your document");
+
+      setTimeout(() => {
+        setMessageTitle("");
+        setMessage("");
+        setDocument("");
+      }, 3000);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("shopDocument", document);
+
+    try {
+      axios.post(
+        "http://localhost/prosen_bentures/api/uploadShopVerificationFiles.php",
+        formData
+      );
+
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+        setIsEditingPicture(false);
+      } else if (response.data.status === "error") {
+        setMessageTitle("Error");
+        setMessage(response.data.message);
+      }
+    } catch (error) {
+      setMessageTitle("Error");
+      setMessage("Something went wrong");
+    }
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+      setIsVerifyingShop(false);
+      setIsLoading(false);
+    }, 2500);
   };
 
   return (
@@ -290,7 +334,7 @@ export const SetUpShop = () => {
 
           <div className="mt-5 flex flex-col items-center">
             <h4 className="font-bold text-xl">
-              Please insert the ff into a single PDF file:
+              Please insert the following into a single PDF file:
             </h4>
             <ul className="mt-3 text-lg flex flex-col gap-2 text-left">
               <li>1. Business Name Registration</li>
@@ -310,7 +354,7 @@ export const SetUpShop = () => {
               id="shopImage"
               name="shopImage"
               accept=".pdf"
-              disabled={isVerifyingShop}
+              disabled={!isVerifyingShop}
               onChange={handleDocumentChange}
             />
           </div>

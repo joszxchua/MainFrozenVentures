@@ -6,6 +6,8 @@ import { Security } from "./components/security";
 import { SetUpShop } from "./components/setup-shop";
 import { ReportProblem } from "./components/report-problem";
 import { useNavigate } from "react-router-dom";
+import { SuccessMessage } from "../../components/success-message";
+import { ErrorMessage } from "../../components/error-message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleUser,
@@ -22,6 +24,8 @@ export const Settings = () => {
   const [isEditingPicture, setIsEditingPicture] = useState(false);
   const [profilePicture, setProfilePicture] = useState();
   const [profilePicturePreview, setProfilePicturePreview] = useState();
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -91,7 +95,14 @@ export const Settings = () => {
 
   const handleSavePicture = async () => {
     if (!profilePicture) {
-      console.log("No picture selected");
+      setMessageTitle("Error");
+      setMessage("Please select your image");
+
+      setTimeout(() => {
+        setMessageTitle("");
+        setMessage("");
+        setProfilePicture("");
+      }, 3000);
       return;
     }
 
@@ -106,11 +117,22 @@ export const Settings = () => {
       );
 
       if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
         setIsEditingPicture(false);
+      } else if (response.data.status === "error") {
+        setMessageTitle("Error");
+        setMessage(response.data.message);
       }
     } catch (error) {
       console.error(error);
     }
+    
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+      setIsEditingPicture(false);
+    }, 2500);
   };
 
   const handleFileChange = (e) => {
@@ -123,6 +145,12 @@ export const Settings = () => {
 
   return (
     <div className="mt-20 mb-10 grid grid-cols-4 font-inter">
+      {messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
       <div className="col-span-1 h-full px-5">
         <div className="shadow-2xl p-8 rounded-lg">
           <div>
@@ -195,7 +223,6 @@ export const Settings = () => {
           </ul>
         </div>
       </div>
-
       <div className="col-span-2 h-full">
         <div className="shadow-2xl p-8 rounded-lg">
           {activeTab === "profile" && <Profile />}
@@ -204,7 +231,6 @@ export const Settings = () => {
           {activeTab === "reportProblem" && <ReportProblem />}
         </div>
       </div>
-
       <div className="col-span-1 h-full px-5">
         <div className="shadow-2xl p-8 rounded-lg flex flex-col items-center gap-5">
           <h3 className="font-bold text-4xl">Profile Picture</h3>

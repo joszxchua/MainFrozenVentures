@@ -165,8 +165,7 @@ export const SetUpShop = () => {
     }
   };
 
-  const handleSubmitVerify = async (e) => {
-    e.preventDefault();
+  const handleSubmitVerify = async () => {
     setIsLoading(true);
     if (!document) {
       setMessageTitle("Error");
@@ -183,10 +182,11 @@ export const SetUpShop = () => {
 
     const formData = new FormData();
     formData.append("shopDocument", document);
+    formData.append("accountId", user.accountId);
 
     try {
       const response = await axios.post(
-        "http://localhost:8081/account/uploadVerifyDocument",
+        "http://localhost:8081/account/uploadShopDocuments",
         formData
       );
 
@@ -208,6 +208,9 @@ export const SetUpShop = () => {
       setMessage("");
       setDocument(null);
       setIsLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }, 2500);
   };
 
@@ -361,6 +364,7 @@ export const SetUpShop = () => {
               className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
               disabled={!isVerifyingShop}
               onChange={handleDocumentChange}
+              ref={fileInputRef}
             />
           </div>
 
@@ -375,7 +379,7 @@ export const SetUpShop = () => {
                 Cancel
               </button>
               <button
-                type="submit"
+                type="button"
                 onClick={handleSubmitVerify}
                 className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
                 disabled={isLoading}

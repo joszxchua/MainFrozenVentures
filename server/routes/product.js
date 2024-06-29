@@ -92,4 +92,40 @@ router.post("/addProduct", uploadProduct.single("productImage"), (req, res) => {
   });
 });
 
+router.post("/sellerProductFetch", (req, res) => {
+  const { accountId } = req.body;
+
+  if (!accountId) {
+    return res.json({
+      status: 0,
+      message: "Account ID is required",
+    });
+  }
+
+  const sql = `SELECT pi.*, COUNT(ps.size) AS totalSizes, SUM(ps.stock) AS totalStock
+              FROM product_info pi
+              LEFT JOIN product_size ps ON pi.productID = ps.productID
+              WHERE pi.accountID = ?
+              GROUP BY pi.productID;`;
+
+  db.query(sql, [accountId], (err, results) => {
+    if (err) {
+      return res.json({ status: 0, message: "Database error", error: err });
+    }
+
+    if (results.length === 0) {
+      return res.json({
+        status: 0,
+        message: "No products found for the provided account ID",
+      });
+    }
+
+    return res.json({
+      status: 1,
+      message: "Products information fetched successfully",
+      products: results,
+    });
+  });
+});
+
 module.exports = router;

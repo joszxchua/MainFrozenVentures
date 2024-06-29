@@ -6,9 +6,13 @@ import {
   faMagnifyingGlass,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
+import { SuccessMessage } from "../../../components/success-message";
+import { ErrorMessage } from "../../../components/error-message";
 
 export const MyProducts = () => {
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleAddProductClick = () => {
     setShowAddProduct(true);
@@ -16,12 +20,38 @@ export const MyProducts = () => {
 
   const handleCancelAddProduct = () => {
     setShowAddProduct(false);
-  }
+  };
+
+  const handleSuccess = (title, message) => {
+    setShowAddProduct(false);
+    setMessageTitle(title);
+    setMessage(message);
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
+  const handleError = (title, message) => {
+    setMessageTitle(title);
+    setMessage(message);
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
   return (
     <>
       {showAddProduct && (
-        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-20">
-          <AddProduct cancelAddProduct={handleCancelAddProduct}/>
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-30">
+          <AddProduct
+            cancelAddProduct={handleCancelAddProduct}
+            onSuccess={handleSuccess}
+            onError={handleError}
+          />
         </div>
       )}
       <div className="flex items-center">
@@ -52,6 +82,12 @@ export const MyProducts = () => {
           </button>
         </div>
       </div>
+      {messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
     </>
   );
 };

@@ -29,13 +29,11 @@ const sizeOptions = [
   { value: "liters", label: "Liters" },
 ];
 
-export const AddProduct = ({ cancelAddProduct }) => {
+export const AddProduct = ({ cancelAddProduct, onSuccess, onError }) => {
   const { user } = useContext(UserContext);
   const [productImage, setProductImage] = useState(null);
   const [productImagePreview, setProductImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [messageTitle, setMessageTitle] = useState("");
-  const [message, setMessage] = useState("");
   const fileInputRef = useRef(null);
   const {
     register,
@@ -58,13 +56,7 @@ export const AddProduct = ({ cancelAddProduct }) => {
 
   const onSubmit = async (data) => {
     if (!productImage) {
-      setMessageTitle("Error");
-      setMessage("Product image is empty");
-
-      setTimeout(() => {
-        setMessageTitle("");
-        setMessage("");
-      }, 3000);
+      onError("Error", "Product image is empty");
       return;
     }
 
@@ -81,11 +73,11 @@ export const AddProduct = ({ cancelAddProduct }) => {
       formData.append("name", data.name);
       formData.append("brand", data.brand);
       formData.append("flavor", data.flavor);
-      formData.append("size", `${data.size} ${data.sizeUnit.value}`);
       formData.append("description", data.description);
+      formData.append("allergens", allergens);
       formData.append("price", data.price);
       formData.append("stock", data.stock);
-      formData.append("allergens", allergens);
+      formData.append("size", `${data.size} ${data.sizeUnit.value}`);
 
       const response = await axios.post(
         "http://localhost:8081/product/addProduct",
@@ -97,33 +89,19 @@ export const AddProduct = ({ cancelAddProduct }) => {
         }
       );
       if (response.data.status === "success") {
-        setMessageTitle("Success");
-        setMessage(response.data.message);
+        onSuccess("Success", response.data.message);
       } else if (response.data.status === "error") {
-        setMessageTitle("Error");
-        setMessage(response.data.message);
+        onError("Error", response.data.message);
       }
     } catch (error) {
-      setMessageTitle("Error");
-      setMessage("Something went wrong");
+      onError("Error", "Something went wrong");
     }
 
     setIsLoading(false);
-
-    setTimeout(() => {
-      setMessageTitle("");
-      setMessage("");
-    }, 3000);
   };
 
   return (
     <div className="flex flex-col gap-5 bg-white p-10 rounded-lg max-h-[80vh] overflow-auto">
-      {messageTitle === "Error" && (
-        <ErrorMessage title={messageTitle} message={message} />
-      )}
-      {messageTitle === "Success" && (
-        <SuccessMessage title={messageTitle} message={message} />
-      )}
       <div className="relative text-4xl">
         <h2 className="font-bold">Add A Product</h2>
         <FontAwesomeIcon

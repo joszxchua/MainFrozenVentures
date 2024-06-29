@@ -68,6 +68,8 @@ export const AddProduct = ({ cancelAddProduct }) => {
       return;
     }
 
+    setIsLoading(true);
+
     try {
       const allergens = data.allergens
         .map((allergen) => allergen.value)
@@ -105,6 +107,8 @@ export const AddProduct = ({ cancelAddProduct }) => {
       setMessageTitle("Error");
       setMessage("Something went wrong");
     }
+
+    setIsLoading(false);
 
     setTimeout(() => {
       setMessageTitle("");
@@ -317,14 +321,16 @@ export const AddProduct = ({ cancelAddProduct }) => {
             type="button"
             onClick={cancelAddProduct}
             className="font-bold px-4 py-2 bg-gray-200 border-2 border-gray-200 text-white cursor-pointer rounded-lg hover:bg-white hover:text-gray-200 duration-300"
+            disabled={isLoading}
           >
             Cancel
           </button>
           <button
             type="submit"
             className="font-bold px-4 py-2 bg-purple-200 border-2 border-purple-200 text-white cursor-pointer rounded-lg hover:bg-white hover:text-purple-200 duration-300"
+            disabled={isLoading}
           >
-            Add Product
+            {isLoading ? "Adding product..." : "Add Product"}
           </button>
         </div>
       </form>

@@ -34,38 +34,56 @@ router.post("/addProduct", uploadProduct.single("productImage"), (req, res) => {
     stock,
     allergens,
   } = req.body;
-  
-  const sql =
-    "INSERT INTO product_info (accountID, productImage, name, brand, flavor, size, description, price, stock, allergens) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-  db.query(
-    sql,
-    [
-      accountId,
-      productImage,
-      name,
-      brand,
-      flavor,
-      size,
-      description,
-      price,
-      stock,
-      allergens,
-    ],
-    (insertErr, insertResult) => {
-      if (insertErr) {
-        console.error("Failed to insert product:", insertErr);
-        return res.status(200).json({
-          status: "error",
-          message: "Failed to add product",
-        });
-      }
 
-      res.status(200).json({
-        status: "success",
-        message: "Product added successfully"
+  const checkSql = "SELECT * FROM product_info WHERE name = ? AND flavor = ?";
+  db.query(checkSql, [name, flavor], (checkErr, checkResult) => {
+    if (checkErr) {
+      console.error("Failed to check product:", checkErr);
+      return res.status(500).json({
+        status: "error",
+        message: "Failed to add product",
       });
     }
-  );
+
+    if (checkResult.length > 0) {
+      return res.status(200).json({
+        status: "error",
+        message: "Product already exists",
+      });
+    }
+
+    const insertSql =
+      "INSERT INTO product_info (accountID, productImage, name, brand, flavor, size, description, price, stock, allergens) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    db.query(
+      insertSql,
+      [
+        accountId,
+        productImage,
+        name,
+        brand,
+        flavor,
+        size,
+        description,
+        price,
+        stock,
+        allergens,
+      ],
+      (insertErr, insertResult) => {
+        if (insertErr) {
+          console.error("Failed to insert product:", insertErr);
+          return res.status(500).json({
+            status: "error",
+            message: "Failed to add product",
+          });
+        }
+
+        res.status(200).json({
+          status: "success",
+          message: "Product added successfully",
+        });
+      }
+    );
+  });
 });
 
 module.exports = router;

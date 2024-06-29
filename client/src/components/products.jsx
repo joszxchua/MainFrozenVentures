@@ -16,7 +16,7 @@ export const Products = () => {
   };
 
   return (
-    <div onClick={handleProductClick} className="flex flex-col w-fit cursor-pointer m-auto px-4 py-3 rounded-lg hover:shadow-2xl duration-300">
+    <div onClick={handleProductClick} className="flex flex-col w-fit cursor-pointer px-4 py-3 rounded-lg hover:shadow-2xl duration-300">
       <div className="relative">
         <img src={Blueberry} alt="Product" className="w-[300px] rounded-2xl" />
         <FontAwesomeIcon

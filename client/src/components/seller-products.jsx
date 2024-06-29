@@ -37,12 +37,12 @@ export const SellerProducts = () => {
         products.map((product) => (
           <div
             key={product.id}
-            className="flex flex-col w-fit cursor-pointer m-auto px-4 py-3 rounded-lg shadow-none hover:shadow-2xl transition-shadow duration-300 ease-in-out"
+            className="flex flex-col w-fit cursor-pointer px-4 py-3 rounded-lg shadow-none hover:shadow-2xl transition-shadow duration-300 ease-in-out"
           >
             <img
               src={`http://localhost:8081/productImages/${product.productImage}`}
               alt="Product Image"
-              className="w-[300px] rounded-2xl"
+              className="w-[270px] rounded-2xl"
             />
 
             <div className="font-inter mt-4 flex flex-col gap-1">
@@ -56,7 +56,7 @@ export const SellerProducts = () => {
                 {product.flavor}
               </p>
 
-              <div className="flex justify-between">
+              <div className="flex justify-between items-end">
                 <p className="text-lg">
                   <span className="font-semibold">Available Sizes:</span>{" "}
                   {product.totalSizes}

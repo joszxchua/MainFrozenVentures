@@ -45,6 +45,12 @@ export const MyProducts = () => {
 
   return (
     <>
+      {messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
       {showAddProduct && (
         <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-30">
           <AddProduct
@@ -82,12 +88,8 @@ export const MyProducts = () => {
           </button>
         </div>
       </div>
-      {messageTitle === "Error" && (
-        <ErrorMessage title={messageTitle} message={message} />
-      )}
-      {messageTitle === "Success" && (
-        <SuccessMessage title={messageTitle} message={message} />
-      )}
+
+      
     </>
   );
 };

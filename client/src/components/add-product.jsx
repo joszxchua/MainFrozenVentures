@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, useState, useRef } from "react";
 import axios from "axios";
 import { UserContext } from "../context/user-context";
 import { useForm } from "react-hook-form";
@@ -10,6 +10,7 @@ export const AddProduct = ({ cancelAddProduct }) => {
   const [productImage, setProductImage] = useState(null);
   const [productImagePreview, setProductImagePreview] = useState(null);
   const fileInputRef = useRef(null);
+  const { register, handleSubmit, formState: { errors } } = useForm();
 
   const handleSelectImage = () => {
     fileInputRef.current.click();
@@ -23,6 +24,15 @@ export const AddProduct = ({ cancelAddProduct }) => {
     }
   };
 
+  const onSubmit = async (data) => {
+    try {
+      // Form submission logic here
+      console.log(data);
+    } catch (error) {
+      console.error("Failed to add product:", error);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-5 bg-white p-10 rounded-lg max-h-[80vh] overflow-auto">
       <div className="relative text-4xl">
@@ -33,7 +43,7 @@ export const AddProduct = ({ cancelAddProduct }) => {
           className="absolute top-0 right-0 shadow-2xl cursor-pointer"
         />
       </div>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-5 items-center justify-center">
           {productImagePreview ? (
             <img
@@ -71,41 +81,39 @@ export const AddProduct = ({ cancelAddProduct }) => {
               <label className="font-semibold">Product Name:</label>
               <input
                 type="text"
-                name="productName"
-                id="productName"
+                {...register("productName", { required: "Product Name is required" })}
                 className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
               />
+              {errors.productName && <span className="text-red-500 text-sm">{errors.productName.message}</span>}
             </div>
             <div className="flex flex-col gap-2 text-xl">
               <label className="font-semibold">Product Brand:</label>
               <input
                 type="text"
-                name="productBrand"
-                id="productBrand"
+                {...register("productBrand", { required: "Product Brand is required" })}
                 className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
               />
+              {errors.productBrand && <span className="text-red-500 text-sm">{errors.productBrand.message}</span>}
             </div>
             <div className="flex flex-col gap-2 text-xl">
               <label className="font-semibold">Flavor:</label>
               <input
                 type="text"
-                name="flavor"
-                id="flavor"
+                {...register("flavor", { required: "Flavor is required" })}
                 className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
               />
+              {errors.flavor && <span className="text-red-500 text-sm">{errors.flavor.message}</span>}
             </div>
             <div className="flex flex-col gap-2 text-xl">
               <label className="font-semibold">Size:</label>
               <div className="flex gap-5">
                 <input
                   type="text"
-                  name="size"
-                  id="size"
+                  {...register("size", { required: "Size is required" })}
                   className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
                 />
                 <select
-                  name="size"
-                  id="size"
+                  {...register("sizeUnit", { required: "Size Unit is required" })}
                   className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
                 >
                   <option value="">Select Size</option>
@@ -118,6 +126,8 @@ export const AddProduct = ({ cancelAddProduct }) => {
                   <option value="liters">Liters</option>
                 </select>
               </div>
+              {errors.size && <span className="text-red-500 text-sm">{errors.size.message}</span>}
+              {errors.sizeUnit && <span className="text-red-500 text-sm">{errors.sizeUnit.message}</span>}
             </div>
           </div>
 
@@ -125,52 +135,55 @@ export const AddProduct = ({ cancelAddProduct }) => {
             <div className="flex flex-col gap-2 text-xl">
               <label className="font-semibold">Product Description:</label>
               <textarea
-                type="text"
-                name="productDescription"
-                id="productDescription"
+                {...register("productDescription", { required: "Product Description is required" })}
                 className="h-[135px] px-3 py-1 border-2 border-black rounded-lg resize-none w-full outline-purple-200"
               />
+              {errors.productDescription && <span className="text-red-500 text-sm">{errors.productDescription.message}</span>}
             </div>
             <div className="flex gap-5">
               <div className="flex flex-col gap-2 text-xl">
                 <label className="font-semibold">Product Price:</label>
                 <input
                   type="text"
-                  name="productPrice"
-                  id="productPrice"
+                  {...register("productPrice", { required: "Product Price is required" })}
                   className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
                 />
+                {errors.productPrice && <span className="text-red-500 text-sm">{errors.productPrice.message}</span>}
               </div>
               <div className="flex flex-col gap-2 text-xl">
                 <label className="font-semibold">Stock:</label>
                 <input
                   type="number"
-                  name="stock"
-                  id="stock"
+                  {...register("stock", { required: "Stock is required" })}
                   className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
                 />
+                {errors.stock && <span className="text-red-500 text-sm">{errors.stock.message}</span>}
               </div>
             </div>
             <div className="flex flex-col gap-2 text-xl">
               <label className="font-semibold">Allergens:</label>
               <input
                 type="text"
-                name="allergens"
-                id="allergens"
+                {...register("allergens", { required: "Allergens are required" })}
                 className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
               />
+              {errors.allergens && <span className="text-red-500 text-sm">{errors.allergens.message}</span>}
             </div>
           </div>
         </div>
 
         <div className="mt-10 flex justify-around">
           <button
+            type="button"
             onClick={cancelAddProduct}
             className="font-bold px-4 py-2 bg-gray-200 border-2 border-gray-200 text-white cursor-pointer rounded-lg hover:bg-white hover:text-gray-200 duration-300"
           >
             Cancel
           </button>
-          <button className="font-bold px-4 py-2 bg-purple-200 border-2 border-purple-200 text-white cursor-pointer rounded-lg hover:bg-white hover:text-purple-200 duration-300">
+          <button
+            type="submit"
+            className="font-bold px-4 py-2 bg-purple-200 border-2 border-purple-200 text-white cursor-pointer rounded-lg hover:bg-white hover:text-purple-200 duration-300"
+          >
             Add Product
           </button>
         </div>

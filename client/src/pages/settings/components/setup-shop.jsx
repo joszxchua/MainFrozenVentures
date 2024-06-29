@@ -282,7 +282,7 @@ export const SetUpShop = () => {
                   name="shopName"
                   id="shopName"
                   disabled={!isSettingUpShop}
-                  className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+                  className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
                   {...register("shopName")}
                 />
               </div>
@@ -293,7 +293,7 @@ export const SetUpShop = () => {
                   name="shopDescription"
                   id="shopDescription"
                   disabled={!isSettingUpShop}
-                  className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+                  className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
                   {...register("shopDescription")}
                 />
               </div>
@@ -361,7 +361,7 @@ export const SetUpShop = () => {
               id="shopImage"
               name="shopImage"
               accept=".pdf"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               disabled={!isVerifyingShop}
               onChange={handleDocumentChange}
               ref={fileInputRef}

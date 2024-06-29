@@ -258,7 +258,7 @@ export const Security = () => {
                   type="text"
                   name="newEmail"
                   id="newEmail"
-                  className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+                  className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
                   value={inputEmail}
                   onChange={(e) => setInputEmail(e.target.value)}
                 />
@@ -280,7 +280,7 @@ export const Security = () => {
                           Code:
                         </label>
                         <input
-                          className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+                          className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
                           type="number"
                           value={inputCode}
                           onChange={(e) => setInputCode(e.target.value)}
@@ -369,7 +369,7 @@ export const Security = () => {
                 type="number"
                 name="newPhone"
                 id="newPhone"
-                className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+                className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
                 value={inputPhone}
                 onChange={(e) => setInputPhone(e.target.value)}
               />
@@ -424,7 +424,7 @@ export const Security = () => {
               name="currentPassword"
               id="currentPassword"
               disabled={!isChangingPassword}
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               value={inputCurrentPassword}
               onChange={(e) => setInputCurrentPassword(e.target.value)}
             />
@@ -439,7 +439,7 @@ export const Security = () => {
               name="newPassword"
               id="newPassword"
               disabled={!isChangingPassword}
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               value={inputNewPassword}
               onChange={(e) => setInputNewPassword(e.target.value)}
             />
@@ -454,7 +454,7 @@ export const Security = () => {
               name="confirmPassword"
               id="confirmPassword"
               disabled={!isChangingPassword}
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               value={inputConfirmPassword}
               onChange={(e) => setInputConfirmPassword(e.target.value)}
             />

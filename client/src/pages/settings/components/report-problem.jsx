@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import Select from "react-select";
 import { UserContext } from "../../../context/user-context";
 import { SuccessMessage } from "../../../components/success-message";
 import { ErrorMessage } from "../../../components/error-message";
@@ -14,13 +15,14 @@ export const ReportProblem = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [selectedAbout, setSelectedAbout] = useState(null);
 
   const aboutOptions = [
     { label: "Select A Problem", value: "" },
-    { label: "Bug", value: "bug" },
-    { label: "Feature Request", value: "feature request" },
-    { label: "Performance Issue", value: "performance issue" },
-    { label: "Other", value: "other" },
+    { label: "Bug", value: "Bug" },
+    { label: "Feature Request", value: "Feature request" },
+    { label: "Performance Issue", value: "Performance issue" },
+    { label: "Other", value: "Other" },
   ];
 
   const handleReportProblem = () => {
@@ -38,7 +40,7 @@ export const ReportProblem = () => {
     try {
       const response = await axios.post(
         "http://localhost:8081/account/reportProblem",
-        { ...data, accountId: user.accountId }
+        { ...data, about: selectedAbout, accountId: user.accountId }
       );
 
       if (response.data.status === "success") {
@@ -56,6 +58,7 @@ export const ReportProblem = () => {
     }
 
     setTimeout(() => {
+      setSelectedAbout("");
       setMessageTitle("");
       setMessage("");
       reset();
@@ -71,7 +74,7 @@ export const ReportProblem = () => {
       {messageTitle === "Success" && (
         <SuccessMessage title={messageTitle} message={message} />
       )}
-     <div className="flex text-4xl font-bold">
+      <div className="flex text-4xl font-bold">
         <FontAwesomeIcon icon={faCircleExclamation} className="mr-3" />
         <h2>Report A Problem</h2>
       </div>
@@ -90,19 +93,19 @@ export const ReportProblem = () => {
             <label htmlFor="about" className="text-lg font-medium">
               About:
             </label>
-            <select
-              name="about"
-              id="about"
-              disabled={!isReportingProblem}
-              className="text-lg px-2 py-2 rounded-lg border-2 border-black outline-purple-200"
-              {...register("about")}
-            >
-              {aboutOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="text-lg border-gray-200 rounded-[5px] w-full outline-purple-200"
+              options={aboutOptions}
+              value={{
+                value: selectedAbout,
+                label: selectedAbout,
+              }}
+              onChange={(selectedOption) =>
+                setSelectedAbout(selectedOption.value)
+              }
+              isDisabled={!isReportingProblem}
+              placeholder="Select A Problem"
+            />
           </div>
 
           <div className="w-[60%] flex flex-col gap-2">
@@ -113,7 +116,7 @@ export const ReportProblem = () => {
               name="description"
               id="description"
               disabled={!isReportingProblem}
-              className="h-[245px] text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200 resize-none"
+              className="h-[245px] resize-none text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               {...register("description")}
             />
           </div>

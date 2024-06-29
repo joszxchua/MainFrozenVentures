@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { UserContext } from "../../../context/user-context";
 import municipalitiesInBataan from "../../../municipalities";
+import Select from "react-select";
 import { SuccessMessage } from "../../../components/success-message";
 import { ErrorMessage } from "../../../components/error-message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,6 +23,7 @@ export const Profile = () => {
     setValue: setValueAddress,
     getValues: getValuesAddress,
   } = useForm();
+  const [selectedGender, setSelectedGender] = useState("");
   const [selectedMunicipality, setSelectedMunicipality] = useState("");
   const [selectedBarangay, setSelectedBarangay] = useState("");
   const [barangays, setBarangays] = useState([]);
@@ -67,6 +69,7 @@ export const Profile = () => {
             setValuePersonal("firstName", userData.firstName);
             setValuePersonal("lastName", userData.lastName);
             setValuePersonal("gender", userData.gender);
+            setSelectedGender(userData.gender);
             setValuePersonal("birthdate", birthdate);
 
             setValueAddress("street", userData.street);
@@ -116,42 +119,6 @@ export const Profile = () => {
     }
   }, [selectedMunicipality, selectedBarangay, setValueAddress]);
 
-  const handleChangeMunicipality = (e) => {
-    const selectedMunicipalityName = e.target.value;
-    setSelectedMunicipality(selectedMunicipalityName);
-    setSelectedBarangay("");
-    setValueAddress("barangay", "");
-    setValueAddress("zipCode", "");
-
-    const selectedMunicipalityObj = municipalitiesInBataan.find(
-      (municipality) => municipality.name === selectedMunicipalityName
-    );
-
-    if (selectedMunicipalityObj) {
-      setBarangays(
-        selectedMunicipalityObj.barangays.map((barangay) => barangay.name)
-      );
-    }
-  };
-
-  const handleChangeBarangay = (e) => {
-    const selectedBarangayName = e.target.value;
-    setSelectedBarangay(selectedBarangayName);
-
-    const selectedMunicipalityObj = municipalitiesInBataan.find(
-      (municipality) => municipality.name === selectedMunicipality
-    );
-
-    if (selectedMunicipalityObj) {
-      const selectedBarangayObj = selectedMunicipalityObj.barangays.find(
-        (barangay) => barangay.name === selectedBarangayName
-      );
-      if (selectedBarangayObj) {
-        setValueAddress("zipCode", selectedBarangayObj.zipCode);
-      }
-    }
-  };
-
   const getMaxDate = () => {
     const today = new Date();
     const maxYear = today.getFullYear() - 13;
@@ -197,6 +164,7 @@ export const Profile = () => {
         "http://localhost:8081/account/personalUpdate",
         {
           ...data,
+          gender: selectedGender,
           accountId: user.accountId,
         }
       );
@@ -211,6 +179,7 @@ export const Profile = () => {
         setValuePersonal("lastName", initialPersonalValues.lastName);
         setValuePersonal("gender", initialPersonalValues.gender);
         setValuePersonal("birthdate", initialPersonalValues.birthdate);
+        setSelectedGender(initialPersonalValues.gender);
       }
     } catch (error) {
       setMessageTitle("Error");
@@ -230,6 +199,8 @@ export const Profile = () => {
         "http://localhost:8081/account/addressUpdate",
         {
           ...data,
+          municipality: selectedMunicipality,
+          barangay: selectedBarangay,
           accountId: user.accountId,
         }
       );
@@ -268,7 +239,7 @@ export const Profile = () => {
       {messageTitle && messageTitle === "Success" && (
         <SuccessMessage title={messageTitle} message={message} />
       )}
-       <div className="flex text-4xl font-bold">
+      <div className="flex text-4xl font-bold">
         <FontAwesomeIcon icon={faUserCircle} className="mr-3" />
         <h2>Profile</h2>
       </div>
@@ -293,7 +264,7 @@ export const Profile = () => {
               type="text"
               name="firstName"
               id="firstName"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               {...registerPersonal("firstName")}
               disabled={!isEditingPersonal}
             />
@@ -307,7 +278,7 @@ export const Profile = () => {
               type="text"
               name="lastName"
               id="lastName"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               {...registerPersonal("lastName")}
               disabled={!isEditingPersonal}
             />
@@ -317,16 +288,22 @@ export const Profile = () => {
             <label htmlFor="gender" className="text-lg font-medium">
               Gender:
             </label>
-            <select
-              className="text-lg px-2 py-2 rounded-lg border-2 border-black outline-purple-200"
-              {...registerPersonal("gender")}
-              disabled={!isEditingPersonal}
-            >
-              <option value="">Select your gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="prefer-not-to-say">Prefer not to say</option>
-            </select>
+            <Select
+              className="text-lg border-gray-200 rounded-[5px] w-full outline-purple-200"
+              options={[
+                { value: "Male", label: "Male" },
+                { value: "Female", label: "Female" },
+                { value: "Prefer not to say", label: "Prefer not to say" },
+              ]}
+              value={{
+                value: selectedGender,
+                label: selectedGender,
+              }}
+              onChange={(selectedOption) =>
+                setSelectedGender(selectedOption.value)
+              }
+              isDisabled={!isEditingPersonal}
+            />
           </div>
 
           <div className="w-[60%] flex flex-col gap-2">
@@ -337,7 +314,7 @@ export const Profile = () => {
               type="date"
               name="birthdate"
               id="birthdate"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               {...registerPersonal("birthdate")}
               max={getMaxDate()}
               disabled={!isEditingPersonal}
@@ -394,7 +371,7 @@ export const Profile = () => {
               type="text"
               name="street"
               id="street"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               {...registerAddress("street")}
               disabled={!isEditingAddress}
             />
@@ -404,39 +381,39 @@ export const Profile = () => {
             <label htmlFor="municipality" className="text-lg font-medium">
               Municipality:
             </label>
-            <select
-              className="text-lg px-2 py-2 rounded-lg border-2 border-black outline-purple-200"
-              {...registerAddress("municipality")}
-              disabled={!isEditingAddress}
-              onChange={handleChangeMunicipality}
-            >
-              <option value="">Select Municipality</option>
-              {municipalitiesInBataan.map((municipality, index) => (
-                <option key={index} value={municipality.name}>
-                  {municipality.name}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="text-lg border-gray-200 rounded-[5px] w-full outline-purple-200"
+              options={municipalitiesInBataan.map((municipality) => ({
+                value: municipality.name,
+                label: municipality.name,
+              }))}
+              value={{
+                value: selectedMunicipality,
+                label: selectedMunicipality,
+              }}
+              onChange={(selectedOption) =>
+                setSelectedMunicipality(selectedOption.value)
+              }
+              isDisabled={!isEditingAddress}
+            />
           </div>
 
           <div className="w-[60%] flex flex-col gap-2">
             <label htmlFor="barangay" className="text-lg font-medium">
               Barangay:
             </label>
-            <select
-              className="text-lg px-2 py-2 rounded-lg border-2 border-black outline-purple-200"
-              {...registerAddress("barangay")}
-              disabled={!isEditingAddress}
-              value={selectedBarangay}
-              onChange={handleChangeBarangay}
-            >
-              <option value="">Select Barangay</option>
-              {barangays.map((barangay, index) => (
-                <option key={index} value={barangay}>
-                  {barangay}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="text-lg border-gray-200 rounded-[5px] w-full outline-purple-200"
+              options={barangays.map((barangay) => ({
+                value: barangay,
+                label: barangay,
+              }))}
+              value={{ value: selectedBarangay, label: selectedBarangay }}
+              onChange={(selectedOption) =>
+                setSelectedBarangay(selectedOption.value)
+              }
+              isDisabled={!isEditingAddress}
+            />
           </div>
 
           <div className="w-[60%] flex flex-col gap-2">
@@ -447,7 +424,7 @@ export const Profile = () => {
               type="text"
               name="province"
               id="province"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               {...registerAddress("province")}
               disabled={!isEditingAddress}
             />
@@ -461,7 +438,7 @@ export const Profile = () => {
               type="text"
               name="zipCode"
               id="zipCode"
-              className="text-lg px-2 py-1 rounded-lg border-2 border-black outline-purple-200"
+              className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               {...registerAddress("zipCode")}
               disabled={!isEditingAddress}
             />

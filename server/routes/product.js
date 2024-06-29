@@ -53,21 +53,10 @@ router.post("/addProduct", uploadProduct.single("productImage"), (req, res) => {
     }
 
     const insertSql =
-      "INSERT INTO product_info (accountID, productImage, name, brand, flavor, size, description, price, stock, allergens) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO product_info (accountID, productImage, name, brand, flavor, description, allergens) VALUES (?, ?, ?, ?, ?, ?, ?)";
     db.query(
       insertSql,
-      [
-        accountId,
-        productImage,
-        name,
-        brand,
-        flavor,
-        size,
-        description,
-        price,
-        stock,
-        allergens,
-      ],
+      [accountId, productImage, name, brand, flavor, description, allergens],
       (insertErr, insertResult) => {
         if (insertErr) {
           console.error("Failed to insert product:", insertErr);
@@ -77,10 +66,27 @@ router.post("/addProduct", uploadProduct.single("productImage"), (req, res) => {
           });
         }
 
-        res.status(200).json({
-          status: "success",
-          message: "Product added successfully",
-        });
+        const productID = insertResult.insertId;
+        const insertSizeSql =
+          "INSERT INTO product_size (productID, size, price, stock) VALUES (?, ?, ?, ?)";
+        db.query(
+          insertSizeSql,
+          [productID, size, price, stock],
+          (sizeErr, sizeResult) => {
+            if (sizeErr) {
+              console.error("Failed to insert product size:", sizeErr);
+              return res.status(500).json({
+                status: "error",
+                message: "Failed to add product size",
+              });
+            }
+
+            return res.status(200).json({
+              status: "success",
+              message: "Product added successfully",
+            });
+          }
+        );
       }
     );
   });

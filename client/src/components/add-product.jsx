@@ -1,16 +1,48 @@
 import React, { useContext, useState, useRef } from "react";
 import axios from "axios";
 import { UserContext } from "../context/user-context";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import Select from "react-select";
+import { SuccessMessage } from "./success-message";
+import { ErrorMessage } from "./error-message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faIceCream, faXmark } from "@fortawesome/free-solid-svg-icons";
+
+const allergenOptions = [
+  { value: "milk", label: "Milk" },
+  { value: "egg", label: "Egg" },
+  { value: "peanut", label: "Peanut" },
+  { value: "treeNut", label: "Tree Nut" },
+  { value: "soy", label: "Soy" },
+  { value: "wheat", label: "Wheat" },
+  { value: "fish", label: "Fish" },
+  { value: "shellfish", label: "Shellfish" },
+];
+
+const sizeOptions = [
+  { value: "oz", label: "Oz" },
+  { value: "cup", label: "Cup" },
+  { value: "pint", label: "Pint" },
+  { value: "quart", label: "Quart" },
+  { value: "gallon", label: "Gallon" },
+  { value: "lbs", label: "Lbs" },
+  { value: "liters", label: "Liters" },
+];
 
 export const AddProduct = ({ cancelAddProduct }) => {
   const { user } = useContext(UserContext);
   const [productImage, setProductImage] = useState(null);
   const [productImagePreview, setProductImagePreview] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
   const fileInputRef = useRef(null);
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
 
   const handleSelectImage = () => {
     fileInputRef.current.click();
@@ -25,9 +57,26 @@ export const AddProduct = ({ cancelAddProduct }) => {
   };
 
   const onSubmit = async (data) => {
+    if (!productImage) {
+      setMessageTitle("Error")
+      setMessage("Product image is empty")
+      return;
+    }
     try {
-      // Form submission logic here
-      console.log(data);
+      const allergens = data.allergens
+        .map((allergen) => allergen.value)
+        .join(", ");
+      const formData = new FormData();
+      formData.append("accountId", user.accountId);
+      formData.append("productImage", productImage);
+      formData.append("name", data.name);
+      formData.append("brand", data.brand);
+      formData.append("flavor", data.flavor);
+      formData.append("description", data.description);
+      formData.append("price", data.price);
+      formData.append("stock", data.stock);
+      formData.append("allergens", allergens);
+      console.log(formData);
     } catch (error) {
       console.error("Failed to add product:", error);
     }
@@ -35,6 +84,12 @@ export const AddProduct = ({ cancelAddProduct }) => {
 
   return (
     <div className="flex flex-col gap-5 bg-white p-10 rounded-lg max-h-[80vh] overflow-auto">
+      {messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
       <div className="relative text-4xl">
         <h2 className="font-bold">Add A Product</h2>
         <FontAwesomeIcon
@@ -81,93 +136,148 @@ export const AddProduct = ({ cancelAddProduct }) => {
               <label className="font-semibold">Product Name:</label>
               <input
                 type="text"
-                {...register("productName", { required: "Product Name is required" })}
-                className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
+                {...register("name", {
+                  required: "Product Name is required",
+                })}
+                className="px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               />
-              {errors.productName && <span className="text-red-500 text-sm">{errors.productName.message}</span>}
+              {errors.name && (
+                <span className="text-red-500 text-sm">
+                  {errors.name.message}
+                </span>
+              )}
             </div>
             <div className="flex flex-col gap-2 text-xl">
               <label className="font-semibold">Product Brand:</label>
               <input
                 type="text"
-                {...register("productBrand", { required: "Product Brand is required" })}
-                className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
+                {...register("brand", {
+                  required: "Product Brand is required",
+                })}
+                className="px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               />
-              {errors.productBrand && <span className="text-red-500 text-sm">{errors.productBrand.message}</span>}
+              {errors.brand && (
+                <span className="text-red-500 text-sm">
+                  {errors.brand.message}
+                </span>
+              )}
             </div>
             <div className="flex flex-col gap-2 text-xl">
               <label className="font-semibold">Flavor:</label>
               <input
                 type="text"
                 {...register("flavor", { required: "Flavor is required" })}
-                className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
+                className="px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               />
-              {errors.flavor && <span className="text-red-500 text-sm">{errors.flavor.message}</span>}
+              {errors.flavor && (
+                <span className="text-red-500 text-sm">
+                  {errors.flavor.message}
+                </span>
+              )}
             </div>
             <div className="flex flex-col gap-2 text-xl">
               <label className="font-semibold">Size:</label>
               <div className="flex gap-5">
                 <input
-                  type="text"
+                  type="Number"
                   {...register("size", { required: "Size is required" })}
-                  className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
+                  className="px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
                 />
-                <select
-                  {...register("sizeUnit", { required: "Size Unit is required" })}
-                  className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
-                >
-                  <option value="">Select Size</option>
-                  <option value="oz">Oz</option>
-                  <option value="cup">Cup</option>
-                  <option value="pint">Pint</option>
-                  <option value="quart">Quart</option>
-                  <option value="gallon">Gallon</option>
-                  <option value="lbs">Lbs</option>
-                  <option value="liters">Liters</option>
-                </select>
+                <Controller
+                  name="sizeUnit"
+                  control={control}
+                  rules={{ required: "Size Unit is required" }}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      options={sizeOptions}
+                      className="basic-single rounded-lg w-full outline-purple-200"
+                      classNamePrefix="select"
+                    />
+                  )}
+                />
               </div>
-              {errors.size && <span className="text-red-500 text-sm">{errors.size.message}</span>}
-              {errors.sizeUnit && <span className="text-red-500 text-sm">{errors.sizeUnit.message}</span>}
+              <div className="flex justify-between">
+                {errors.size && (
+                  <span className="text-red-500 text-sm">
+                    {errors.size.message}
+                  </span>
+                )}
+                {errors.sizeUnit && (
+                  <span className="text-red-500 text-sm">
+                    {errors.sizeUnit.message}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-2 text-xl">
-              <label className="font-semibold">Product Description:</label>
+              <label className="font-semibold">Description:</label>
               <textarea
-                {...register("productDescription", { required: "Product Description is required" })}
-                className="h-[135px] px-3 py-1 border-2 border-black rounded-lg resize-none w-full outline-purple-200"
+                {...register("description", {
+                  required: "Description is required",
+                })}
+                className="h-[135px] resize-none px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               />
-              {errors.productDescription && <span className="text-red-500 text-sm">{errors.productDescription.message}</span>}
+              {errors.description && (
+                <span className="text-red-500 text-sm">
+                  {errors.description.message}
+                </span>
+              )}
             </div>
             <div className="flex gap-5">
               <div className="flex flex-col gap-2 text-xl">
-                <label className="font-semibold">Product Price:</label>
+                <label className="font-semibold">Price:</label>
                 <input
-                  type="text"
-                  {...register("productPrice", { required: "Product Price is required" })}
-                  className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
+                  type="number"
+                  {...register("price", {
+                    required: "Price is required",
+                  })}
+                  className="px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
                 />
-                {errors.productPrice && <span className="text-red-500 text-sm">{errors.productPrice.message}</span>}
+                {errors.price && (
+                  <span className="text-red-500 text-sm">
+                    {errors.price.message}
+                  </span>
+                )}
               </div>
               <div className="flex flex-col gap-2 text-xl">
                 <label className="font-semibold">Stock:</label>
                 <input
                   type="number"
                   {...register("stock", { required: "Stock is required" })}
-                  className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
+                  className="px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
                 />
-                {errors.stock && <span className="text-red-500 text-sm">{errors.stock.message}</span>}
+                {errors.stock && (
+                  <span className="text-red-500 text-sm">
+                    {errors.stock.message}
+                  </span>
+                )}
               </div>
             </div>
             <div className="flex flex-col gap-2 text-xl">
               <label className="font-semibold">Allergens:</label>
-              <input
-                type="text"
-                {...register("allergens", { required: "Allergens are required" })}
-                className="px-3 py-1 border-2 border-black rounded-lg w-full outline-purple-200"
+              <Controller
+                name="allergens"
+                control={control}
+                rules={{ required: "Allergens are required" }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    isMulti
+                    options={allergenOptions}
+                    className="basic-multi-select rounded-lg w-full outline-purple-200"
+                    classNamePrefix="select"
+                  />
+                )}
               />
-              {errors.allergens && <span className="text-red-500 text-sm">{errors.allergens.message}</span>}
+              {errors.allergens && (
+                <span className="text-red-500 text-sm">
+                  {errors.allergens.message}
+                </span>
+              )}
             </div>
           </div>
         </div>

@@ -61,7 +61,6 @@ router.post(
     const shopDocument = req.file.filename;
     const { accountId } = req.body;
 
-    console.log(shopDocument)
     const sql =
       "UPDATE shop_info SET shopDocument = ? WHERE accountID = ?";
     db.query(sql, [shopDocument, accountId], (err, result) => {

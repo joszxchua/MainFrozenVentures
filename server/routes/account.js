@@ -135,8 +135,6 @@ router.post("/setUpShop", uploadLogo.single("shopLogo"), (req, res) => {
         });
       }
 
-      console.log(shopName);
-
       if (!shopName || shopName === undefined || shopName === "") {
         return res.status(200).json({
           status: "error",

@@ -58,28 +58,58 @@ export const AddProduct = ({ cancelAddProduct }) => {
 
   const onSubmit = async (data) => {
     if (!productImage) {
-      setMessageTitle("Error")
-      setMessage("Product image is empty")
+      setMessageTitle("Error");
+      setMessage("Product image is empty");
+
+      setTimeout(() => {
+        setMessageTitle("");
+        setMessage("");
+      }, 3000);
       return;
     }
+
     try {
       const allergens = data.allergens
         .map((allergen) => allergen.value)
         .join(", ");
+
       const formData = new FormData();
       formData.append("accountId", user.accountId);
       formData.append("productImage", productImage);
       formData.append("name", data.name);
       formData.append("brand", data.brand);
       formData.append("flavor", data.flavor);
+      formData.append("size", `${data.size} ${data.sizeUnit.value}`);
       formData.append("description", data.description);
       formData.append("price", data.price);
       formData.append("stock", data.stock);
       formData.append("allergens", allergens);
-      console.log(formData);
+
+      const response = await axios.post(
+        "http://localhost:8081/product/addProduct",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+      } else if (response.data.status === "error") {
+        setMessageTitle("Error");
+        setMessage(response.data.message);
+      }
     } catch (error) {
-      console.error("Failed to add product:", error);
+      setMessageTitle("Error");
+      setMessage("Something went wrong");
     }
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
   };
 
   return (

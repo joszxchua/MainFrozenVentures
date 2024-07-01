@@ -57,7 +57,13 @@ export const EditProduct = ({
       setValue("brand", product.brand);
       setValue("flavor", product.flavor);
       setValue("description", product.description);
-      setValue("allergens", product.allergens);
+      setValue(
+        "allergens",
+        product.allergens.split(",").map((allergen) => ({
+          value: allergen,
+          label: allergen.charAt(0).toUpperCase() + allergen.slice(1),
+        }))
+      );
     }
   }, [product, setValue]);
 
@@ -227,7 +233,6 @@ export const EditProduct = ({
               <Controller
                 name="allergens"
                 control={control}
-                rules={{ required: "Allergens are required" }}
                 render={({ field }) => (
                   <Select
                     {...field}

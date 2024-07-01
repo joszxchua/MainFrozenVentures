@@ -6,6 +6,7 @@ export const Confirmation = ({
   confirmationTitle,
   confirmationMessage,
   cancelConfirmation,
+  yesConfirmation
 }) => {
   return (
     <div className="relative flex flex-col gap-3 bg-white p-10 rounded-lg max-h-[80vh] overflow-auto">
@@ -24,7 +25,7 @@ export const Confirmation = ({
         >
           Cancel
         </button>
-        <button className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
+        <button onClick={yesConfirmation} className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
           Yes
         </button>
       </div>

@@ -32,6 +32,7 @@ export const ManageProduct = () => {
   const [showEditProduct, setShowEditProduct] = useState(false);
   const [confirmationTitle, setConfirmationTitle] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
+  const [removeSizeId, setRemoveSizeId] = useState("");
   const { register, handleSubmit, control, reset } = useForm();
 
   useEffect(() => {
@@ -149,11 +150,26 @@ export const ManageProduct = () => {
   const handleRemoveSize = (size) => {
     setConfirmationTitle("Remove Size");
     setConfirmationMessage(`Are you sure you want to remove ${size.size}?`);
+    setRemoveSizeId(size.sizeID);
+  };
+
+  const handleRemoveProduct = () => {
+    setConfirmationTitle("Remove Product");
+    setConfirmationMessage(`Are you sure you want to remove ${product.name}?`);
   };
 
   const handleCancelConfirmation = () => {
     setConfirmationTitle("");
     setConfirmationMessage("");
+    setRemoveSizeId("");
+  };
+
+  const handleYesConfirmation = () => {
+    if (confirmationTitle === "Remove Size") {
+      console.log("WOW SIZE", removeSizeId)
+    } else {
+      console.log("WOW PRODUCT", product.productID)
+    }
   }
 
   return (
@@ -170,6 +186,7 @@ export const ManageProduct = () => {
             confirmationTitle={confirmationTitle}
             confirmationMessage={confirmationMessage}
             cancelConfirmation={handleCancelConfirmation}
+            yesConfirmation={handleYesConfirmation}
           />
         </div>
       )}
@@ -185,7 +202,15 @@ export const ManageProduct = () => {
           />
         </div>
       )}
-      <h1 className="text-5xl font-bold">Manage Product</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-5xl font-bold">Manage Product</h1>
+        <button
+          onClick={handleRemoveProduct}
+          className="bg-red-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-red-200 hover:bg-white duration-300 hover:text-red-200 ease-in-out"
+        >
+          Remove This Product
+        </button>
+      </div>
 
       <div className="mt-10 flex gap-20">
         <div className="w-full">
@@ -320,7 +345,7 @@ export const ManageProduct = () => {
                         onClick={() => {
                           handleRemoveSize(size);
                         }}
-                        className="cursor-pointer px-3 py-2 rounded-full hover:bg-gray-100 hover:text-purple-200 duration-300 ease-in-out"
+                        className="cursor-pointer px-3 py-2 rounded-full hover:bg-gray-100 hover:text-red-200 duration-300 ease-in-out"
                       >
                         <FontAwesomeIcon icon={faTrash} />
                       </button>

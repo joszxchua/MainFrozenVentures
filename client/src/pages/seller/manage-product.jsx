@@ -8,6 +8,7 @@ import { EditProduct } from "../../components/edit-product";
 import { SuccessMessage } from "../../components/success-message";
 import { ErrorMessage } from "../../components/error-message";
 import { Confirmation } from "../../components/confirmation";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faXmark, faTrash } from "@fortawesome/free-solid-svg-icons";
 
@@ -34,6 +35,7 @@ export const ManageProduct = () => {
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [removeSizeId, setRemoveSizeId] = useState("");
   const { register, handleSubmit, control, reset } = useForm();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -164,13 +166,59 @@ export const ManageProduct = () => {
     setRemoveSizeId("");
   };
 
-  const handleYesConfirmation = () => {
+  const handleYesConfirmation = async () => {
     if (confirmationTitle === "Remove Size") {
-      console.log("WOW SIZE", removeSizeId)
+      try {
+        const response = await axios.post(
+          "http://localhost:8081/product/deleteSize",
+          { sizeId: removeSizeId }
+        );
+        if (response.data.status === "success") {
+          setMessageTitle("Success");
+          setMessage(response.data.message);
+
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        } else if (response.data.status === "error") {
+          setMessageTitle("Error");
+          setMessage(response.data.message);
+        }
+      } catch (error) {
+        setMessageTitle("Error");
+        setMessage("Something went wrong");
+      }
     } else {
-      console.log("WOW PRODUCT", product.productID)
+      try {
+        const response = await axios.post(
+          "http://localhost:8081/product/deleteProduct",
+          { productId: productId }
+        );
+        if (response.data.status === "success") {
+          setMessageTitle("Success");
+          setMessage(response.data.message);
+
+          setTimeout(() => {
+            navigate("/home-seller");
+          }, 3000);
+        } else if (response.data.status === "error") {
+          setMessageTitle("Error");
+          setMessage(response.data.message);
+        }
+      } catch (error) {
+        setMessageTitle("Error");
+        setMessage("Something went wrong");
+      }
     }
-  }
+
+    setConfirmationTitle("");
+    setConfirmationMessage("");
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
 
   return (
     <div className="mt-20 font-inter px-10 pb-10">

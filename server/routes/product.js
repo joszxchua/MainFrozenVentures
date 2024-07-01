@@ -92,19 +92,43 @@ router.post("/addProduct", uploadProduct.single("productImage"), (req, res) => {
   });
 });
 
+router.post("/deleteProduct", (req, res) => {
+  const { productId } = req.body;
+
+  if (!productId) {
+    return res.json({
+      status: 0,
+      message: "Product ID is required",
+    });
+  }
+
+  const sql = `UPDATE product_info SET isDeleted = 1 WHERE productID = ?`;
+
+  db.query(sql, [productId], (err, result) => {
+    if (err) {
+      return res.json({ status: 0, message: "Database error", error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.json({
+        status: 0,
+        message: "No product found with the provided product ID",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Product deleted successfully",
+    });
+  });
+});
+
 router.post(
   "/editProduct",
   uploadProduct.single("productImage"),
   (req, res) => {
     const productImage = req.file ? req.file.filename : null;
-    const {
-      productId,
-      name,
-      brand,
-      flavor,
-      description,
-      allergens,
-    } = req.body;
+    const { productId, name, brand, flavor, description, allergens } = req.body;
 
     const fieldsToUpdate = {
       productImage,
@@ -168,7 +192,7 @@ router.post("/sellerProductFetch", (req, res) => {
   const sql = `SELECT pi.*, COUNT(ps.size) AS totalSizes, SUM(ps.stock) AS totalStock
               FROM product_info pi
               LEFT JOIN product_size ps ON pi.productID = ps.productID
-              WHERE pi.accountID = ?
+              WHERE pi.accountID = ? AND pi.isDeleted = 0
               GROUP BY pi.productID;`;
 
   db.query(sql, [accountId], (err, results) => {
@@ -204,7 +228,7 @@ router.post("/productFetch", (req, res) => {
   const sql = `SELECT pi.*, COUNT(ps.size) AS totalSizes, SUM(ps.stock) AS totalStock
               FROM product_info pi
               LEFT JOIN product_size ps ON pi.productID = ps.productID
-              WHERE pi.accountID = ? AND  pi.productID = ?
+              WHERE pi.accountID = ? AND  pi.productID = ? AND  pi.isDeleted = 0
               GROUP BY pi.productID;`;
 
   db.query(sql, [accountId, productId], (err, results) => {
@@ -239,7 +263,7 @@ router.post("/productSizesFetch", (req, res) => {
 
   const sql = `SELECT *
               FROM product_size
-              WHERE productID = ?;`;
+              WHERE productID = ? AND isDeleted = 0;`;
 
   db.query(sql, [productId], (err, results) => {
     if (err) {
@@ -257,6 +281,37 @@ router.post("/productSizesFetch", (req, res) => {
       status: 1,
       message: "Products information fetched successfully",
       products: results,
+    });
+  });
+});
+
+router.post("/deleteSize", (req, res) => {
+  const { sizeId } = req.body;
+
+  if (!sizeId) {
+    return res.json({
+      status: 0,
+      message: "Size ID is required",
+    });
+  }
+
+  const sql = `UPDATE product_size SET isDeleted = 1 WHERE sizeID = ?`;
+
+  db.query(sql, [sizeId], (err, result) => {
+    if (err) {
+      return res.json({ status: 0, message: "Database error", error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.json({
+        status: 0,
+        message: "No product found with the provided product ID",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Size deleted successfully",
     });
   });
 });

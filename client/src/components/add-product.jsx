@@ -242,6 +242,7 @@ export const AddProduct = ({ cancelAddProduct, onSuccess, onError }) => {
                 <label className="font-semibold">Price:</label>
                 <input
                   type="number"
+                  step="0.01"
                   {...register("price", {
                     required: "Price is required",
                   })}

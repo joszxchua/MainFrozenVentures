@@ -346,6 +346,7 @@ export const ManageProduct = () => {
                     <div className="w-full flex flex-col gap-2 text-xl px-10">
                       <input
                         type="number"
+                        step="0.01"
                         {...register("price", {
                           required: "Price is required",
                         })}

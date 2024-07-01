@@ -31,6 +31,7 @@ export const MyProducts = () => {
     setTimeout(() => {
       setMessageTitle("");
       setMessage("");
+      window.location.reload();
     }, 3000);
   };
 

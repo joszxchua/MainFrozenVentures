@@ -128,4 +128,75 @@ router.post("/sellerProductFetch", (req, res) => {
   });
 });
 
+router.post("/productFetch", (req, res) => {
+  const { accountId, productId } = req.body;
+
+  if (!accountId || !productId) {
+    return res.json({
+      status: 0,
+      message: "Account and Product ID is required",
+    });
+  }
+
+  const sql = `SELECT pi.*, COUNT(ps.size) AS totalSizes, SUM(ps.stock) AS totalStock
+              FROM product_info pi
+              LEFT JOIN product_size ps ON pi.productID = ps.productID
+              WHERE pi.accountID = ? AND  pi.productID = ?
+              GROUP BY pi.productID;`;
+
+  db.query(sql, [accountId, productId], (err, results) => {
+    if (err) {
+      return res.json({ status: 0, message: "Database error", error: err });
+    }
+
+    if (results.length === 0) {
+      return res.json({
+        status: 0,
+        message: "No products found for the provided account ID",
+      });
+    }
+
+    return res.json({
+      status: 1,
+      message: "Products information fetched successfully",
+      product: results[0],
+    });
+  });
+});
+
+router.post("/productSizesFetch", (req, res) => {
+  const { productId } = req.body;
+
+  if (!productId) {
+    return res.json({
+      status: 0,
+      message: "Product ID is required",
+    });
+  }
+
+  const sql = `SELECT *
+              FROM product_size
+              WHERE productID = ?
+              GROUP BY productID;`;
+
+  db.query(sql, [productId], (err, results) => {
+    if (err) {
+      return res.json({ status: 0, message: "Database error", error: err });
+    }
+
+    if (results.length === 0) {
+      return res.json({
+        status: 0,
+        message: "No products found for the provided account ID",
+      });
+    }
+
+    return res.json({
+      status: 1,
+      message: "Products information fetched successfully",
+      products: results,
+    });
+  });
+});
+
 module.exports = router;

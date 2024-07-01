@@ -1,10 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../context/user-context";
+import { useNavigate } from "react-router-dom";
 
 export const SellerProducts = () => {
   const { user } = useContext(UserContext);
   const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -31,12 +33,17 @@ export const SellerProducts = () => {
     fetchUserData();
   }, [user.accountId]);
 
+  const handleProductClick = (productId) => {
+    navigate(`/manage-product/${productId}`);
+  };
+
   return (
     <>
       {products.length > 0 ? (
         products.map((product) => (
           <div
-            key={product.id}
+            key={product.productID}
+            onClick={() => handleProductClick(product.productID)}
             className="flex flex-col w-fit cursor-pointer px-4 py-3 rounded-lg shadow-none hover:shadow-2xl transition-shadow duration-300 ease-in-out"
           >
             <img

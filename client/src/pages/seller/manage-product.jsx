@@ -1,13 +1,29 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../../context/user-context";
+import { useForm, Controller } from "react-hook-form";
+import Select from "react-select";
 import { useParams } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faXmark, faTrash } from "@fortawesome/free-solid-svg-icons";
+
+const sizeOptions = [
+  { value: "oz", label: "Oz" },
+  { value: "cup", label: "Cup" },
+  { value: "pint", label: "Pint" },
+  { value: "quart", label: "Quart" },
+  { value: "gallon", label: "Gallon" },
+  { value: "lbs", label: "Lbs" },
+  { value: "liters", label: "Liters" },
+];
 
 export const ManageProduct = () => {
   const { user } = useContext(UserContext);
+  const { productId } = useParams();
   const [product, setProduct] = useState({});
   const [sizes, setSizes] = useState([]);
-  const { productId } = useParams();
+  const [addingSize, setAddingSize] = useState(false);
+  const { register, handleSubmit, control, reset } = useForm();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -56,6 +72,20 @@ export const ManageProduct = () => {
     fetchUserData();
   }, [user.accountId]);
 
+  const handleAddSize = () => {
+    setAddingSize(true);
+  };
+
+  const handleCancelAddSize = () => {
+    setAddingSize(false);
+    reset();
+  };
+
+  const onSubmit = async (data) => {
+    console.log(data);
+    setAddingSize(false);
+  };
+
   return (
     <div className="mt-20 font-inter px-10 pb-10">
       <h1 className="text-5xl font-bold">Manage Product</h1>
@@ -97,26 +127,93 @@ export const ManageProduct = () => {
           <div className="mt-20 rounded-lg shadow-2xl p-5">
             <div className="flex justify-between items-center">
               <h2 className="text-3xl font-semibold">Product Sizes</h2>
-              <button className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
-                Add Product Size
+              <button
+                onClick={addingSize ? handleCancelAddSize : handleAddSize}
+                className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+              >
+                {addingSize ? "Cancel" : "Add Size"}
               </button>
             </div>
 
             {sizes.length > 0 ? (
               <div className="p-5">
-                <div className="flex justify-between text-center text-2xl font-bold">
+                <div className="flex justify-between text-center text-2xl font-bold  border-b pb-5 mb-5">
                   <p className="w-full">Size</p>
                   <p className="w-full">Price</p>
                   <p className="w-full">Stocks</p>
+                  <p className="w-full">Action</p>
                 </div>
+
+                {addingSize && (
+                  <form
+                    className="flex justify-between"
+                    onSubmit={handleSubmit(onSubmit)}
+                  >
+                    <div className="w-full flex gap-5 px-10">
+                      <input
+                        type="number"
+                        {...register("size", { required: "Size is required" })}
+                        className="px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-[50%] outline-purple-200"
+                      />
+                      <Controller
+                        name="sizeUnit"
+                        control={control}
+                        rules={{ required: "Size Unit is required" }}
+                        render={({ field }) => (
+                          <Select
+                            {...field}
+                            options={sizeOptions}
+                            className="basic-single rounded-lg w-full outline-purple-200"
+                            classNamePrefix="select"
+                          />
+                        )}
+                      />
+                    </div>
+
+                    <div className="w-full flex flex-col gap-2 text-xl px-10">
+                      <input
+                        type="number"
+                        {...register("price", {
+                          required: "Price is required",
+                        })}
+                        className="px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
+                      />
+                    </div>
+
+                    <div className="w-full flex flex-col gap-2 text-xl px-10">
+                      <input
+                        type="number"
+                        {...register("stock", {
+                          required: "Stock is required",
+                        })}
+                        className="px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
+                      />
+                    </div>
+
+                    <div className="w-full flex justify-center gap-2 text-xl px-10">
+                      <button
+                        onClick={handleCancelAddSize}
+                        className="w-full bg-red-100 text-red-200 px-3 py-1 rounded-lg border-2 border-red-200"
+                      >
+                        <FontAwesomeIcon icon={faXmark} />
+                      </button>
+                      <button className="w-full bg-green-100 text-green-200 px-3 py-1 rounded-lg border-2 border-green-200">
+                        <FontAwesomeIcon icon={faCheck} />
+                      </button>
+                    </div>
+                  </form>
+                )}
                 {sizes.map((size) => (
                   <div
                     key={size.sizeID}
-                    className="flex justify-between text-center text-xl border-t py-5 mt-5"
+                    className="flex justify-between text-center text-xl py-5"
                   >
                     <p className="w-full">{size.size}</p>
                     <p className="w-full">Php {size.price}</p>
                     <p className="w-full">{size.stock} items left</p>
+                    <div className="w-full">
+                      <FontAwesomeIcon icon={faTrash} />
+                    </div>
                   </div>
                 ))}
               </div>

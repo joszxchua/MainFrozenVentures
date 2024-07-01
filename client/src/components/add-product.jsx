@@ -3,8 +3,6 @@ import axios from "axios";
 import { UserContext } from "../context/user-context";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
-import { SuccessMessage } from "./success-message";
-import { ErrorMessage } from "./error-message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faIceCream, faXmark } from "@fortawesome/free-solid-svg-icons";
 

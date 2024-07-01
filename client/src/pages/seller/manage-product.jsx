@@ -4,6 +4,9 @@ import { UserContext } from "../../context/user-context";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { useParams } from "react-router-dom";
+import { EditProduct } from "../../components/edit-product";
+import { SuccessMessage } from "../../components/success-message";
+import { ErrorMessage } from "../../components/error-message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faXmark, faTrash } from "@fortawesome/free-solid-svg-icons";
 
@@ -23,6 +26,9 @@ export const ManageProduct = () => {
   const [product, setProduct] = useState({});
   const [sizes, setSizes] = useState([]);
   const [addingSize, setAddingSize] = useState(false);
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
+  const [showEditProduct, setShowEditProduct] = useState(false);
   const { register, handleSubmit, control, reset } = useForm();
 
   useEffect(() => {
@@ -81,13 +87,81 @@ export const ManageProduct = () => {
     reset();
   };
 
+  const handleEditProduct = () => {
+    setShowEditProduct(true);
+  };
+
+  const handleCancelEditProduct = () => {
+    setShowEditProduct(false);
+  };
+
   const onSubmit = async (data) => {
-    console.log(data);
-    setAddingSize(false);
+    try {
+      const response = await axios.post(
+        "http://localhost:8081/product/addProductSize",
+        {
+          productId: productId,
+          size: `${data.size} ${data.sizeUnit.value}`,
+          price: data.price,
+          stock: data.stock,
+        }
+      );
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+      } else if (response.data.status === "error") {
+        setMessageTitle("Error");
+        setMessage(response.data.message);
+      }
+    } catch (error) {}
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+      setAddingSize(false);
+    }, 3000);
+  };
+
+  const handleSuccess = (title, message) => {
+    setShowEditProduct(false);
+    setMessageTitle(title);
+    setMessage(message);
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
+  const handleError = (title, message) => {
+    setMessageTitle(title);
+    setMessage(message);
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
   };
 
   return (
     <div className="mt-20 font-inter px-10 pb-10">
+      {messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
+      {showEditProduct && (
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-30">
+          <EditProduct
+            productId={productId}
+            product={product}
+            cancelEditProduct={handleCancelEditProduct}
+            onSuccess={handleSuccess}
+            onError={handleError}
+          />
+        </div>
+      )}
       <h1 className="text-5xl font-bold">Manage Product</h1>
 
       <div className="mt-10 flex gap-20">
@@ -117,7 +191,10 @@ export const ManageProduct = () => {
               <p className="text-justify text-xl">{product.description}</p>
 
               <div className="flex justify-end">
-                <button className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
+                <button
+                  onClick={handleEditProduct}
+                  className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                >
                   Edit Product
                 </button>
               </div>
@@ -192,12 +269,16 @@ export const ManageProduct = () => {
 
                     <div className="w-full flex justify-center gap-2 text-xl px-10">
                       <button
+                        type="button"
                         onClick={handleCancelAddSize}
                         className="w-full bg-red-100 text-red-200 px-3 py-1 rounded-lg border-2 border-red-200"
                       >
                         <FontAwesomeIcon icon={faXmark} />
                       </button>
-                      <button className="w-full bg-green-100 text-green-200 px-3 py-1 rounded-lg border-2 border-green-200">
+                      <button
+                        type="submit"
+                        className="w-full bg-green-100 text-green-200 px-3 py-1 rounded-lg border-2 border-green-200"
+                      >
                         <FontAwesomeIcon icon={faCheck} />
                       </button>
                     </div>

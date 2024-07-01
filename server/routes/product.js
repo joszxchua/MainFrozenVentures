@@ -92,6 +92,69 @@ router.post("/addProduct", uploadProduct.single("productImage"), (req, res) => {
   });
 });
 
+router.post(
+  "/editProduct",
+  uploadProduct.single("productImage"),
+  (req, res) => {
+    const productImage = req.file ? req.file.filename : null;
+    const {
+      productId,
+      name,
+      brand,
+      flavor,
+      description,
+      allergens,
+    } = req.body;
+
+    const fieldsToUpdate = {
+      productImage,
+      name,
+      brand,
+      flavor,
+      description,
+      allergens,
+    };
+
+    const updates = [];
+    const values = [];
+
+    Object.keys(fieldsToUpdate).forEach((field) => {
+      if (fieldsToUpdate[field]) {
+        updates.push(`${field} = ?`);
+        values.push(fieldsToUpdate[field]);
+      }
+    });
+
+    if (updates.length === 0) {
+      return res.status(200).json({
+        status: "error",
+        message: "Nothing to update",
+      });
+    }
+
+    values.push(productId);
+
+    const updateSql = `UPDATE product_info SET ${updates.join(
+      ", "
+    )} WHERE productID = ?`;
+
+    db.query(updateSql, values, (updateErr, updateResult) => {
+      if (updateErr) {
+        console.error("Failed to update product:", updateErr);
+        return res.status(200).json({
+          status: "error",
+          message: "Failed to update product",
+        });
+      }
+
+      return res.status(200).json({
+        status: "success",
+        message: "Product updated successfully",
+      });
+    });
+  }
+);
+
 router.post("/sellerProductFetch", (req, res) => {
   const { accountId } = req.body;
 
@@ -176,8 +239,7 @@ router.post("/productSizesFetch", (req, res) => {
 
   const sql = `SELECT *
               FROM product_size
-              WHERE productID = ?
-              GROUP BY productID;`;
+              WHERE productID = ?;`;
 
   db.query(sql, [productId], (err, results) => {
     if (err) {
@@ -195,6 +257,61 @@ router.post("/productSizesFetch", (req, res) => {
       status: 1,
       message: "Products information fetched successfully",
       products: results,
+    });
+  });
+});
+
+router.post("/addProductSize", (req, res) => {
+  const { productId, size, price, stock } = req.body;
+
+  if (!productId) {
+    return res.json({
+      status: 0,
+      message: "Product ID is required",
+    });
+  }
+
+  if (!size || !price || !stock) {
+    return res.status(200).json({
+      status: "error",
+      message: "Size, price, and stock cannot be empty",
+    });
+  }
+
+  const checkSizeSql = `SELECT *
+                        FROM product_size
+                        WHERE productID = ? AND size = ?`;
+
+  db.query(checkSizeSql, [productId, size], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        status: "error",
+        message: "Database query error",
+      });
+    }
+
+    if (results.length > 0) {
+      return res.status(200).json({
+        status: "error",
+        message: "Size already exists for this product",
+      });
+    }
+
+    const insertSizeSql = `INSERT INTO product_size (productID, size, price, stock)
+                           VALUES (?, ?, ?, ?)`;
+
+    db.query(insertSizeSql, [productId, size, price, stock], (err, results) => {
+      if (err) {
+        return res.status(500).json({
+          status: "error",
+          message: "Database insertion error",
+        });
+      }
+
+      return res.status(200).json({
+        status: "success",
+        message: "Product size added successfully",
+      });
     });
   });
 });

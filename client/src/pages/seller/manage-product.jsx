@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import { EditProduct } from "../../components/edit-product";
 import { SuccessMessage } from "../../components/success-message";
 import { ErrorMessage } from "../../components/error-message";
+import { Confirmation } from "../../components/confirmation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faXmark, faTrash } from "@fortawesome/free-solid-svg-icons";
 
@@ -29,6 +30,8 @@ export const ManageProduct = () => {
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
   const [showEditProduct, setShowEditProduct] = useState(false);
+  const [confirmationTitle, setConfirmationTitle] = useState("");
+  const [confirmationMessage, setConfirmationMessage] = useState("");
   const { register, handleSubmit, control, reset } = useForm();
 
   useEffect(() => {
@@ -143,6 +146,16 @@ export const ManageProduct = () => {
     }, 3000);
   };
 
+  const handleRemoveSize = (size) => {
+    setConfirmationTitle("Remove Size");
+    setConfirmationMessage(`Are you sure you want to remove ${size.size}?`);
+  };
+
+  const handleCancelConfirmation = () => {
+    setConfirmationTitle("");
+    setConfirmationMessage("");
+  }
+
   return (
     <div className="mt-20 font-inter px-10 pb-10">
       {messageTitle === "Error" && (
@@ -151,6 +164,16 @@ export const ManageProduct = () => {
       {messageTitle === "Success" && (
         <SuccessMessage title={messageTitle} message={message} />
       )}
+      {confirmationTitle && (
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-30">
+          <Confirmation
+            confirmationTitle={confirmationTitle}
+            confirmationMessage={confirmationMessage}
+            cancelConfirmation={handleCancelConfirmation}
+          />
+        </div>
+      )}
+
       {showEditProduct && (
         <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-30">
           <EditProduct
@@ -218,7 +241,7 @@ export const ManageProduct = () => {
                   <p className="w-full">Size</p>
                   <p className="w-full">Price</p>
                   <p className="w-full">Stocks</p>
-                  <p className="w-full">Action</p>
+                  <p className="w-full"></p>
                 </div>
 
                 {addingSize && (
@@ -287,13 +310,20 @@ export const ManageProduct = () => {
                 {sizes.map((size) => (
                   <div
                     key={size.sizeID}
-                    className="flex justify-between text-center text-xl py-5"
+                    className="flex justify-between items-center text-center text-xl py-5"
                   >
                     <p className="w-full">{size.size}</p>
                     <p className="w-full">Php {size.price}</p>
                     <p className="w-full">{size.stock} items left</p>
                     <div className="w-full">
-                      <FontAwesomeIcon icon={faTrash} />
+                      <button
+                        onClick={() => {
+                          handleRemoveSize(size);
+                        }}
+                        className="cursor-pointer px-3 py-2 rounded-full hover:bg-gray-100 hover:text-purple-200 duration-300 ease-in-out"
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
                     </div>
                   </div>
                 ))}

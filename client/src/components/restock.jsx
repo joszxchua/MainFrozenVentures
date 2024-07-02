@@ -9,6 +9,7 @@ export const Restock = ({
   cancelRestock,
   onSuccess,
   onError,
+  updateStock, // Receive the function here
 }) => {
   const [stock, setStock] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -17,20 +18,23 @@ export const Restock = ({
     setStock(e.target.value);
   };
 
-  const handleRestockClick = () => {
+  const handleRestockClick = async () => {
     setIsLoading(true);
     try {
-      const response = axios.post(
+      const response = await axios.post(
         "http://localhost:8081/product/productRestock",
         { sizeId: sizeInfo.sizeID, stock: stock }
       );
       if (response.data.status === "success") {
+        const newStock = Number(sizeInfo.stock) + Number(stock);
+        updateStock(sizeInfo.sizeID, newStock); // Update the stock here
         onSuccess("Success", response.data.message);
       } else if (response.data.status === "error") {
         onError("Error", response.data.message);
       }
     } catch (error) {
       onError("Error", "Something went wrong");
+      console.log(error);
     }
     setIsLoading(false);
   };

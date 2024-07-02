@@ -109,6 +109,14 @@ export const MyInventory = () => {
     }, 3000);
   };
 
+  const updateStock = (sizeId, newStock) => {
+    setSizes((prevSizes) =>
+      prevSizes.map((size) =>
+        size.sizeID === sizeId ? { ...size, stock: newStock } : size
+      )
+    );
+  };
+
   return (
     <>
       {messageTitle === "Error" && (
@@ -125,6 +133,7 @@ export const MyInventory = () => {
             cancelRestock={handleCancelRestock}
             onSuccess={handleSuccess}
             onError={handleError}
+            updateStock={updateStock}
           />
         </div>
       )}

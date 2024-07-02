@@ -285,6 +285,63 @@ router.post("/productSizesFetch", (req, res) => {
   });
 });
 
+router.post("/productRestock", (req, res) => {
+  const { sizeId, stock } = req.body;
+
+  if (!sizeId) {
+    return res.status(500).json({
+      status: "error",
+      message: "Size ID is required",
+    });
+  }
+
+  if (!stock) {
+    return res.status(200).json({
+      status: "error",
+      message: "Invalid stock value",
+    });
+  }
+
+  const stockToAdd = Number(stock);
+
+  const selectSql = `SELECT stock FROM product_size WHERE sizeID = ? AND isDeleted = 0`;
+  db.query(selectSql, [sizeId], (selectErr, selectResult) => {
+    if (selectErr) {
+      return res.json({
+        status: 0,
+        message: "Database error",
+        error: selectErr,
+      });
+    }
+
+    if (selectResult.length === 0) {
+      return res.json({
+        status: 0,
+        message: "No product size found with the provided size ID",
+      });
+    }
+
+    const currentStock = Number(selectResult[0].stock);
+    const newStock = currentStock + stockToAdd;
+
+    const updateSql = `UPDATE product_size SET stock = ? WHERE sizeID = ? AND isDeleted = 0`;
+    db.query(updateSql, [newStock, sizeId], (updateErr, updateResult) => {
+      if (updateErr) {
+        return res.json({
+          status: 0,
+          message: "Database error",
+          error: updateErr,
+        });
+      }
+
+      return res.status(200).json({
+        status: "success",
+        message: "Stock updated successfully",
+      });
+    });
+  });
+});
+
 router.post("/deleteSize", (req, res) => {
   const { sizeId } = req.body;
 

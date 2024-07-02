@@ -1,6 +1,9 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../../../context/user-context";
+import { Restock } from "../../../components/restock";
+import { SuccessMessage } from "../../../components/success-message";
+import { ErrorMessage } from "../../../components/error-message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCubes,
@@ -16,6 +19,10 @@ export const MyInventory = () => {
   const [sizes, setSizes] = useState([]);
   const [expandedProductId, setExpandedProductId] = useState(null);
   const [showRestock, setShowRestock] = useState(false);
+  const [product, setProduct] = useState([]);
+  const [size, setSize] = useState([]);
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,12 +76,58 @@ export const MyInventory = () => {
     setExpandedProductId(null);
   };
 
-  const handleRestockClick = () => {
+  const handleRestockClick = (product, size) => {
     setShowRestock(true);
-  }
+    setProduct(product);
+    setSize(size);
+  };
+
+  const handleCancelRestock = () => {
+    setShowRestock(false);
+    setProduct("");
+    setSize("");
+  };
+
+  const handleSuccess = (title, message) => {
+    setShowRestock(false);
+    setMessageTitle(title);
+    setMessage(message);
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
+  const handleError = (title, message) => {
+    setMessageTitle(title);
+    setMessage(message);
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
 
   return (
     <>
+      {messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
+      {showRestock && (
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-30">
+          <Restock
+            productInfo={product}
+            sizeInfo={size}
+            cancelRestock={handleCancelRestock}
+            onSuccess={handleSuccess}
+            onError={handleError}
+          />
+        </div>
+      )}
       <div className="flex items-center">
         <div className="w-full flex gap-3 text-5xl font-bold">
           <FontAwesomeIcon icon={faCubes} />
@@ -175,7 +228,10 @@ export const MyInventory = () => {
                           <p>{size.stock <= 20 ? "Low Stock" : "In Stock"}</p>
                         </div>
                         <div className="w-[50%] flex items-center justify-end">
-                          <button className="w-fit bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
+                          <button
+                            onClick={() => handleRestockClick(product, size)}
+                            className="w-fit bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                          >
                             Restock
                           </button>
                         </div>

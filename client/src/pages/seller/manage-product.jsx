@@ -65,58 +65,14 @@ export const ManageProduct = () => {
     fetchData();
   }, [user.accountId, productId]);
 
-  const handleAddSize = () => setAddingSize(true);
-  const handleCancelAddSize = () => {
-    setAddingSize(false);
-    reset();
-  };
-
   const handleEditProduct = () => setShowEditProduct(true);
   const handleCancelEditProduct = () => setShowEditProduct(false);
 
-  const onSubmit = async (data) => {
-    setAddingSize(false);
-    try {
-      const response = await axios.post(
-        "http://localhost:8081/product/addProductSize",
-        {
-          productId,
-          size: `${data.size} ${data.sizeUnit.value}`,
-          price: data.price,
-          stock: data.stock,
-        }
-      );
-      if (response.data.status === "success") {
-        setMessageTitle("Success");
-        setMessage(response.data.message);
-        setSizes((prevSizes) => [
-          ...prevSizes,
-          {
-            sizeID: response.data.sizeID,
-            size: `${data.size} ${data.sizeUnit.value}`,
-            price: data.price,
-            stock: data.stock,
-          },
-        ]);
-      } else {
-        setMessageTitle("Error");
-        setMessage(response.data.message);
-      }
-    } catch (error) {
-      console.error("Error adding size:", error);
-    }
-
-    setTimeout(() => {
-      setMessageTitle("");
-      setMessage("");
-    }, 3000);
-  };
-
-  const handleSuccess = (title, message, data) => {
+  const handleSuccess = (title, message, updatedProduct) => {
     setShowEditProduct(false);
     setMessageTitle(title);
     setMessage(message);
-    setProduct(data);
+    setProduct(updatedProduct);
 
     setTimeout(() => {
       setMessageTitle("");
@@ -192,6 +148,50 @@ export const ManageProduct = () => {
 
     setConfirmationTitle("");
     setConfirmationMessage("");
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
+  const handleAddSize = () => setAddingSize(true);
+  const handleCancelAddSize = () => {
+    setAddingSize(false);
+    reset();
+  };
+
+  const onSubmit = async (data) => {
+    setAddingSize(false);
+    try {
+      const response = await axios.post(
+        "http://localhost:8081/product/addProductSize",
+        {
+          productId,
+          size: `${data.size} ${data.sizeUnit.value}`,
+          price: data.price,
+          stock: data.stock,
+        }
+      );
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+        setSizes((prevSizes) => [
+          ...prevSizes,
+          {
+            sizeID: response.data.sizeID,
+            size: `${data.size} ${data.sizeUnit.value}`,
+            price: data.price,
+            stock: data.stock,
+          },
+        ]);
+      } else {
+        setMessageTitle("Error");
+        setMessage(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error adding size:", error);
+    }
 
     setTimeout(() => {
       setMessageTitle("");
@@ -276,7 +276,9 @@ export const ManageProduct = () => {
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
-            <h2 className="text-2xl font-bold">Product's Size, Price and Stocks</h2>
+            <h2 className="text-2xl font-bold">
+              Product's Size, Price and Stocks
+            </h2>
 
             <button
               onClick={handleAddSize}
@@ -317,6 +319,7 @@ export const ManageProduct = () => {
                 <label className="font-bold">Price</label>
                 <input
                   type="text"
+                  step="0.01"
                   className="border-2 border-primary rounded-lg px-2 py-1"
                   {...register("price", { required: true })}
                 />

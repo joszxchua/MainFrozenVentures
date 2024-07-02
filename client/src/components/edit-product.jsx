@@ -113,7 +113,17 @@ export const EditProduct = ({
         }
       );
       if (response.data.status === "success") {
-        onSuccess("Success", response.data.message, data);
+        const updatedProduct = {
+          productId: productId,
+          productImage: productImage,
+          name: data.name,
+          brand: data.brand,
+          flavor: data.flavor,
+          description: data.description,
+          allergens: allergens,
+        };
+
+        onSuccess("Success", response.data.message, updatedProduct);
       } else if (response.data.status === "error") {
         onError("Error", response.data.message);
       }

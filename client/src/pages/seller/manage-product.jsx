@@ -3,12 +3,11 @@ import axios from "axios";
 import { UserContext } from "../../context/user-context";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { EditProduct } from "../../components/edit-product";
 import { SuccessMessage } from "../../components/success-message";
 import { ErrorMessage } from "../../components/error-message";
 import { Confirmation } from "../../components/confirmation";
-import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faXmark, faTrash } from "@fortawesome/free-solid-svg-icons";
 
@@ -25,6 +24,9 @@ const sizeOptions = [
 export const ManageProduct = () => {
   const { user } = useContext(UserContext);
   const { productId } = useParams();
+  const navigate = useNavigate();
+  const { register, handleSubmit, control, reset } = useForm();
+
   const [product, setProduct] = useState({});
   const [sizes, setSizes] = useState([]);
   const [addingSize, setAddingSize] = useState(false);
@@ -34,79 +36,51 @@ export const ManageProduct = () => {
   const [confirmationTitle, setConfirmationTitle] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [removeSizeId, setRemoveSizeId] = useState("");
-  const { register, handleSubmit, control, reset } = useForm();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       if (user.accountId) {
         try {
-          const response = await axios.post(
+          const productResponse = await axios.post(
             "http://localhost:8081/product/productFetch",
-            {
-              accountId: user.accountId,
-              productId: productId,
-            }
+            { accountId: user.accountId, productId }
           );
-          if (response.data.status === 1) {
-            const productData = response.data.product;
-            setProduct(productData);
+          if (productResponse.data.status === 1) {
+            setProduct(productResponse.data.product);
+          }
+
+          const sizesResponse = await axios.post(
+            "http://localhost:8081/product/productSizesFetch",
+            { productId }
+          );
+          if (sizesResponse.data.status === 1) {
+            setSizes(sizesResponse.data.products);
           }
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          console.error("Error fetching data:", error);
         }
       }
     };
 
-    fetchUserData();
+    fetchData();
   }, [user.accountId, productId]);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user.accountId) {
-        try {
-          const response = await axios.post(
-            "http://localhost:8081/product/productSizesFetch",
-            {
-              productId: productId,
-            }
-          );
-          if (response.data.status === 1) {
-            const sizesData = response.data.products;
-            setSizes(Array.isArray(sizesData) ? sizesData : [sizesData]);
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      }
-    };
-
-    fetchUserData();
-  }, [user.accountId]);
-
-  const handleAddSize = () => {
-    setAddingSize(true);
-  };
-
+  const handleAddSize = () => setAddingSize(true);
   const handleCancelAddSize = () => {
     setAddingSize(false);
     reset();
   };
 
-  const handleEditProduct = () => {
-    setShowEditProduct(true);
-  };
-
-  const handleCancelEditProduct = () => {
-    setShowEditProduct(false);
-  };
+  const handleEditProduct = () => setShowEditProduct(true);
+  const handleCancelEditProduct = () => setShowEditProduct(false);
 
   const onSubmit = async (data) => {
+    setAddingSize(false);
     try {
       const response = await axios.post(
         "http://localhost:8081/product/addProductSize",
         {
-          productId: productId,
+          productId,
           size: `${data.size} ${data.sizeUnit.value}`,
           price: data.price,
           stock: data.stock,
@@ -115,23 +89,34 @@ export const ManageProduct = () => {
       if (response.data.status === "success") {
         setMessageTitle("Success");
         setMessage(response.data.message);
-      } else if (response.data.status === "error") {
+        setSizes((prevSizes) => [
+          ...prevSizes,
+          {
+            sizeID: response.data.sizeID,
+            size: `${data.size} ${data.sizeUnit.value}`,
+            price: data.price,
+            stock: data.stock,
+          },
+        ]);
+      } else {
         setMessageTitle("Error");
         setMessage(response.data.message);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error adding size:", error);
+    }
 
     setTimeout(() => {
       setMessageTitle("");
       setMessage("");
-      setAddingSize(false);
     }, 3000);
   };
 
-  const handleSuccess = (title, message) => {
+  const handleSuccess = (title, message, data) => {
     setShowEditProduct(false);
     setMessageTitle(title);
     setMessage(message);
+    setProduct(data);
 
     setTimeout(() => {
       setMessageTitle("");
@@ -167,8 +152,8 @@ export const ManageProduct = () => {
   };
 
   const handleYesConfirmation = async () => {
-    if (confirmationTitle === "Remove Size") {
-      try {
+    try {
+      if (confirmationTitle === "Remove Size") {
         const response = await axios.post(
           "http://localhost:8081/product/deleteSize",
           { sizeId: removeSizeId }
@@ -176,23 +161,17 @@ export const ManageProduct = () => {
         if (response.data.status === "success") {
           setMessageTitle("Success");
           setMessage(response.data.message);
-
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        } else if (response.data.status === "error") {
+          setSizes((prevSizes) =>
+            prevSizes.filter((size) => size.sizeID !== removeSizeId)
+          );
+        } else {
           setMessageTitle("Error");
           setMessage(response.data.message);
         }
-      } catch (error) {
-        setMessageTitle("Error");
-        setMessage("Something went wrong");
-      }
-    } else {
-      try {
+      } else {
         const response = await axios.post(
           "http://localhost:8081/product/deleteProduct",
-          { productId: productId }
+          { productId }
         );
         if (response.data.status === "success") {
           setMessageTitle("Success");
@@ -201,14 +180,14 @@ export const ManageProduct = () => {
           setTimeout(() => {
             navigate("/home-seller");
           }, 3000);
-        } else if (response.data.status === "error") {
+        } else {
           setMessageTitle("Error");
           setMessage(response.data.message);
         }
-      } catch (error) {
-        setMessageTitle("Error");
-        setMessage("Something went wrong");
       }
+    } catch (error) {
+      setMessageTitle("Error");
+      setMessage("Something went wrong");
     }
 
     setConfirmationTitle("");
@@ -250,6 +229,7 @@ export const ManageProduct = () => {
           />
         </div>
       )}
+
       <div className="flex justify-between items-center">
         <h1 className="text-5xl font-bold">Manage Product</h1>
         <button
@@ -286,157 +266,116 @@ export const ManageProduct = () => {
 
               <p className="text-justify text-xl">{product.description}</p>
 
-              <div className="flex justify-end">
-                <button
-                  onClick={handleEditProduct}
-                  className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
-                >
-                  Edit Product
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-20 rounded-lg shadow-2xl p-5">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-semibold">Product Sizes</h2>
               <button
-                onClick={addingSize ? handleCancelAddSize : handleAddSize}
-                className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                onClick={handleEditProduct}
+                className="w-fit bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
               >
-                {addingSize ? "Cancel" : "Add Size"}
+                Edit Product
               </button>
             </div>
-
-            {sizes.length > 0 ? (
-              <div className="p-5">
-                <div className="flex justify-between text-center text-2xl font-bold  border-b pb-5 mb-5">
-                  <p className="w-full">Size</p>
-                  <p className="w-full">Price</p>
-                  <p className="w-full">Stocks</p>
-                  <p className="w-full"></p>
-                </div>
-
-                {addingSize && (
-                  <form
-                    className="flex justify-between"
-                    onSubmit={handleSubmit(onSubmit)}
-                  >
-                    <div className="w-full flex gap-5 px-10">
-                      <input
-                        type="number"
-                        {...register("size", { required: "Size is required" })}
-                        className="px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-[50%] outline-purple-200"
-                      />
-                      <Controller
-                        name="sizeUnit"
-                        control={control}
-                        rules={{ required: "Size Unit is required" }}
-                        render={({ field }) => (
-                          <Select
-                            {...field}
-                            options={sizeOptions}
-                            className="basic-single rounded-lg w-full outline-purple-200"
-                            classNamePrefix="select"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="w-full flex flex-col gap-2 text-xl px-10">
-                      <input
-                        type="number"
-                        step="0.01"
-                        {...register("price", {
-                          required: "Price is required",
-                        })}
-                        className="px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
-                      />
-                    </div>
-
-                    <div className="w-full flex flex-col gap-2 text-xl px-10">
-                      <input
-                        type="number"
-                        {...register("stock", {
-                          required: "Stock is required",
-                        })}
-                        className="px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
-                      />
-                    </div>
-
-                    <div className="w-full flex justify-center gap-2 text-xl px-10">
-                      <button
-                        type="button"
-                        onClick={handleCancelAddSize}
-                        className="w-full bg-red-100 text-red-200 px-3 py-1 rounded-lg border-2 border-red-200"
-                      >
-                        <FontAwesomeIcon icon={faXmark} />
-                      </button>
-                      <button
-                        type="submit"
-                        className="w-full bg-green-100 text-green-200 px-3 py-1 rounded-lg border-2 border-green-200"
-                      >
-                        <FontAwesomeIcon icon={faCheck} />
-                      </button>
-                    </div>
-                  </form>
-                )}
-                {sizes.map((size) => (
-                  <div
-                    key={size.sizeID}
-                    className="flex justify-between items-center text-center text-xl py-5"
-                  >
-                    <p className="w-full">{size.size}</p>
-                    <p className="w-full">Php {size.price}</p>
-                    <p className="w-full">{size.stock} items left</p>
-                    <div className="w-full">
-                      <button
-                        onClick={() => {
-                          handleRemoveSize(size);
-                        }}
-                        className="cursor-pointer px-3 py-2 rounded-full hover:bg-gray-100 hover:text-red-200 duration-300 ease-in-out"
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p>No sizes available</p>
-            )}
           </div>
-        </div>
 
-        <div className="w-[50%]  rounded-lg p-10 shadow-2xl">
-          <h2 className="text-3xl font-semibold border-b-2 pb-5 mb-5">
-            Reviews
-          </h2>
+          <div className="w-full flex items-center justify-between mt-10">
+            <h2 className="text-2xl font-bold">Product's Size, Price and Stocks</h2>
 
-          <div className="flex flex-col gap-5">
-            <div className="flex items-center gap-5">
-              <img
-                src={`http://localhost:8081/productImages/${product.productImage}`}
-                alt="Product Image"
-                className="w-[50px] h-[50px] rounded-full"
-              />
+            <button
+              onClick={handleAddSize}
+              className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+            >
+              Add Size
+            </button>
+          </div>
 
+          {addingSize && (
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="mt-5 flex items-center gap-10 border-2 border-primary rounded-lg p-5"
+            >
               <div className="w-full">
-                <div className="flex justify-between items-start">
-                  <h3 className="text-lg font-semibold">Pedro Mapagmahal</h3>
-                  <p>
-                    <span className="font-semibold">Rating:</span> 3/5
-                  </p>
+                <label className="font-bold">Size</label>
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    className="border-2 border-primary rounded-lg px-2 py-1 mr-2"
+                    {...register("size", { required: true })}
+                  />
+                  <Controller
+                    name="sizeUnit"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        options={sizeOptions}
+                        className="w-full text-black"
+                      />
+                    )}
+                    rules={{ required: true }}
+                  />
                 </div>
-
-                <p className="text-justify">
-                  I absolutely love this vanilla ice cream! The flavor is
-                  incredibly rich and authentic, with just the right amount of
-                  sweetness. The texture is smooth and creamy, making every bite
-                  a delight.
-                </p>
               </div>
-            </div>
+              <div className="w-full flex flex-col">
+                <label className="font-bold">Price</label>
+                <input
+                  type="text"
+                  className="border-2 border-primary rounded-lg px-2 py-1"
+                  {...register("price", { required: true })}
+                />
+              </div>
+
+              <div className="w-full flex flex-col">
+                <label className="font-bold">Stock</label>
+                <input
+                  type="text"
+                  className="border-2 border-primary rounded-lg px-2 py-1"
+                  {...register("stock", { required: true })}
+                />
+              </div>
+
+              <div className="w-[50%] flex justify-end mt-5 gap-2">
+                <button
+                  type="button"
+                  onClick={handleCancelAddSize}
+                  className="bg-red-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-red-200 hover:bg-white duration-300 hover:text-red-200 ease-in-out"
+                >
+                  <FontAwesomeIcon icon={faXmark} />
+                </button>
+                <button
+                  type="submit"
+                  className="bg-green-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-green-200 hover:bg-white duration-300 hover:text-green-200 ease-in-out"
+                >
+                  <FontAwesomeIcon icon={faCheck} />
+                </button>
+              </div>
+            </form>
+          )}
+
+          <div className="mt-5 flex flex-col gap-5">
+            {sizes.length > 0 ? (
+              sizes.map((size) => (
+                <div
+                  key={size.sizeID}
+                  className="border-2 border-primary rounded-lg flex justify-between items-center py-2 px-5"
+                >
+                  <p className="w-full text-lg">
+                    <span className="font-bold">Size:</span> {size.size}
+                  </p>
+                  <p className="w-full text-lg">
+                    <span className="font-bold">Price:</span> Php {size.price}
+                  </p>
+                  <p className="w-full text-lg">
+                    <span className="font-bold">Stock:</span> {size.stock}
+                  </p>
+                  <button
+                    onClick={() => handleRemoveSize(size)}
+                    className="bg-red-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-red-200 hover:bg-white duration-300 hover:text-red-200 ease-in-out"
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p className="text-center">No sizes available.</p>
+            )}
           </div>
         </div>
       </div>

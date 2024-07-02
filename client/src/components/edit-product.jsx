@@ -113,7 +113,7 @@ export const EditProduct = ({
         }
       );
       if (response.data.status === "success") {
-        onSuccess("Success", response.data.message);
+        onSuccess("Success", response.data.message, data);
       } else if (response.data.status === "error") {
         onError("Error", response.data.message);
       }

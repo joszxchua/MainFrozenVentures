@@ -260,7 +260,7 @@ export const ManageProduct = () => {
               </p>
 
               <p className="text-2xl">
-                <span className="font-bold">Allergens:</span>{" "}
+                <span className="font-bold">Allergens:</span>
                 {product.allergens}
               </p>
 
@@ -363,7 +363,7 @@ export const ManageProduct = () => {
                     <span className="font-bold">Size:</span> {size.size}
                   </p>
                   <p className="w-full text-lg">
-                    <span className="font-bold">Price:</span> Php {size.price}
+                    <span className="font-bold">Price:</span> Php {size.price.toFixed(2)}
                   </p>
                   <p className="w-full text-lg">
                     <span className="font-bold">Stock:</span> {size.stock}

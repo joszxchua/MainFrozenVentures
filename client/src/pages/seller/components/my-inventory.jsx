@@ -15,6 +15,7 @@ export const MyInventory = () => {
   const [products, setProducts] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [expandedProductId, setExpandedProductId] = useState(null);
+  const [showRestock, setShowRestock] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,6 +68,10 @@ export const MyInventory = () => {
   const handleCloseSizes = () => {
     setExpandedProductId(null);
   };
+
+  const handleRestockClick = () => {
+    setShowRestock(true);
+  }
 
   return (
     <>
@@ -126,7 +131,7 @@ export const MyInventory = () => {
                     {product.totalStock} Items Left
                   </p>
 
-                  <div>
+                  <div className="h-fit px-3 py-2 rounded-full hover:bg-gray-100 duration-300 ease-in-out">
                     {expandedProductId === product.productID ? (
                       <FontAwesomeIcon
                         onClick={handleCloseSizes}
@@ -160,7 +165,7 @@ export const MyInventory = () => {
                           {size.stock} Items Left
                         </p>
                         <div
-                          className={`w-[35%] flex items-center gap-5 ${
+                          className={`w-[50%] flex items-center gap-5 ${
                             size.stock <= 20
                               ? "bg-red-100  text-red-200 font-bold"
                               : "bg-green-100 text-green-200 font-bold"
@@ -168,6 +173,11 @@ export const MyInventory = () => {
                         >
                           <FontAwesomeIcon icon={faCircle} />
                           <p>{size.stock <= 20 ? "Low Stock" : "In Stock"}</p>
+                        </div>
+                        <div className="w-[50%] flex items-center justify-end">
+                          <button className="w-fit bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
+                            Restock
+                          </button>
                         </div>
                       </div>
                     </div>

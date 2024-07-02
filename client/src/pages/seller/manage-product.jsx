@@ -294,7 +294,7 @@ export const ManageProduct = () => {
               className="mt-5 flex items-center gap-10 border-2 border-primary rounded-lg p-5"
             >
               <div className="w-full">
-                <label className="font-bold">Size</label>
+                <label className="font-bold">Size:</label>
                 <div className="flex items-center">
                   <input
                     type="text"
@@ -316,7 +316,7 @@ export const ManageProduct = () => {
                 </div>
               </div>
               <div className="w-full flex flex-col">
-                <label className="font-bold">Price</label>
+                <label className="font-bold">Price:</label>
                 <input
                   type="text"
                   step="0.01"
@@ -326,7 +326,7 @@ export const ManageProduct = () => {
               </div>
 
               <div className="w-full flex flex-col">
-                <label className="font-bold">Stock</label>
+                <label className="font-bold">Stocks:</label>
                 <input
                   type="text"
                   className="border-2 border-primary rounded-lg px-2 py-1"
@@ -366,7 +366,7 @@ export const ManageProduct = () => {
                     <span className="font-bold">Price:</span> Php {size.price.toFixed(2)}
                   </p>
                   <p className="w-full text-lg">
-                    <span className="font-bold">Stock:</span> {size.stock}
+                    <span className="font-bold">Stocks:</span> {size.stock}
                   </p>
                   <button
                     onClick={() => handleRemoveSize(size)}

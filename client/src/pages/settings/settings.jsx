@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../../context/user-context";
 import { Profile } from "./components/profile";
 import { Security } from "./components/security";
 import { SetUpShop } from "./components/setup-shop";
 import { ReportProblem } from "./components/report-problem";
-import { useNavigate } from "react-router-dom";
 import { SuccessMessage } from "../../components/success-message";
 import { ErrorMessage } from "../../components/error-message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,6 +27,15 @@ export const Settings = () => {
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get("tab");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [location]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -126,7 +135,7 @@ export const Settings = () => {
       }
     } catch (error) {
       setMessageTitle("Error");
-        setMessage("Something went wrong");
+      setMessage("Something went wrong");
     }
 
     setTimeout(() => {

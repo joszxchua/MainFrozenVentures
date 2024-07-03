@@ -41,6 +41,11 @@ export const Navbar = () => {
   const handleClickOutside = (event) => {
     if (sideCartRef.current && !sideCartRef.current.contains(event.target)) {
       setShowSideCart(false);
+    } else if (
+      menuDropdownRef.current &&
+      !menuDropdownRef.current.contains(event.target)
+    ) {
+      setShowMenuDropdown(false);
     }
   };
 
@@ -68,6 +73,18 @@ export const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showSideCart]);
+
+  useEffect(() => {
+    if (showMenuDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showMenuDropdown]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -107,7 +124,7 @@ export const Navbar = () => {
         user?.accountId ? "p-2" : "p-5"
       } bg-white w-full flex justify-between z-40`}
     >
-      {showMenuDropdown && <MenuDropdown />}
+      {showMenuDropdown && <MenuDropdown ref={menuDropdownRef} />}
       {showSideCart && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30 backdrop-blur-sm">
           <SideCart
@@ -146,7 +163,10 @@ export const Navbar = () => {
             Sign In
           </button>
         ) : (
-          <div className="flex items-center gap-3 font-inter p-2">
+          <div
+            className="flex items-center gap-3 font-inter p-2 cursor-pointer"
+            onClick={toggleMenuDropdown}
+          >
             {!accountInfo?.profilePicture ? (
               <FontAwesomeIcon icon={faUserCircle} className="text-4xl" />
             ) : (
@@ -166,7 +186,6 @@ export const Navbar = () => {
             </div>
             <FontAwesomeIcon
               icon={showMenuDropdown ? faChevronUp : faChevronDown}
-              onClick={toggleMenuDropdown}
               className="cursor-pointer"
             />
           </div>

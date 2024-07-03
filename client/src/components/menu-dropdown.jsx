@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, forwardRef } from "react";
 import { UserContext } from "../context/user-context";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,7 +11,7 @@ import {
   faShop,
 } from "@fortawesome/free-solid-svg-icons";
 
-export const MenuDropdown = () => {
+export const MenuDropdown = forwardRef((props, ref) => {
   const { user, clearUser } = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -19,7 +19,7 @@ export const MenuDropdown = () => {
     navigate(`/settings?tab=${tab}`);
   };
 
-  const handlePruchaseHistory = () => {
+  const handlePurchaseHistory = () => {
     navigate("/purchase-history");
   };
 
@@ -29,7 +29,10 @@ export const MenuDropdown = () => {
   };
 
   return (
-    <div className="fixed top-[72px] right-0 rounded-bl-lg bg-white border-l-2 border-b-2 border-purple-200 p-5">
+    <div
+      ref={ref}
+      className="fixed top-[72px] right-0 rounded-bl-lg bg-white border-l-2 border-b-2 border-purple-200 p-5"
+    >
       <ul className="flex flex-col gap-4 font-bold text-2xl">
         <li
           className="text-gray-900 cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out"
@@ -47,7 +50,7 @@ export const MenuDropdown = () => {
         </li>
         <li
           className="cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out"
-          onClick={handlePruchaseHistory}
+          onClick={handlePurchaseHistory}
         >
           <FontAwesomeIcon icon={faClockRotateLeft} className="mr-3" />
           Purchase History
@@ -78,4 +81,4 @@ export const MenuDropdown = () => {
       </ul>
     </div>
   );
-};
+});

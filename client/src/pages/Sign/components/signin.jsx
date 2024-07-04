@@ -121,7 +121,7 @@ export const SignIn = ({ createClick }) => {
             <button
               type="submit"
               disabled={isSigningIn}
-              className="text-lg px-3 py-1 rounded-md border-2 bg-purple-200 w-40 text-white border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+              className="font-bold text-lg px-3 py-1 rounded-md border-2 bg-purple-200 w-40 text-white border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
             >
               {isSigningIn ? "Signing In..." : "Sign In"}
             </button>

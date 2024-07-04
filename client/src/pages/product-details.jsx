@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Blueberry from "../assets/flavors/Blueberry.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,8 +7,7 @@ import { faArrowLeft, faStar } from "@fortawesome/free-solid-svg-icons";
 export const ProductDetails = () => {
   const { productId } = useParams();
   return (
-    <div className="mt-20 px-10 pb-10 font-inter">
-      <div className="flex justify-center gap-36">
+    <div className="mt-20 mb-10 pb-10 min-h-[70vh] flex justify-center gap-36">
         <div className="flex flex-col gap-5">
           <div className="flex items-center gap-3 text-xl cursor-pointer">
             <FontAwesomeIcon
@@ -80,6 +79,5 @@ export const ProductDetails = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };

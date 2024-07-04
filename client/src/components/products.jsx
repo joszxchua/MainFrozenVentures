@@ -3,11 +3,7 @@ import axios from "axios";
 import { UserContext } from "../context/user-context";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faIceCream,
-  faCartPlus,
-  faStar,
-} from "@fortawesome/free-solid-svg-icons";
+import { faIceCream, faStar } from "@fortawesome/free-solid-svg-icons";
 
 export const Products = () => {
   const { user } = useContext(UserContext);
@@ -52,17 +48,11 @@ export const Products = () => {
           onClick={() => handleProductClick(product.productID)}
           className="flex flex-col w-fit cursor-pointer px-4 py-3 rounded-lg hover:shadow-2xl duration-300"
         >
-          <div className="relative">
-            <img
-              src={`http://localhost:8081/productImages/${product.productImage}`}
-              alt="Product"
-              className="w-[300px] rounded-2xl"
-            />
-            <FontAwesomeIcon
-              icon={faCartPlus}
-              className="absolute bottom-5 right-5 text-xl bg-white p-2 rounded-sm cursor-pointer"
-            />
-          </div>
+          <img
+            src={`http://localhost:8081/productImages/${product.productImage}`}
+            alt="Product"
+            className="w-[300px] rounded-2xl"
+          />
 
           <div className="font-inter mt-4">
             <div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Select from "react-select";
 import { useParams } from "react-router-dom";
-import Blueberry from "../assets/flavors/Blueberry.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faStar } from "@fortawesome/free-solid-svg-icons";
 
@@ -45,18 +45,22 @@ export const ProductDetails = () => {
           <p className="font-semibold">Return to shop</p>
         </div>
 
-        <img src={Blueberry} alt="Product" className="rounded-lg w-[500px]" />
+        <img
+          src={`http://localhost:8081/productImages/${product.productImage}`}
+          alt="Product"
+          className="rounded-lg w-[500px]"
+        />
       </div>
 
       <div className="flex flex-col justify-between w-[30vw]">
-        <div>
-          <div>
-            <h2 className="font-bold text-4xl">Product Name</h2>
-            <p className="text-xl text-gray-200">Shop Name</p>
-          </div>
+        <div className="flex flex-col gap-5">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="font-bold text-4xl">{product.name}</h2>
+              <p className="text-xl text-gray-200">{product.shopName}</p>
+            </div>
 
-          <div className="flex items-center justify-between">
-            <div className="py-5 flex gap-2">
+            <div className="flex gap-2">
               <FontAwesomeIcon
                 icon={faStar}
                 className="text-purple-200 text-3xl"
@@ -78,11 +82,24 @@ export const ProductDetails = () => {
                 className="text-gray-100 text-3xl"
               />
             </div>
+          </div>
+
+          <div className="flex gap-10 text-xl">
+            <p>
+              <span className="font-bold">Flavor:</span> {product.flavor}
+            </p>
+            <p>
+              <span className="font-bold">Brand:</span> {product.brand}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Select></Select>
             <p className="font-semibold text-2xl">Php 120.00</p>
           </div>
         </div>
 
-        <div className="py-5">
+        <div className="my-5">
           <div className="flex justify-between pb-5 border-b-2 border-gray-200">
             <p className="w-full font-semibold text-center text-lg text-purple-200 cursor-pointer">
               Description

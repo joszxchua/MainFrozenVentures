@@ -225,10 +225,11 @@ router.post("/productFetch", (req, res) => {
     });
   }
 
-  const sql = `SELECT pi.*, COUNT(ps.size) AS totalSizes, SUM(ps.stock) AS totalStock
+  const sql = `SELECT pi.*, COUNT(ps.size) AS totalSizes, SUM(ps.stock) AS totalStock, si.shopName
               FROM product_info pi
               LEFT JOIN product_size ps ON pi.productID = ps.productID
-              WHERE  pi.productID = ? AND  pi.isDeleted = 0
+              INNER JOIN shop_info si ON pi.accountID = si.accountID
+              WHERE pi.productID = ? AND pi.isDeleted = 0
               GROUP BY pi.productID;`;
 
   db.query(sql, [productId], (err, results) => {

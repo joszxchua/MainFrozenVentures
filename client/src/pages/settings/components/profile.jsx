@@ -9,6 +9,16 @@ import { ErrorMessage } from "../../../components/error-message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 
+const customStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    borderColor: state.isFocused ? "rgb(123, 106, 194)" : provided.borderColor,
+    boxShadow: state.isFocused
+      ? "0 0 0 1px rgb(123, 106, 194)"
+      : provided.boxShadow,
+  }),
+};
+
 export const Profile = () => {
   const { user } = useContext(UserContext);
   const {
@@ -289,6 +299,7 @@ export const Profile = () => {
               Gender:
             </label>
             <Select
+              styles={customStyles}
               className="text-lg border-gray-200 rounded-[5px] w-full outline-purple-200"
               options={[
                 { value: "Male", label: "Male" },
@@ -382,6 +393,7 @@ export const Profile = () => {
               Municipality:
             </label>
             <Select
+              styles={customStyles}
               className="text-lg border-gray-200 rounded-[5px] w-full outline-purple-200"
               options={municipalitiesInBataan.map((municipality) => ({
                 value: municipality.name,
@@ -403,6 +415,7 @@ export const Profile = () => {
               Barangay:
             </label>
             <Select
+              styles={customStyles}
               className="text-lg border-gray-200 rounded-[5px] w-full outline-purple-200"
               options={barangays.map((barangay) => ({
                 value: barangay,

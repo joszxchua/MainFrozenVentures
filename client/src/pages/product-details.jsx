@@ -10,7 +10,7 @@ import {
   faScroll,
 } from "@fortawesome/free-solid-svg-icons";
 
-export const customStyles = {
+const customStyles = {
   control: (provided, state) => ({
     ...provided,
     borderColor: state.isFocused ? "rgb(123, 106, 194)" : provided.borderColor,

@@ -6,6 +6,16 @@ import Select from "react-select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faIceCream, faXmark } from "@fortawesome/free-solid-svg-icons";
 
+const customStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    borderColor: state.isFocused ? "rgb(123, 106, 194)" : provided.borderColor,
+    boxShadow: state.isFocused
+      ? "0 0 0 1px rgb(123, 106, 194)"
+      : provided.boxShadow,
+  }),
+};
+
 const allergenOptions = [
   { value: "milk", label: "Milk" },
   { value: "egg", label: "Egg" },
@@ -15,16 +25,6 @@ const allergenOptions = [
   { value: "wheat", label: "Wheat" },
   { value: "fish", label: "Fish" },
   { value: "shellfish", label: "Shellfish" },
-];
-
-const sizeOptions = [
-  { value: "oz", label: "Oz" },
-  { value: "cup", label: "Cup" },
-  { value: "pint", label: "Pint" },
-  { value: "quart", label: "Quart" },
-  { value: "gallon", label: "Gallon" },
-  { value: "lbs", label: "Lbs" },
-  { value: "liters", label: "Liters" },
 ];
 
 export const EditProduct = ({
@@ -245,6 +245,7 @@ export const EditProduct = ({
                 control={control}
                 render={({ field }) => (
                   <Select
+                  styles={customStyles}
                     {...field}
                     isMulti
                     options={allergenOptions}

@@ -6,6 +6,16 @@ import Select from "react-select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faIceCream, faXmark } from "@fortawesome/free-solid-svg-icons";
 
+const customStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    borderColor: state.isFocused ? "rgb(123, 106, 194)" : provided.borderColor,
+    boxShadow: state.isFocused
+      ? "0 0 0 1px rgb(123, 106, 194)"
+      : provided.boxShadow,
+  }),
+};
+
 const allergenOptions = [
   { value: "milk", label: "Milk" },
   { value: "egg", label: "Egg" },
@@ -199,6 +209,7 @@ export const AddProduct = ({ cancelAddProduct, onSuccess, onError }) => {
                   rules={{ required: "Size Unit is required" }}
                   render={({ field }) => (
                     <Select
+                      styles={customStyles}
                       {...field}
                       options={sizeOptions}
                       className="basic-single rounded-lg w-full outline-purple-200"
@@ -276,6 +287,7 @@ export const AddProduct = ({ cancelAddProduct, onSuccess, onError }) => {
                 rules={{ required: "Allergens are required" }}
                 render={({ field }) => (
                   <Select
+                    styles={customStyles}
                     {...field}
                     isMulti
                     options={allergenOptions}

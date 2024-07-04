@@ -428,4 +428,50 @@ router.post("/addProductSize", (req, res) => {
   });
 });
 
+router.post("/productShopFetch", (req, res) => {
+  const { userRole } = req.body;
+
+  if (!userRole) {
+    return res.status(500).json({
+      status: "error",
+      message: "User role is required",
+    });
+  }
+
+  const fetchProductsSql = `SELECT 
+                                pi.name, 
+                                pi.productImage,
+                                COUNT(ps.size) AS totalSizes, 
+                                SUM(ps.stock) AS totalStock,
+                                MIN(ps.price) AS lowestPrice,
+                                s.shopName, 
+                                a.userRole
+                            FROM 
+                                product_info pi
+                            LEFT JOIN 
+                                product_size ps ON pi.productID = ps.productID AND ps.isDeleted = 0
+                            INNER JOIN 
+                                shop_info s ON pi.accountID = s.accountID 
+                            INNER JOIN 
+                                account_info a ON s.accountID = a.accountID 
+                            WHERE 
+                                a.userRole = ? AND pi.isDeleted = 0 
+                            GROUP BY 
+                                pi.productID, s.shopName, a.userRole;`;
+
+  db.query(fetchProductsSql, [userRole], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        status: "error",
+        message: "Database query error",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      data: results,
+    });
+  });
+});
+
 module.exports = router;

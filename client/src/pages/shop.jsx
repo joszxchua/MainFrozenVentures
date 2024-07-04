@@ -48,13 +48,6 @@ export const Shop = () => {
 
       <div className="m-auto px-20 pb-20 flex flex-wrap gap-5">
         <Products />
-        <Products />
-        <Products />
-        <Products />
-        <Products />
-        <Products />
-        <Products />
-        <Products />
       </div>
     </div>
   );

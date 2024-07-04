@@ -54,9 +54,6 @@ export const Home = () => {
 
         <div className="flex pt-14 justify-between px-40">
           <Products />
-          <Products />
-          <Products />
-          <Products />
         </div>
       </div>
 

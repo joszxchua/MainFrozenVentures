@@ -16,14 +16,17 @@ export const MenuDropdown = forwardRef((props, ref) => {
   const navigate = useNavigate();
 
   const handleNavigation = (tab) => {
+    props.closeDropdown();
     navigate(`/settings?tab=${tab}`);
   };
 
   const handlePurchaseHistory = () => {
+    props.closeDropdown();
     navigate("/purchase-history");
   };
 
   const handleSignOutClick = () => {
+    props.closeDropdown();
     clearUser();
     navigate("/");
   };
@@ -55,7 +58,7 @@ export const MenuDropdown = forwardRef((props, ref) => {
           <FontAwesomeIcon icon={faClockRotateLeft} className="mr-3" />
           Purchase History
         </li>
-        {user.userRole !== "customer" && (
+        {user?.userRole !== "customer" && (
           <li
             className="text-gray-900 cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out"
             onClick={() => handleNavigation("setUpShop")}

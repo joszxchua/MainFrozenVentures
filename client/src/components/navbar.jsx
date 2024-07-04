@@ -124,7 +124,12 @@ export const Navbar = () => {
         user?.accountId ? "p-2" : "p-5"
       } bg-white w-full flex justify-between z-40`}
     >
-      {showMenuDropdown && <MenuDropdown ref={menuDropdownRef} />}
+      {showMenuDropdown && (
+        <MenuDropdown
+          ref={menuDropdownRef}
+          closeDropdown={() => setShowMenuDropdown(false)}
+        />
+      )}
       {showSideCart && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30 backdrop-blur-sm">
           <SideCart

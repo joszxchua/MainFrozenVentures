@@ -439,8 +439,7 @@ router.post("/productShopFetch", (req, res) => {
   }
 
   const fetchProductsSql = `SELECT 
-                                pi.name, 
-                                pi.productImage,
+                                pi.*,
                                 COUNT(ps.size) AS totalSizes, 
                                 SUM(ps.stock) AS totalStock,
                                 MIN(ps.price) AS lowestPrice,

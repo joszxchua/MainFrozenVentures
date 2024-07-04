@@ -40,8 +40,8 @@ export const Products = () => {
     fetchProducts();
   }, [user]);
 
-  const handleProductClick = () => {
-    navigate("/product-details");
+  const handleProductClick = (productID) => {
+    navigate(`/product-details/${productID}`);
   };
 
   return (
@@ -49,7 +49,7 @@ export const Products = () => {
       {products.map((product) => (
         <div
           key={product.productID}
-          onClick={handleProductClick}
+          onClick={() => handleProductClick(product.productID)}
           className="flex flex-col w-fit cursor-pointer px-4 py-3 rounded-lg hover:shadow-2xl duration-300"
         >
           <div className="relative">
@@ -101,7 +101,9 @@ export const Products = () => {
                 </p>
               </div>
 
-              <p className="font-bold text-xl">Php {product.lowestPrice.toFixed(2)}</p>
+              <p className="font-bold text-xl">
+                Php {product.lowestPrice.toFixed(2)}
+              </p>
             </div>
           </div>
         </div>

@@ -1,10 +1,11 @@
 import React from "react";
-import { Products } from "../components/products";
+import { useParams } from "react-router-dom";
 import Blueberry from "../assets/flavors/Blueberry.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faStar } from "@fortawesome/free-solid-svg-icons";
 
 export const ProductDetails = () => {
+  const { productId } = useParams();
   return (
     <div className="mt-20 px-10 pb-10 font-inter">
       <div className="flex justify-center gap-36">
@@ -77,19 +78,6 @@ export const ProductDetails = () => {
               Buy now
             </button>
           </div>
-        </div>
-      </div>
-
-      <div className="mt-12 px-10">
-        <h3 className="font-bold text-4xl">Other Products</h3>
-
-        <div className="mt-5 flex flex-wrap gap-10">
-          <Products />
-          <Products />
-          <Products />
-          <Products />
-          <Products />
-          <Products />
         </div>
       </div>
     </div>

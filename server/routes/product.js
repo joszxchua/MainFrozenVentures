@@ -216,22 +216,22 @@ router.post("/sellerProductFetch", (req, res) => {
 });
 
 router.post("/productFetch", (req, res) => {
-  const { accountId, productId } = req.body;
+  const { productId } = req.body;
 
-  if (!accountId || !productId) {
+  if (!productId) {
     return res.json({
       status: 0,
-      message: "Account and Product ID is required",
+      message: "Product ID is required",
     });
   }
 
   const sql = `SELECT pi.*, COUNT(ps.size) AS totalSizes, SUM(ps.stock) AS totalStock
               FROM product_info pi
               LEFT JOIN product_size ps ON pi.productID = ps.productID
-              WHERE pi.accountID = ? AND  pi.productID = ? AND  pi.isDeleted = 0
+              WHERE  pi.productID = ? AND  pi.isDeleted = 0
               GROUP BY pi.productID;`;
 
-  db.query(sql, [accountId, productId], (err, results) => {
+  db.query(sql, [productId], (err, results) => {
     if (err) {
       return res.json({ status: 0, message: "Database error", error: err });
     }

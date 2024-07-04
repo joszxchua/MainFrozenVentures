@@ -43,7 +43,7 @@ export const ManageProduct = () => {
         try {
           const productResponse = await axios.post(
             "http://localhost:8081/product/productFetch",
-            { accountId: user.accountId, productId }
+            { productId: productId }
           );
           if (productResponse.data.status === 1) {
             setProduct(productResponse.data.product);
@@ -363,7 +363,8 @@ export const ManageProduct = () => {
                     <span className="font-bold">Size:</span> {size.size}
                   </p>
                   <p className="w-full text-lg">
-                    <span className="font-bold">Price:</span> Php {size.price.toFixed(2)}
+                    <span className="font-bold">Price:</span> Php{" "}
+                    {size.price.toFixed(2)}
                   </p>
                   <p className="w-full text-lg">
                     <span className="font-bold">Stocks:</span> {size.stock}

@@ -1,6 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { UserContext } from "../../context/user-context";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { useParams, useNavigate } from "react-router-dom";
@@ -22,7 +21,6 @@ const sizeOptions = [
 ];
 
 export const ManageProduct = () => {
-  const { user } = useContext(UserContext);
   const { productId } = useParams();
   const navigate = useNavigate();
   const { register, handleSubmit, control, reset } = useForm();
@@ -39,7 +37,7 @@ export const ManageProduct = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (user.accountId) {
+      if (productId) {
         try {
           const productResponse = await axios.post(
             "http://localhost:8081/product/productFetch",
@@ -63,7 +61,7 @@ export const ManageProduct = () => {
     };
 
     fetchData();
-  }, [user.accountId, productId]);
+  }, [productId]);
 
   const handleEditProduct = () => setShowEditProduct(true);
   const handleCancelEditProduct = () => setShowEditProduct(false);

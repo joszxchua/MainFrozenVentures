@@ -7,6 +7,36 @@ import { faArrowLeft, faStar } from "@fortawesome/free-solid-svg-icons";
 
 export const ProductDetails = () => {
   const { productId } = useParams();
+  const [product, setProduct] = useState({});
+  const [sizes, setSizes] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (productId) {
+        try {
+          const productResponse = await axios.post(
+            "http://localhost:8081/product/productFetch",
+            { productId: productId }
+          );
+          if (productResponse.data.status === 1) {
+            setProduct(productResponse.data.product);
+          }
+
+          const sizesResponse = await axios.post(
+            "http://localhost:8081/product/productSizesFetch",
+            { productId }
+          );
+          if (sizesResponse.data.status === 1) {
+            setSizes(sizesResponse.data.products);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [productId]);
   return (
     <div className="mt-20 mb-10 pb-10 min-h-[70vh] flex justify-center gap-36">
       <div className="flex flex-col gap-5">

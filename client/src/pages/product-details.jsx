@@ -10,6 +10,16 @@ import {
   faScroll,
 } from "@fortawesome/free-solid-svg-icons";
 
+export const customStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    borderColor: state.isFocused ? "rgb(123, 106, 194)" : provided.borderColor,
+    boxShadow: state.isFocused
+      ? "0 0 0 1px rgb(123, 106, 194)"
+      : provided.boxShadow,
+  }),
+};
+
 export const ProductDetails = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
@@ -143,6 +153,7 @@ export const ProductDetails = () => {
           <div className="flex items-center justify-between">
             <Select
               className="w-full"
+              styles={customStyles}
               value={selectedSize}
               onChange={handleSizeChange}
               options={sizes.map((size) => ({

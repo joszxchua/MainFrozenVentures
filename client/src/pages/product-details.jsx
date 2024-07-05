@@ -112,153 +112,158 @@ export const ProductDetails = () => {
   };
 
   return (
-    <div className="mt-20 mb-10 pb-10 min-h-[70vh] flex justify-center gap-36">
-      <div className="flex flex-col justify-around">
-        <div
-          onClick={handleReturnShop}
-          className="flex items-center gap-3 text-xl cursor-pointer"
-        >
-          <FontAwesomeIcon icon={faArrowLeft} />
-          <p className="font-semibold">Return to shop</p>
-        </div>
-
-        <img
-          src={`http://localhost:8081/productImages/${product.productImage}`}
-          alt="Product"
-          className="rounded-lg w-[500px]"
-        />
+    <>
+      <div
+        onClick={handleReturnShop}
+        className="mt-20 ml-5 flex items-center gap-3 text-xl cursor-pointer"
+      >
+        <FontAwesomeIcon icon={faArrowLeft} />
+        <p className="font-semibold">Return to shop</p>
       </div>
 
-      <div className="flex flex-col justify-between w-[30vw]">
-        <div className="flex flex-col gap-5">
-          <div className="flex justify-between items-start">
-            <div>
-              <h2 className="font-bold text-4xl">{product.name}</h2>
-              <p className="text-xl text-gray-200">{product.shopName}</p>
+      <div className="mt-10 mb-10 pb-10 min-h-[70vh] flex justify-center gap-24">
+        <div className="flex flex-col justify-between w-[30vw] p-10 rounded-lg shadow-2xl">
+          <div className="flex flex-col gap-5">
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="font-bold text-4xl">{product.name}</h2>
+                <p className="text-xl text-gray-200">{product.shopName}</p>
+              </div>
+
+              <div className="flex gap-2">
+                <FontAwesomeIcon
+                  icon={faStar}
+                  className="text-purple-200 text-3xl"
+                />
+                <FontAwesomeIcon
+                  icon={faStar}
+                  className="text-purple-200 text-3xl"
+                />
+                <FontAwesomeIcon
+                  icon={faStar}
+                  className="text-purple-200 text-3xl"
+                />
+                <FontAwesomeIcon
+                  icon={faStar}
+                  className="text-gray-100 text-3xl"
+                />
+                <FontAwesomeIcon
+                  icon={faStar}
+                  className="text-gray-100 text-3xl"
+                />
+              </div>
             </div>
 
-            <div className="flex gap-2">
-              <FontAwesomeIcon
-                icon={faStar}
-                className="text-purple-200 text-3xl"
-              />
-              <FontAwesomeIcon
-                icon={faStar}
-                className="text-purple-200 text-3xl"
-              />
-              <FontAwesomeIcon
-                icon={faStar}
-                className="text-purple-200 text-3xl"
-              />
-              <FontAwesomeIcon
-                icon={faStar}
-                className="text-gray-100 text-3xl"
-              />
-              <FontAwesomeIcon
-                icon={faStar}
-                className="text-gray-100 text-3xl"
-              />
+            <div className="flex justify-between items-center text-xl">
+              <p>
+                <span className="font-bold">Flavor:</span> {product.flavor}
+              </p>
+              <p>
+                <span className="font-bold">Brand:</span> {product.brand}
+              </p>
+              <p className="font-bold text-2xl text-right">
+                Php {price.toFixed(2)}
+              </p>
+            </div>
+
+            <div className="flex items-end justify-between">
+              <div className="w-full flex flex-col gap-2">
+                <p className="font-bold text-xl">Size:</p>
+                <Select
+                  styles={customStyles}
+                  value={selectedSize}
+                  onChange={handleSizeChange}
+                  options={sizes.map((size) => ({
+                    label: size.size,
+                    value: size,
+                  }))}
+                />
+              </div>
+              <p className="w-full text-xl text-right text-gray-200">
+                <FontAwesomeIcon icon={faIceCream} /> {stock} Items Left
+              </p>
             </div>
           </div>
 
-          <div className="flex justify-between items-center text-xl">
-            <p>
-              <span className="font-bold">Flavor:</span> {product.flavor}
-            </p>
-            <p>
-              <span className="font-bold">Brand:</span> {product.brand}
-            </p>
-            <p className="font-bold text-2xl text-right">
-              Php {price.toFixed(2)}
-            </p>
-          </div>
+          <div className="h-full my-10">
+            <div className="flex justify-between pb-5 border-b-2 border-gray-200">
+              <p
+                onClick={handleDescriptionClick}
+                className={`w-full font-semibold text-center text-lg ${
+                  activeDescRev === "description"
+                    ? "text-purple-200"
+                    : "text-gray-200"
+                } cursor-pointer`}
+              >
+                Description
+              </p>
+              <p
+                onClick={handleReviewsClick}
+                className={`w-full font-semibold text-center text-lg ${
+                  activeDescRev === "reviews"
+                    ? "text-purple-200"
+                    : "text-gray-200"
+                } cursor-pointer`}
+              >
+                Reviews
+              </p>
+            </div>
 
-          <div className="flex items-center justify-between">
-            <Select
-              className="w-full"
-              styles={customStyles}
-              value={selectedSize}
-              onChange={handleSizeChange}
-              options={sizes.map((size) => ({
-                label: size.size,
-                value: size,
-              }))}
-            />
-            <p className="w-full text-xl text-right text-gray-200">
-              <FontAwesomeIcon icon={faIceCream} /> {stock} Items Left
-            </p>
+            {activeDescRev === "description" ? (
+              <p className="py-5 text-xl text-justify">{product.description}</p>
+            ) : (
+              <div className="h-full flex items-center justify-center text-3xl gap-5">
+                <p className="font-bold">No reviews yet</p>
+                <FontAwesomeIcon icon={faScroll} className="text-purple-200" />
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="my-5">
-          <div className="flex justify-between pb-5 border-b-2 border-gray-200">
-            <p
-              onClick={handleDescriptionClick}
-              className={`w-full font-semibold text-center text-lg ${
-                activeDescRev === "description"
-                  ? "text-purple-200"
-                  : "text-gray-200"
-              } cursor-pointer`}
-            >
-              Description
-            </p>
-            <p
-              onClick={handleReviewsClick}
-              className={`w-full font-semibold text-center text-lg ${
-                activeDescRev === "reviews"
-                  ? "text-purple-200"
-                  : "text-gray-200"
-              } cursor-pointer`}
-            >
-              Reviews
-            </p>
-          </div>
+        <div className="flex flex-col gap-10">
+          <img
+            src={`http://localhost:8081/productImages/${product.productImage}`}
+            alt="Product"
+            className="rounded-lg w-[450px]"
+          />
 
-          {activeDescRev === "description" ? (
-            <p className="p-5 text-xl text-justify">{product.description}</p>
-          ) : (
-            <div className="h-full flex items-center justify-center text-3xl gap-5">
-              <p className="font-bold">No reviews yet</p>
-              <FontAwesomeIcon icon={faScroll} className="text-purple-200" />
+          <div className="h-full flex flex-col justify-around gap-5 p-7 rounded-lg shadow-2xl">
+            <div className="flex flex-col items-center">
+              <p className="text-xl font-bold mb-2">Quantity:</p>
+              <div className="flex justify-center items-center gap-5 text-lg">
+                <FontAwesomeIcon
+                  icon={faMinus}
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="cursor-pointer"
+                />
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  className="border rounded outline-purple-200 px-2 py-1 text-center"
+                />
+                <FontAwesomeIcon
+                  icon={faPlus}
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="cursor-pointer"
+                />
+              </div>
             </div>
-          )}
-        </div>
 
-        <div className="h-full flex flex-col justify-around">
-          <div className="flex flex-col items-center">
-            <p className="text-xl font-bold mb-2">Quantity:</p>
-            <div className="flex justify-center items-center gap-5 text-lg">
-              <FontAwesomeIcon
-                icon={faMinus}
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="cursor-pointer"
-              />
-              <input
-                type="number"
-                value={quantity}
-                onChange={handleQuantityChange}
-                className="border rounded outline-purple-200 px-2 py-1 text-center"
-              />
-              <FontAwesomeIcon
-                icon={faPlus}
-                onClick={() => setQuantity(quantity + 1)}
-                className="cursor-pointer"
-              />
+            <div className="flex justify-between">
+              <button
+                onClick={handleAddToCart}
+                className="font-bold text-lg px-3 py-1 bg-white text-purple-200 rounded-md border-2 border-purple-200 hover:text-white hover:bg-purple-200 duration-300 ease-in-out"
+              >
+                Add to cart
+              </button>
+              <button className="font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">
+                Buy now
+              </button>
             </div>
-          </div>
-          <div className="flex justify-between">
-            <button
-              onClick={handleAddToCart}
-              className="font-bold text-lg px-3 py-1 bg-white text-purple-200 rounded-md border-2 border-purple-200 hover:text-white hover:bg-purple-200 duration-300 ease-in-out"
-            >
-              Add to cart
-            </button>
-            <button className="font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">
-              Buy now
-            </button>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

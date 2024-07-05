@@ -38,34 +38,6 @@ router.post("/cartItemFetch", async (req, res) => {
   });
 });
 
-router.post("/cartFetch", async (req, res) => {
-  const { accountId } = req.body;
-
-  if (!accountId) {
-    return res.status(400).json({
-      status: "error",
-      message: "Missing accountId",
-    });
-  }
-
-  const fetchCartSql = "SELECT * FROM user_cart WHERE accountID = ?";
-
-  db.query(fetchCartSql, [accountId], (err, results) => {
-    if (err) {
-      console.error("Error fetching cart:", err);
-      return res.status(500).json({
-        status: "error",
-        message: "Database fetch error",
-      });
-    }
-
-    return res.status(200).json({
-      status: 1,
-      cart: results,
-    });
-  });
-});
-
 router.post("/addToCart", async (req, res) => {
   const { accountId, productId, sizeId, quantity } = req.body;
 

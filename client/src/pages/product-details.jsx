@@ -91,8 +91,12 @@ export const ProductDetails = () => {
     setActiveDescRev("reviews");
   };
 
-  const handleQuantityChange = (amount) => {
-    setQuantity((prevQuantity) => Math.max(1, prevQuantity + amount));
+  const handleQuantityChange = (event) => {
+    let value = parseInt(event.target.value);
+    if (isNaN(value) || value < 1) {
+      value = 1;
+    }
+    setQuantity(value);
   };
 
   return (
@@ -212,14 +216,22 @@ export const ProductDetails = () => {
           <div className="flex flex-col items-center">
             <p className="text-xl font-bold mb-2">Quantity:</p>
             <div className="flex justify-center items-center gap-5 text-lg">
-              <FontAwesomeIcon icon={faMinus} onClick={() => handleQuantityChange(-1)} />
+              <FontAwesomeIcon
+                icon={faMinus}
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="cursor-pointer"
+              />
               <input
                 type="number"
                 value={quantity}
-                readOnly
+                onChange={handleQuantityChange}
                 className="border rounded outline-purple-200 px-2 py-1 text-center"
               />
-              <FontAwesomeIcon icon={faPlus} onClick={() => handleQuantityChange(1)} />
+              <FontAwesomeIcon
+                icon={faPlus}
+                onClick={() => setQuantity(quantity + 1)}
+                className="cursor-pointer"
+              />
             </div>
           </div>
           <div className="flex justify-between">

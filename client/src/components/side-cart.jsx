@@ -1,4 +1,6 @@
-import React, { forwardRef } from "react";
+import React, { useContext, useState, useEffect, forwardRef } from "react";
+import axios from "axios";
+import { UserContext } from "../context/user-context";
 import Blueberry from "../assets/flavors/Blueberry.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,6 +11,29 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
+  const { user } = useContext(UserContext);
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user?.accountId) {
+        try {
+          const cartResponse = await axios.post(
+            "http://localhost:8081/cart/cartFetch",
+            { accountId: user.accountId }
+          );
+          if (cartResponse.data.status === 1) {
+            setCartItems(cartResponse.data.cart);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [user?.accountId]);
+
   return (
     <div
       ref={ref}

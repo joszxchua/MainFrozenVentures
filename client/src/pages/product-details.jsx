@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { UserContext } from "../context/user-context";
 import Select from "react-select";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,12 +24,14 @@ const customStyles = {
 };
 
 export const ProductDetails = () => {
+  const { user } = useContext(UserContext);
   const { productId } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState({});
   const [reviews, setReviews] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [sizeId, setSizeId] = useState(0);
   const [price, setPrice] = useState(0);
   const [stock, setStock] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -63,6 +66,7 @@ export const ProductDetails = () => {
             });
             setPrice(lowestPriceOption.price);
             setStock(lowestPriceOption.stock);
+            setSizeId(lowestPriceOption.sizeID);
           }
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -81,6 +85,7 @@ export const ProductDetails = () => {
     setSelectedSize(selectedOption);
     setPrice(selectedOption.value.price);
     setStock(selectedOption.value.stock);
+    setSizeId(selectedOption.value.sizeID);
   };
 
   const handleDescriptionClick = () => {
@@ -97,6 +102,13 @@ export const ProductDetails = () => {
       value = 1;
     }
     setQuantity(value);
+  };
+
+  const handleAddToCart = () => {
+    console.log("Account ID:", user?.accountId);
+    console.log("Product ID:", productId);
+    console.log("Size ID:", sizeId);
+    console.log("Quantity:", quantity);
   };
 
   return (
@@ -235,7 +247,10 @@ export const ProductDetails = () => {
             </div>
           </div>
           <div className="flex justify-between">
-            <button className="font-bold text-lg px-3 py-1 bg-white text-purple-200 rounded-md border-2 border-purple-200 hover:text-white hover:bg-purple-200 duration-300 ease-in-out">
+            <button
+              onClick={handleAddToCart}
+              className="font-bold text-lg px-3 py-1 bg-white text-purple-200 rounded-md border-2 border-purple-200 hover:text-white hover:bg-purple-200 duration-300 ease-in-out"
+            >
               Add to cart
             </button>
             <button className="font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">

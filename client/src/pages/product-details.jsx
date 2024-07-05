@@ -31,6 +31,7 @@ export const ProductDetails = () => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [price, setPrice] = useState(0);
   const [stock, setStock] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [activeDescRev, setActiveDescRev] = useState("description");
 
   useEffect(() => {
@@ -88,6 +89,10 @@ export const ProductDetails = () => {
 
   const handleReviewsClick = () => {
     setActiveDescRev("reviews");
+  };
+
+  const handleQuantityChange = (amount) => {
+    setQuantity((prevQuantity) => Math.max(1, prevQuantity + amount));
   };
 
   return (
@@ -207,12 +212,14 @@ export const ProductDetails = () => {
           <div className="flex flex-col items-center">
             <p className="text-xl font-bold mb-2">Quantity:</p>
             <div className="flex justify-center items-center gap-5 text-lg">
-              <FontAwesomeIcon icon={faMinus} />
+              <FontAwesomeIcon icon={faMinus} onClick={() => handleQuantityChange(-1)} />
               <input
                 type="number"
+                value={quantity}
+                readOnly
                 className="border rounded outline-purple-200 px-2 py-1 text-center"
               />
-              <FontAwesomeIcon icon={faPlus} />
+              <FontAwesomeIcon icon={faPlus} onClick={() => handleQuantityChange(1)} />
             </div>
           </div>
           <div className="flex justify-between">

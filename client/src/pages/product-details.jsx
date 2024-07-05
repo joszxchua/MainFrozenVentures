@@ -3,6 +3,8 @@ import axios from "axios";
 import { UserContext } from "../context/user-context";
 import Select from "react-select";
 import { useParams, useNavigate } from "react-router-dom";
+import { SuccessMessage } from "../components/success-message";
+import { ErrorMessage } from "../components/error-message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
@@ -31,11 +33,13 @@ export const ProductDetails = () => {
   const [reviews, setReviews] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(null);
-  const [sizeId, setSizeId] = useState(0);
+  const [sizeId, setSizeId] = useState(null);
   const [price, setPrice] = useState(0);
   const [stock, setStock] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeDescRev, setActiveDescRev] = useState("description");
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,15 +108,46 @@ export const ProductDetails = () => {
     setQuantity(value);
   };
 
-  const handleAddToCart = () => {
-    console.log("Account ID:", user?.accountId);
-    console.log("Product ID:", productId);
-    console.log("Size ID:", sizeId);
-    console.log("Quantity:", quantity);
+  const handleAddToCart = async () => {
+    if (user?.accountId) {
+      const userCart = {
+        accountId: user?.accountId,
+        productId: productId,
+        sizeId: sizeId,
+        quantity: quantity,
+      };
+
+      const response = await axios.post(
+        "http://localhost:8081/cart/addToCart",
+        userCart
+      );
+
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+      } else if (response.data.status === "error") {
+        setMessageTitle("Error");
+        setMessage(response.data.message);
+      }
+    } else {
+      setMessageTitle("Error");
+      setMessage("You need to be signed in first");
+    }
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
   };
 
   return (
     <>
+      {messageTitle && messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle && messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
       <div
         onClick={handleReturnShop}
         className="mt-20 ml-5 flex items-center gap-3 text-xl cursor-pointer"

@@ -3,6 +3,41 @@ const db = require("../db");
 
 const router = express.Router();
 
+router.post("/cartItemFetch", async (req, res) => {
+  const { accountId } = req.body;
+
+  if (!accountId) {
+    return res.status(400).json({
+      status: "error",
+      message: "Missing accountID",
+    });
+  }
+
+  const cartItemFetchSql = `
+      SELECT DISTINCT uc.cartID, uc.accountID, uc.productID, uc.sizeID, uc.quantity, 
+             ps.size, ps.price, ps.stock, 
+             pi.name, pi.description, pi.flavor, pi.brand, pi.productImage
+      FROM user_cart uc
+      INNER JOIN product_size ps ON uc.productID = ps.productID AND uc.sizeID = ps.sizeID
+      INNER JOIN product_info pi ON ps.productID = pi.productID
+      WHERE uc.accountID = ?`;
+
+  db.query(cartItemFetchSql, [accountId], (err, results) => {
+    if (err) {
+      console.error("Error fetching cart:", err);
+      return res.status(500).json({
+        status: "error",
+        message: "Database fetch error",
+      });
+    }
+
+    return res.status(200).json({
+      status: 1,
+      cart: results,
+    });
+  });
+});
+
 router.post("/cartFetch", async (req, res) => {
   const { accountId } = req.body;
 
@@ -13,7 +48,7 @@ router.post("/cartFetch", async (req, res) => {
     });
   }
 
-  const fetchCartSql = "SELECT * FROM user_cart WHERE accountId = ?";
+  const fetchCartSql = "SELECT * FROM user_cart WHERE accountID = ?";
 
   db.query(fetchCartSql, [accountId], (err, results) => {
     if (err) {

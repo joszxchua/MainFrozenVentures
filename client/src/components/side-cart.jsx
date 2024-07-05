@@ -48,9 +48,9 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
       </div>
 
       <div className="flex flex-col justify-between ">
-        <div className="max-h-[80vh] px-5 py-14 overflow-y-auto">
+        <div className="max-h-[80vh] overflow-y-auto">
           {cartItems.map((item, cartID) => (
-            <div key={cartID} className="mb-4">
+            <div key={cartID} className="p-5">
               <div className="relative flex items-center gap-10">
                 <img
                   src={`http://localhost:8081/productImages/${item.productImage}`}

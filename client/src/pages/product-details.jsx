@@ -8,6 +8,8 @@ import {
   faStar,
   faIceCream,
   faScroll,
+  faMinus,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 
 const customStyles = {
@@ -90,7 +92,7 @@ export const ProductDetails = () => {
 
   return (
     <div className="mt-20 mb-10 pb-10 min-h-[70vh] flex justify-center gap-36">
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col justify-around">
         <div
           onClick={handleReturnShop}
           className="flex items-center gap-3 text-xl cursor-pointer"
@@ -201,13 +203,26 @@ export const ProductDetails = () => {
           )}
         </div>
 
-        <div className="mt-auto flex justify-between">
-          <button className="font-bold text-lg px-3 py-1 bg-white text-purple-200 rounded-md border-2 border-purple-200 hover:text-white hover:bg-purple-200 duration-300 ease-in-out">
-            Add to cart
-          </button>
-          <button className="font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">
-            Buy now
-          </button>
+        <div className="h-full flex flex-col justify-around">
+          <div className="flex flex-col items-center">
+            <p className="text-xl font-bold mb-2">Quantity:</p>
+            <div className="flex justify-center items-center gap-5 text-lg">
+              <FontAwesomeIcon icon={faMinus} />
+              <input
+                type="number"
+                className="border rounded outline-purple-200 px-2 py-1 text-center"
+              />
+              <FontAwesomeIcon icon={faPlus} />
+            </div>
+          </div>
+          <div className="flex justify-between">
+            <button className="font-bold text-lg px-3 py-1 bg-white text-purple-200 rounded-md border-2 border-purple-200 hover:text-white hover:bg-purple-200 duration-300 ease-in-out">
+              Add to cart
+            </button>
+            <button className="font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">
+              Buy now
+            </button>
+          </div>
         </div>
       </div>
     </div>

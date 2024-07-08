@@ -154,12 +154,14 @@ export const Navbar = () => {
         >
           Shop
         </p>
-        <p
-          onClick={handleCartClick}
-          className="font-inter font-bold text-lg cursor-pointer hover:text-purple-200 duration-300 ease-in-out"
-        >
-          Cart
-        </p>
+        {location.pathname !== "/cart" && (
+          <p
+            onClick={handleCartClick}
+            className="font-inter font-bold text-lg cursor-pointer hover:text-purple-200 duration-300 ease-in-out"
+          >
+            Cart
+          </p>
+        )}
         {!user?.accountId ? (
           <button
             onClick={handleSignClick}

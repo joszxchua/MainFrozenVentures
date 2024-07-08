@@ -140,7 +140,7 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
       </div>
 
       <div className="flex flex-col justify-between ">
-        <div className="max-h-[80vh] overflow-y-auto">
+        <div className="min-h-[80vh] max-h-[80vh] overflow-y-auto">
           {messageTitle && messageTitle === "Error" && (
             <ErrorMessage title={messageTitle} message={message} />
           )}

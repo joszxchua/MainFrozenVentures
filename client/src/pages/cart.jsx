@@ -77,7 +77,7 @@ export const Cart = () => {
 
   const handleRemoveItem = (cartID, name, size) => {
     const removeItem = cartItems[cartID];
-    setRemoveCartId(removeItem);
+    setRemoveCartId(removeItem.cartID);
     setConfirmationTitle("Remove From Cart");
     setConfirmationMessage(
       `Are you sure you want to remove ${name} ${size} from your cart?`
@@ -94,7 +94,7 @@ export const Cart = () => {
     try {
       const response = await axios.post(
         "http://localhost:8081/cart/removeFromCart",
-        { cartId: removeCartId }
+        { accountId: user.accountId, cartId: removeCartId }
       );
       if (response.data.status === "success") {
         setMessageTitle("Success");

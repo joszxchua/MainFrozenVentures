@@ -40,18 +40,18 @@ router.post("/updateQuantity", async (req, res) => {
 });
 
 router.post("/removeFromCart", async (req, res) => {
-  const { cartId } = req.body;
+  const { accountId, cartId } = req.body;
 
-  if (!cartId) {
+  if (!accountId || !cartId) {
     return res.status(400).json({
       status: "error",
-      message: "Missing cartID",
+      message: "Missing accountID and cartID",
     });
   }
 
-  const removeItemSql = "DELETE FROM user_cart WHERE cartID = ?";
+  const removeItemSql = "DELETE FROM user_cart WHERE accountID = ? AND cartID = ?";
 
-  db.query(removeItemSql, [cartId], (err, results) => {
+  db.query(removeItemSql, [accountId, cartId], (err, results) => {
     if (err) {
       console.error("Error removing item:", err);
       return res.status(500).json({

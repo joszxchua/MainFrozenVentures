@@ -15,7 +15,7 @@ export const Confirmation = ({
         onClick={cancelConfirmation}
         className="absolute top-5 right-5 text-2xl cursor-pointer"
       />
-      <h2 className="text-2xl font-bold">{confirmationTitle}</h2>
+      <h2 className="text-3xl font-bold">{confirmationTitle}</h2>
       <p className="text-xl">{confirmationMessage}</p>
 
       <div className="mt-5 flex justify-around">

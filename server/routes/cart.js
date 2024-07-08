@@ -20,8 +20,8 @@ router.post("/updateQuantity", async (req, res) => {
     });
   }
 
-  const updateQuantitySql = "UPDATE user_cart SET quantity = ? WHERE cartID = ? AND  accountID = ?";
-
+  const updateQuantitySql =
+    "UPDATE user_cart SET quantity = ? WHERE cartID = ? AND  accountID = ?";
 
   db.query(updateQuantitySql, [quantity, cartId, accountId], (err, results) => {
     if (err) {
@@ -35,6 +35,34 @@ router.post("/updateQuantity", async (req, res) => {
     return res.status(200).json({
       status: "success",
       message: "Quantity updated successfully",
+    });
+  });
+});
+
+router.post("/removeFromCart", async (req, res) => {
+  const { cartId } = req.body;
+
+  if (!cartId) {
+    return res.status(400).json({
+      status: "error",
+      message: "Missing cartID",
+    });
+  }
+
+  const removeItemSql = "DELETE FROM user_cart WHERE cartID = ?";
+
+  db.query(removeItemSql, [cartId], (err, results) => {
+    if (err) {
+      console.error("Error removing item:", err);
+      return res.status(500).json({
+        status: "error",
+        message: "Database delete error",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Product removed successfully",
     });
   });
 });

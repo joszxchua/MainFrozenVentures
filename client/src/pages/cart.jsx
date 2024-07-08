@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { SuccessMessage } from "../components/success-message";
 import { ErrorMessage } from "../components/error-message";
+import { Confirmation } from "../components/confirmation";
 
 export const Cart = () => {
   const { user } = useContext(UserContext);
@@ -12,6 +13,9 @@ export const Cart = () => {
   const [error, setError] = useState("");
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [confirmationTitle, setConfirmationTitle] = useState("");
+  const [confirmationMessage, setConfirmationMessage] = useState("");
+  const [removeCartId, setRemoveCartId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,31 +65,56 @@ export const Cart = () => {
         }
       })
       .catch((error) => {
-        console.error("Error updating quantity:", error);
+        setMessageTitle("Error");
+        setMessage("Something went wrong");
       });
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
   };
 
-  const handleRemoveItem = (cartID) => {
-    const removedItem = cartItems[cartID];
-
-    setCartItems((prevItems) =>
-      prevItems.filter((_, index) => index !== cartID)
+  const handleRemoveItem = (cartID, name, size) => {
+    const removeItem = cartItems[cartID];
+    setRemoveCartId(removeItem);
+    setConfirmationTitle("Remove From Cart");
+    setConfirmationMessage(
+      `Are you sure you want to remove ${name} ${size} from your cart?`
     );
+  };
 
-    axios
-      .post("http://localhost:8081/cart/removeItem", {
-        accountId: user.accountId,
-        productId: removedItem.productID,
-        sizeId: removedItem.sizeID,
-      })
-      .then((response) => {
-        if (response.data.status !== 1) {
-          console.error("Failed to remove item");
-        }
-      })
-      .catch((error) => {
-        console.error("Error removing item:", error);
-      });
+  const handleCancelConfirmation = () => {
+    setConfirmationTitle("");
+    setConfirmationMessage("");
+    setRemoveCartId(null);
+  };
+
+  const handleYesConfirmation = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8081/cart/removeFromCart",
+        { cartId: removeCartId }
+      );
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+      } else {
+        setMessageTitle("Error");
+        setMessage("Something went wrong");
+      }
+    } catch (error) {
+      setMessageTitle("Error");
+      setMessage("Something went wrong");
+    }
+
+    setConfirmationTitle("");
+    setConfirmationMessage("");
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
   };
 
   return (
@@ -95,6 +124,16 @@ export const Cart = () => {
       )}
       {messageTitle && messageTitle === "Success" && (
         <SuccessMessage title={messageTitle} message={message} />
+      )}
+      {confirmationTitle && (
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-30">
+          <Confirmation
+            confirmationTitle={confirmationTitle}
+            confirmationMessage={confirmationMessage}
+            cancelConfirmation={handleCancelConfirmation}
+            yesConfirmation={handleYesConfirmation}
+          />
+        </div>
       )}
       <div className="font-inter mr-10">
         <h2 className="text-4xl font-bold mb-4">My Cart</h2>
@@ -157,7 +196,9 @@ export const Cart = () => {
                   <td className="absolute top-5 right-5 text-xl cursor-pointer">
                     <FontAwesomeIcon
                       icon={faTrash}
-                      onClick={() => handleRemoveItem(cartID)}
+                      onClick={() =>
+                        handleRemoveItem(cartID, item.name, item.size)
+                      }
                     />
                   </td>
                 </tr>

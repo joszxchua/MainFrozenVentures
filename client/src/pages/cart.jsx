@@ -1,9 +1,34 @@
-import React from "react";
-import Blueberry from "../assets/flavors/Blueberry.jpg";
+import React, { useContext, useState, useEffect } from "react";
+import axios from "axios";
+import { UserContext } from "../context/user-context";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import Blueberry from "../assets/flavors/Blueberry.jpg";
 
 export const Cart = () => {
+  const { user } = useContext(UserContext);
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user?.accountId) {
+        try {
+          const cartResponse = await axios.post(
+            "http://localhost:8081/cart/cartItemFetch",
+            { accountId: user.accountId }
+          );
+          if (cartResponse.data.status === 1) {
+            setCartItems(cartResponse.data.cart);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [user?.accountId]);
+
   return (
     <div className="mt-20 h-[70vh] grid grid-cols-1 md:grid-cols-[70%_30%] px-10 pb-10">
       <div className="font-inter pb-10 mr-10">

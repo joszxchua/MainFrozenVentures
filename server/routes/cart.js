@@ -3,6 +3,42 @@ const db = require("../db");
 
 const router = express.Router();
 
+router.post("/updateQuantity", async (req, res) => {
+  const { accountId, cartId, quantity } = req.body;
+
+  if (!accountId) {
+    return res.status(400).json({
+      status: "error",
+      message: "Missing accountID",
+    });
+  }
+
+  if (!cartId || !quantity) {
+    return res.status(400).json({
+      status: "error",
+      message: "Missing cartID or quantity",
+    });
+  }
+
+  const updateQuantitySql = "UPDATE user_cart SET quantity = ? WHERE cartID = ? AND  accountID = ?";
+
+
+  db.query(updateQuantitySql, [quantity, cartId, accountId], (err, results) => {
+    if (err) {
+      console.error("Error updating quantity:", err);
+      return res.status(500).json({
+        status: "error",
+        message: "Database update error",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Quantity updated successfully",
+    });
+  });
+});
+
 router.post("/cartItemFetch", async (req, res) => {
   const { accountId } = req.body;
 

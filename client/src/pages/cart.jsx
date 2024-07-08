@@ -99,6 +99,9 @@ export const Cart = () => {
       if (response.data.status === "success") {
         setMessageTitle("Success");
         setMessage(response.data.message);
+        setCartItems((prevItems) =>
+          prevItems.filter((item) => item.cartID !== removeCartId)
+        );
       } else {
         setMessageTitle("Error");
         setMessage("Something went wrong");

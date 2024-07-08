@@ -8,10 +8,19 @@ import {
   faPlus,
   faMinus,
 } from "@fortawesome/free-solid-svg-icons";
+import { SuccessMessage } from "../components/success-message";
+import { ErrorMessage } from "../components/error-message";
+import { Confirmation } from "../components/confirmation";
 
 export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
   const { user } = useContext(UserContext);
   const [cartItems, setCartItems] = useState([]);
+  const [error, setError] = useState("");
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
+  const [confirmationTitle, setConfirmationTitle] = useState("");
+  const [confirmationMessage, setConfirmationMessage] = useState("");
+  const [removeCartId, setRemoveCartId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,6 +34,7 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
             setCartItems(cartResponse.data.cart);
           }
         } catch (error) {
+          setError("Error fetching data");
           console.error("Error fetching data:", error);
         }
       }
@@ -32,6 +42,88 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
 
     fetchData();
   }, [user?.accountId]);
+
+  const handleQuantityChange = (cartID, newQuantity) => {
+    if (newQuantity < 1) return;
+
+    setCartItems((prevItems) =>
+      prevItems.map((item, index) =>
+        index === cartID ? { ...item, quantity: newQuantity } : item
+      )
+    );
+
+    const updatedItem = cartItems[cartID];
+
+    axios
+      .post("http://localhost:8081/cart/updateQuantity", {
+        accountId: user.accountId,
+        cartId: updatedItem.cartID,
+        quantity: newQuantity,
+      })
+      .then((response) => {
+        if (response.data.status === "success") {
+          setMessageTitle("Success");
+          setMessage(response.data.message);
+        } else {
+          setMessageTitle("Error");
+          setMessage("Something went wrong");
+        }
+      })
+      .catch((error) => {
+        setMessageTitle("Error");
+        setMessage("Something went wrong");
+      });
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
+  const handleRemoveItem = (cartID, name, size) => {
+    const removeItem = cartItems[cartID];
+    setRemoveCartId(removeItem.cartID);
+    setConfirmationTitle("Remove From Cart");
+    setConfirmationMessage(
+      `Are you sure you want to remove ${name} ${size} from your cart?`
+    );
+  };
+
+  const handleCancelConfirmation = () => {
+    setConfirmationTitle("");
+    setConfirmationMessage("");
+    setRemoveCartId(null);
+  };
+
+  const handleYesConfirmation = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8081/cart/removeFromCart",
+        { accountId: user.accountId, cartId: removeCartId }
+      );
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+        setCartItems((prevItems) =>
+          prevItems.filter((item) => item.cartID !== removeCartId)
+        );
+      } else {
+        setMessageTitle("Error");
+        setMessage("Something went wrong");
+      }
+    } catch (error) {
+      setMessageTitle("Error");
+      setMessage("Something went wrong");
+    }
+
+    setConfirmationTitle("");
+    setConfirmationMessage("");
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
 
   return (
     <div
@@ -49,6 +141,22 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
 
       <div className="flex flex-col justify-between ">
         <div className="max-h-[80vh] overflow-y-auto">
+          {messageTitle && messageTitle === "Error" && (
+            <ErrorMessage title={messageTitle} message={message} />
+          )}
+          {messageTitle && messageTitle === "Success" && (
+            <SuccessMessage title={messageTitle} message={message} />
+          )}
+          {confirmationTitle && (
+            <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-30">
+              <Confirmation
+                confirmationTitle={confirmationTitle}
+                confirmationMessage={confirmationMessage}
+                cancelConfirmation={handleCancelConfirmation}
+                yesConfirmation={handleYesConfirmation}
+              />
+            </div>
+          )}
           {cartItems.map((item, cartID) => (
             <div key={cartID} className="p-5">
               <div className="relative flex items-center gap-10">
@@ -72,6 +180,7 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
                 <FontAwesomeIcon
                   icon={faTrash}
                   className="absolute top-0 right-0 text-2xl cursor-pointer"
+                  onClick={() => handleRemoveItem(cartID, item.name, item.size)}
                 />
               </div>
 
@@ -81,14 +190,21 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
                 <div className="flex gap-10 items-center">
                   <FontAwesomeIcon
                     icon={faMinus}
-                    className="text-xl cursor-pointer"
+                    className={`text-xl cursor-pointer ${
+                      item.quantity <= 1 ? "text-gray-400" : ""
+                    }`}
+                    onClick={() =>
+                      handleQuantityChange(cartID, item.quantity - 1)
+                    }
+                    disabled={item.quantity <= 1}
                   />
-
                   <p>{item.quantity}</p>
-
                   <FontAwesomeIcon
                     icon={faPlus}
                     className="text-xl cursor-pointer"
+                    onClick={() =>
+                      handleQuantityChange(cartID, item.quantity + 1)
+                    }
                   />
                 </div>
 

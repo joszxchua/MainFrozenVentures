@@ -44,7 +44,7 @@ export const Order = () => {
                     <td className="text-center">
                       Php {parseFloat(product.price).toFixed(2)}
                     </td>
-                    <td className="text-center">{product.quantity}</td>
+                    <td className="text-center">x {product.quantity}</td>
                     <td className="text-center font-bold">
                       Php{" "}
                       {(parseFloat(product.price) * product.quantity).toFixed(

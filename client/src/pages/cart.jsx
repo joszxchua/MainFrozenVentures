@@ -13,7 +13,6 @@ export const Cart = () => {
   const { user } = useContext(UserContext);
   const { setOrder, orderProducts, clearOrder } = useContext(OrderContext);
   const [cartItems, setCartItems] = useState([]);
-  const [error, setError] = useState("");
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
   const [confirmationTitle, setConfirmationTitle] = useState("");
@@ -33,7 +32,6 @@ export const Cart = () => {
             setCartItems(cartResponse.data.cart);
           }
         } catch (error) {
-          setError("Error fetching data");
           console.error("Error fetching data:", error);
         }
       }
@@ -164,7 +162,13 @@ export const Cart = () => {
           acc[curr.productID] = {
             productId: curr.productID,
             sizeId: curr.sizeID,
+            productImage: curr.productImage,
+            name: curr.name,
+            brand: curr.brand,
+            flavor: curr.flavor,
             quantity: curr.quantity,
+            size: curr.size,
+            price: curr.price,
             totalPrice: (curr.quantity * curr.price).toFixed(2),
             status: "pending",
             orderDate: currentDate,
@@ -209,7 +213,6 @@ export const Cart = () => {
       )}
       <div className="font-inter mr-10">
         <h2 className="text-4xl font-bold mb-4">My Cart</h2>
-        {error && <p className="text-red-500">{error}</p>}
         <div>
           <table className="w-full border-collapse">
             <thead>

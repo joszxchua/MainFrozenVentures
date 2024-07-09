@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect, forwardRef } from "react";
 import axios from "axios";
 import { UserContext } from "../context/user-context";
+import { OrderContext } from "../context/order-context";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faXmark,
@@ -14,13 +16,14 @@ import { Confirmation } from "../components/confirmation";
 
 export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
   const { user } = useContext(UserContext);
+  const { setOrder, orderProducts, clearOrder } = useContext(OrderContext);
   const [cartItems, setCartItems] = useState([]);
-  const [error, setError] = useState("");
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
   const [confirmationTitle, setConfirmationTitle] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [removeCartId, setRemoveCartId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,7 +37,6 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
             setCartItems(cartResponse.data.cart);
           }
         } catch (error) {
-          setError("Error fetching data");
           console.error("Error fetching data:", error);
         }
       }
@@ -118,6 +120,78 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
 
     setConfirmationTitle("");
     setConfirmationMessage("");
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
+  const handleCheckout = async () => {
+    clearOrder();
+    try {
+      if (user.userRole === "retailer" || user.userRole === "distributor") {
+        const minQuantity = user.userRole === "retailer" ? 50 : 100;
+        const invalidProducts = cartItems.filter(
+          (item) => item.quantity < minQuantity
+        );
+        if (invalidProducts.length > 0) {
+          setMessageTitle("Error");
+          setMessage(
+            `${
+              user.userRole.charAt(0).toUpperCase() + user.userRole.slice(1)
+            }s must order at least ${minQuantity} units of each product.`
+          );
+        }
+      }
+
+      const currentDate = new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      const orderDetails = {
+        products: cartItems.reduce((acc, curr) => {
+          if (curr.quantity > curr.stock) {
+            setMessageTitle("Error");
+            setMessage(
+              `Quantity for ${curr.productName} exceeds available stock`
+            );
+
+            throw new Error(
+              `Quantity for ${curr.productName} exceeds available stock.`
+            );
+          }
+
+          acc[curr.productID] = {
+            productId: curr.productID,
+            sizeId: curr.sizeID,
+            productImage: curr.productImage,
+            name: curr.name,
+            brand: curr.brand,
+            flavor: curr.flavor,
+            quantity: curr.quantity,
+            size: curr.size,
+            price: curr.price,
+            totalPrice: (curr.quantity * curr.price).toFixed(2),
+            status: "pending",
+            orderDate: currentDate,
+          };
+          return acc;
+        }, {}),
+      };
+
+      setOrder(orderDetails);
+
+      if (orderProducts) {
+        navigate("/order");
+        closeSideCart();
+      }
+    } catch (error) {
+      setMessageTitle("Error");
+      setMessage("Something went wrong");
+    }
 
     setTimeout(() => {
       setMessageTitle("");
@@ -223,7 +297,10 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
           >
             View Cart
           </button>
-          <button className="font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">
+          <button
+            onClick={handleCheckout}
+            className="font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out"
+          >
             <strong>Checkout:</strong> Php{" "}
             {cartItems
               .reduce((total, item) => total + item.price * item.quantity, 0)

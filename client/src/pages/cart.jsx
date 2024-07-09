@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../context/user-context";
+import { OrderContext } from "../context/order-context";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { SuccessMessage } from "../components/success-message";
@@ -9,6 +11,7 @@ import { Confirmation } from "../components/confirmation";
 
 export const Cart = () => {
   const { user } = useContext(UserContext);
+  const { setOrder, orderProducts, clearOrder } = useContext(OrderContext);
   const [cartItems, setCartItems] = useState([]);
   const [error, setError] = useState("");
   const [messageTitle, setMessageTitle] = useState("");
@@ -16,6 +19,7 @@ export const Cart = () => {
   const [confirmationTitle, setConfirmationTitle] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [removeCartId, setRemoveCartId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -120,6 +124,71 @@ export const Cart = () => {
     }, 3000);
   };
 
+  const handleCheckout = async () => {
+    clearOrder();
+    try {
+      if (user.userRole === "retailer" || user.userRole === "distributor") {
+        const minQuantity = user.userRole === "retailer" ? 50 : 100;
+        const invalidProducts = cartItems.filter(
+          (item) => item.quantity < minQuantity
+        );
+        if (invalidProducts.length > 0) {
+          setMessageTitle("Error");
+          setMessage(
+            `${
+              user.userRole.charAt(0).toUpperCase() + user.userRole.slice(1)
+            }s must order at least ${minQuantity} units of each product.`
+          );
+        }
+      }
+
+      const currentDate = new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      const orderDetails = {
+        products: cartItems.reduce((acc, curr) => {
+          if (curr.quantity > curr.stock) {
+            setMessageTitle("Error");
+            setMessage(
+              `Quantity for ${curr.productName} exceeds available stock`
+            );
+
+            throw new Error(
+              `Quantity for ${curr.productName} exceeds available stock.`
+            );
+          }
+
+          acc[curr.productID] = {
+            productId: curr.productID,
+            sizeId: curr.sizeID,
+            quantity: curr.quantity,
+            totalPrice: (curr.quantity * curr.price).toFixed(2),
+            status: "pending",
+            orderDate: currentDate,
+          };
+          return acc;
+        }, {}),
+      };
+
+      setOrder(orderDetails);
+
+      if (orderProducts) {
+        navigate("/order");
+      }
+    } catch (error) {
+      setMessageTitle("Error");
+      setMessage("Something went wrong");
+    }
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
   return (
     <div className="mt-20 min-h-[70vh] grid grid-cols-1 md:grid-cols-[70%_30%] px-10 pb-10">
       {messageTitle && messageTitle === "Error" && (
@@ -144,7 +213,7 @@ export const Cart = () => {
         <div>
           <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b-2">
+              <tr className="border-b-2 text-2xl">
                 <th className="text-left py-2">Product</th>
                 <th className="text-center py-2 w-[200px]">Flavor</th>
                 <th className="text-center py-2 w-[150px]">Size</th>
@@ -211,7 +280,7 @@ export const Cart = () => {
         </div>
       </div>
 
-      <div className="bg-gray-100 p-10 rounded-lg flex flex-col h-fit">
+      <div className="bg-gray-100 p-10 rounded-lg flex flex-col min-h-60 max-h-fit">
         <h2 className="text-4xl font-bold mb-4">Cart Summary</h2>
 
         {cartItems.map((item, cartID) => (
@@ -235,7 +304,10 @@ export const Cart = () => {
               .toFixed(2)}
           </p>
 
-          <button className="w-full font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">
+          <button
+            onClick={handleCheckout}
+            className="w-full font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out"
+          >
             Checkout
           </button>
         </div>

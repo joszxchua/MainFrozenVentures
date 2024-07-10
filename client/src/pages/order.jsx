@@ -29,6 +29,24 @@ export const Order = () => {
   const [selectedMunicipality, setSelectedMunicipality] = useState("");
   const [selectedBarangay, setSelectedBarangay] = useState("");
   const [barangays, setBarangays] = useState([]);
+  const [shippingMode, setShippingMode] = useState("pickup");
+
+  const VAT_RATE = 0.12;
+  const SERVICE_FEE_RATE = 0.05;
+  let totalProductAmount = 0;
+  let serviceFee = 0;
+
+  if (productsArray) {
+    for (const productId in productsArray) {
+      const product = productsArray[productId];
+      totalProductAmount += product.price * product.quantity;
+      serviceFee += product.price * product.quantity * SERVICE_FEE_RATE;
+    }
+  }
+
+  const shippingCost = shippingMode === "pickup" ? 0 : 10 * Object.keys(productsObject).length;
+  const vat = (totalProductAmount + shippingCost + serviceFee) * VAT_RATE;
+  const totalOrderCost = totalProductAmount + shippingCost + serviceFee + vat;
 
   useEffect(() => {
     const selectedMunicipalityObj = municipalitiesInBataan.find(
@@ -99,9 +117,9 @@ export const Order = () => {
                     <td className="text-center">x {product.quantity}</td>
                     <td className="text-center font-bold">
                       Php{" "}
-                      {(parseFloat(product.price) * product.quantity).toFixed(
-                        2
-                      )}
+                      {(
+                        parseFloat(product.price) * product.quantity
+                      ).toFixed(2)}
                     </td>
                   </tr>
                 ))
@@ -123,23 +141,23 @@ export const Order = () => {
         <div className="flex flex-wrap justify-between gap-2">
           <p className="flex flex-col text-xl font-bold">
             <span className="text-lg text-gray-200 font-semibold">Name:</span>{" "}
-            Vince Jeremy Canaria
+            {user.name}
           </p>
 
           <p className="flex flex-col text-xl font-bold">
             <span className="text-lg text-gray-200 font-semibold">Email:</span>{" "}
-            customer@gmail.com
+            {user.email}
           </p>
 
           <p className="flex flex-col text-xl font-bold">
             <span className="text-lg text-gray-200 font-semibold">
               Phone Number:
             </span>{" "}
-            09131231
+            {user.phoneNumber}
           </p>
         </div>
 
-        <form className="flex flex-col items-center gap-5 py-5">
+        <form className="mt-10 flex flex-col items-center gap-3">
           <div className="w-full flex flex-col gap-2">
             <label
               htmlFor="street"
@@ -238,9 +256,48 @@ export const Order = () => {
           </div>
         </form>
 
-        <div className="mt-auto pt-5">
-          <p className="flex justify-between font-semibold text-xl border-b pb-5 mb-5">
-            <span className="font-bold">Total:</span>
+        <div className="mt-10 w-full flex gap-5">
+          <div className="w-full flex flex-col gap-2">
+            <label
+              htmlFor="shippingMode"
+              className="text-lg text-gray-200 font-semibold"
+            >
+              Shipping Mode:
+            </label>
+            <Select
+              styles={customStyles}
+              className="text-lg border-gray-200 rounded-[5px] w-full outline-purple-200"
+              options={[
+                { value: "Pickup", label: "Pickup" },
+                { value: "Delivery", label: "Delivery" },
+              ]}
+              value={{ value: shippingMode, label: shippingMode }}
+              onChange={(selectedOption) =>
+                setShippingMode(selectedOption.value)
+              }
+            />
+          </div>
+
+          <div className="w-full flex flex-col gap-2">
+            <label
+              htmlFor="receiveDate"
+              className="text-lg text-gray-200 font-semibold"
+            >
+              Receive Date:
+            </label>
+            <input
+              type="date"
+              name="receiveDate"
+              id="receiveDate"
+              className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
+              {...registerAddress("receiveDate")}
+            />
+          </div>
+        </div>
+
+        <div className="mt-10">
+          <p className="flex justify-between font-semibold text-xl mb-5">
+            <span className="font-bold">Sub Total:</span>
             Php{" "}
             {productsArray.length > 0
               ? productsArray
@@ -252,9 +309,21 @@ export const Order = () => {
                   .toFixed(2)
               : "0.00"}
           </p>
+          <p className="flex justify-between font-semibold text-xl mb-5">
+            <span className="font-bold">Service Fee:</span>
+            Php {serviceFee.toFixed(2)}
+          </p>
+          <p className="flex justify-between font-semibold text-xl mb-5">
+            <span className="font-bold">Delivery Fee:</span>
+            Php {shippingCost.toFixed(2)}
+          </p>
+          <p className="flex justify-between font-semibold text-xl border-b pb-5 mb-5">
+            <span className="font-bold">Vat:</span>
+            Php {vat.toFixed(2)}
+          </p>
 
           <button className="w-full font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">
-            Checkout
+            Checkout Php {totalOrderCost.toFixed(2)}
           </button>
         </div>
       </div>

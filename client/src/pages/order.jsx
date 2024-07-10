@@ -1,11 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import municipalitiesInBataan from "../municipalities";
-import Select, { useStateManager } from "react-select";
+import Select from "react-select";
 import { useForm } from "react-hook-form";
 import { UserContext } from "../context/user-context";
 import { OrderContext } from "../context/order-context";
 import { ErrorMessage } from "../components/error-message";
+import { useNavigate } from "react-router-dom";
 
 const customStyles = {
   control: (provided, state) => ({
@@ -36,6 +37,7 @@ export const Order = () => {
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPersonalData = async () => {
@@ -178,7 +180,7 @@ export const Order = () => {
           orderData
         );
         if (response.data.status === "success") {
-          
+          navigate("/order-invoice");
         } else {
           setMessageTitle("Error");
           setMessage("Failed to place order");

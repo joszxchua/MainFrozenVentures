@@ -10,6 +10,7 @@ import { Settings } from "./pages/settings/settings";
 import { Shop } from "./pages/shop";
 import { Cart } from "./pages/cart";
 import { Order } from "./pages/order";
+import { OrderInvoice } from "./pages/order-invoice";
 import { ProductDetails } from "./pages/product-details";
 import { PurchaseHistory } from "./pages/purchase-history";
 import { HomeSeller } from "./pages/seller/home-seller";
@@ -29,6 +30,7 @@ function App() {
               <Route path="/shop" element={<Shop />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/order" element={<Order />} />
+              <Route path="/order-invoice" element={<OrderInvoice />} />
               <Route
                 path="/product-details/:productId"
                 element={<ProductDetails />}

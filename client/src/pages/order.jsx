@@ -126,7 +126,7 @@ export const Order = () => {
     for (const product of productsArray) {
       const serviceFee = product.price * product.quantity * SERVICE_FEE_RATE;
       const shippingFee =
-        shippingMode === "Delivery" ? 10 * product.quantity : 0;
+        shippingMode === "Delivery" ? 10 : 0;
       const vat =
         (Number(product.price) * product.quantity + serviceFee + shippingFee) *
         VAT_RATE;

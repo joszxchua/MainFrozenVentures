@@ -24,7 +24,7 @@ export const Order = () => {
     setValue: setValueAddress,
     getValues: getValuesAddress,
   } = useForm();
-  const { orderProducts, clearOrder } = useContext(OrderContext);
+  const { orderProducts } = useContext(OrderContext);
   const productsObject = orderProducts?.products || {};
   const productsArray = Object.values(productsObject);
   const [personalInfo, setPersonalInfo] = useState({});
@@ -73,7 +73,7 @@ export const Order = () => {
     if (selectedMunicipalityObj) {
       setBarangays(
         selectedMunicipalityObj.barangays.map((barangay) => barangay.name)
-      ); 
+      );
     } else {
       setBarangays([]);
     }
@@ -112,6 +112,40 @@ export const Order = () => {
     shippingMode === "pickup" ? 0 : 10 * Object.keys(productsObject).length;
   const vat = (totalProductAmount + shippingCost + serviceFee) * VAT_RATE;
   const totalOrderCost = totalProductAmount + shippingCost + serviceFee + vat;
+
+  const today = new Date().toISOString().split("T")[0];
+  const maxDate = new Date();
+  maxDate.setDate(maxDate.getDate() + 14);
+  const maxReceiveDate = maxDate.toISOString().split("T")[0];
+
+  const onSubmitOrder = async (data) => {
+    for (const productId in productsArray) {
+      const product = productsArray[productId];
+
+      const serviceFee =
+        product.price * product.quantity * SERVICE_FEE_RATE;
+      const shippingFee =
+        shippingMode === "delivery" ? 10 * product.quantity : 0;
+      const vat =
+        (Number(product.subTotal) + serviceFee + shippingFee) * VAT_RATE;
+      const totalPrice =
+        Number(product.subTotal) + serviceFee + shippingFee + vat;
+
+      const orderData = {
+        accountId: user.accountId,
+        productId: product.productId,
+        sizeId: product.sizeId,
+        orderDate: product.orderDate,
+        shippingMode: shippingMode,
+        receiveDate: data.receiveDate,
+        status: product.status,
+        quantity: product.quantity,
+        totalPrice: totalPrice.toFixed(2),
+      };
+
+      console.log(orderData);
+    }
+  };
 
   return (
     <div className="mt-20 min-h-[70vh] grid grid-cols-1 md:grid-cols-[70%_30%] px-10 pb-10">
@@ -329,6 +363,8 @@ export const Order = () => {
               id="receiveDate"
               className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               {...registerAddress("receiveDate")}
+              min={today}
+              max={maxReceiveDate}
             />
           </div>
         </div>
@@ -360,7 +396,10 @@ export const Order = () => {
             Php {vat.toFixed(2)}
           </p>
 
-          <button className="w-full font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">
+          <button
+            onClick={onSubmitOrder}
+            className="w-full font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out"
+          >
             Checkout : Php {totalOrderCost.toFixed(2)}
           </button>
         </div>

@@ -1,10 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
+import municipalitiesInBataan from "../municipalities";
+import Select, { useStateManager } from "react-select";
 import { useForm } from "react-hook-form";
 import { UserContext } from "../context/user-context";
 import { OrderContext } from "../context/order-context";
-import municipalitiesInBataan from "../municipalities";
-import Select from "react-select";
+import { ErrorMessage } from "../components/error-message";
 
 const customStyles = {
   control: (provided, state) => ({
@@ -32,6 +33,9 @@ export const Order = () => {
   const [selectedBarangay, setSelectedBarangay] = useState("");
   const [barangays, setBarangays] = useState([]);
   const [shippingMode, setShippingMode] = useState("Pickup");
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchPersonalData = async () => {
@@ -121,12 +125,12 @@ export const Order = () => {
   const maxReceiveDate = maxDate.toISOString().split("T")[0];
 
   const onSubmitOrder = async (data) => {
+    setIsLoading(true);
     let orderTotal = 0;
 
     for (const product of productsArray) {
       const serviceFee = product.price * product.quantity * SERVICE_FEE_RATE;
-      const shippingFee =
-        shippingMode === "Delivery" ? 10 : 0;
+      const shippingFee = shippingMode === "Delivery" ? 10 : 0;
       const vat =
         (Number(product.price) * product.quantity + serviceFee + shippingFee) *
         VAT_RATE;
@@ -415,8 +419,11 @@ export const Order = () => {
           <button
             onClick={handleSubmitForm}
             className="w-full font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out"
+            disabled={isLoading}
           >
-            Checkout : Php {totalOrderCost.toFixed(2)}
+            {isLoading
+              ? "Checking Out..."
+              : `Check Out : Php ${totalOrderCost.toFixed(2)} `}
           </button>
         </div>
       </div>

@@ -31,7 +31,7 @@ export const Order = () => {
   const [selectedMunicipality, setSelectedMunicipality] = useState("");
   const [selectedBarangay, setSelectedBarangay] = useState("");
   const [barangays, setBarangays] = useState([]);
-  const [shippingMode, setShippingMode] = useState("pickup");
+  const [shippingMode, setShippingMode] = useState("Pickup");
 
   useEffect(() => {
     const fetchPersonalData = async () => {
@@ -270,6 +270,7 @@ export const Order = () => {
                 id="province"
                 className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
                 {...registerAddress("province")}
+                readOnly
               />
             </div>
 
@@ -286,6 +287,7 @@ export const Order = () => {
                 id="zipCode"
                 className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
                 {...registerAddress("zipCode")}
+                readOnly
               />
             </div>
           </div>
@@ -358,7 +360,7 @@ export const Order = () => {
           </p>
 
           <button className="w-full font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">
-            Checkout Php {totalOrderCost.toFixed(2)}
+            Checkout : Php {totalOrderCost.toFixed(2)}
           </button>
         </div>
       </div>

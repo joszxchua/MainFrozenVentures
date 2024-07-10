@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { UserContext } from "../context/user-context";
 import { OrderContext } from "../context/order-context";
@@ -26,27 +27,43 @@ export const Order = () => {
   const { orderProducts, clearOrder } = useContext(OrderContext);
   const productsObject = orderProducts?.products || {};
   const productsArray = Object.values(productsObject);
+  const [personalInfo, setPersonalInfo] = useState({});
   const [selectedMunicipality, setSelectedMunicipality] = useState("");
   const [selectedBarangay, setSelectedBarangay] = useState("");
   const [barangays, setBarangays] = useState([]);
   const [shippingMode, setShippingMode] = useState("pickup");
 
-  const VAT_RATE = 0.12;
-  const SERVICE_FEE_RATE = 0.05;
-  let totalProductAmount = 0;
-  let serviceFee = 0;
+  useEffect(() => {
+    const fetchPersonalData = async () => {
+      if (user.accountId) {
+        try {
+          const response = await axios.post(
+            "http://localhost:8081/account/accountFetch",
+            {
+              accountId: user.accountId,
+            }
+          );
+          if (response.data.status === 1) {
+            const userData = response.data.account;
 
-  if (productsArray) {
-    for (const productId in productsArray) {
-      const product = productsArray[productId];
-      totalProductAmount += product.price * product.quantity;
-      serviceFee += product.price * product.quantity * SERVICE_FEE_RATE;
-    }
-  }
+            setValueAddress("street", userData.street);
+            setValueAddress("municipality", userData.municipality);
+            setValueAddress("barangay", userData.barangay);
+            setValueAddress("province", userData.province);
+            setValueAddress("zipCode", userData.zipCode);
+            setSelectedMunicipality(userData.municipality);
+            setSelectedBarangay(userData.barangay);
 
-  const shippingCost = shippingMode === "pickup" ? 0 : 10 * Object.keys(productsObject).length;
-  const vat = (totalProductAmount + shippingCost + serviceFee) * VAT_RATE;
-  const totalOrderCost = totalProductAmount + shippingCost + serviceFee + vat;
+            setPersonalInfo(userData);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchPersonalData();
+  }, [user.accountId]);
 
   useEffect(() => {
     const selectedMunicipalityObj = municipalitiesInBataan.find(
@@ -77,6 +94,24 @@ export const Order = () => {
       }
     }
   }, [selectedMunicipality, selectedBarangay, setValueAddress]);
+
+  const VAT_RATE = 0.12;
+  const SERVICE_FEE_RATE = 0.05;
+  let totalProductAmount = 0;
+  let serviceFee = 0;
+
+  if (productsArray) {
+    for (const productId in productsArray) {
+      const product = productsArray[productId];
+      totalProductAmount += product.price * product.quantity;
+      serviceFee += product.price * product.quantity * SERVICE_FEE_RATE;
+    }
+  }
+
+  const shippingCost =
+    shippingMode === "pickup" ? 0 : 10 * Object.keys(productsObject).length;
+  const vat = (totalProductAmount + shippingCost + serviceFee) * VAT_RATE;
+  const totalOrderCost = totalProductAmount + shippingCost + serviceFee + vat;
 
   return (
     <div className="mt-20 min-h-[70vh] grid grid-cols-1 md:grid-cols-[70%_30%] px-10 pb-10">
@@ -117,9 +152,9 @@ export const Order = () => {
                     <td className="text-center">x {product.quantity}</td>
                     <td className="text-center font-bold">
                       Php{" "}
-                      {(
-                        parseFloat(product.price) * product.quantity
-                      ).toFixed(2)}
+                      {(parseFloat(product.price) * product.quantity).toFixed(
+                        2
+                      )}
                     </td>
                   </tr>
                 ))
@@ -141,19 +176,19 @@ export const Order = () => {
         <div className="flex flex-wrap justify-between gap-2">
           <p className="flex flex-col text-xl font-bold">
             <span className="text-lg text-gray-200 font-semibold">Name:</span>{" "}
-            {user.name}
+            {personalInfo.firstName} {personalInfo.lastName}
           </p>
 
           <p className="flex flex-col text-xl font-bold">
             <span className="text-lg text-gray-200 font-semibold">Email:</span>{" "}
-            {user.email}
+            {personalInfo.email}
           </p>
 
           <p className="flex flex-col text-xl font-bold">
             <span className="text-lg text-gray-200 font-semibold">
               Phone Number:
             </span>{" "}
-            {user.phoneNumber}
+            {personalInfo.phone}
           </p>
         </div>
 

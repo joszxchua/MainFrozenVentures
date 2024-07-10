@@ -101,15 +101,17 @@ export const Order = () => {
   let serviceFee = 0;
 
   if (productsArray) {
-    for (const productId in productsArray) {
-      const product = productsArray[productId];
-      totalProductAmount += product.price * product.quantity;
-      serviceFee += product.price * product.quantity * SERVICE_FEE_RATE;
-    }
+    productsArray.forEach((product) => {
+      const subtotal = product.price * product.quantity;
+      const productServiceFee = subtotal * SERVICE_FEE_RATE;
+
+      totalProductAmount += subtotal;
+      serviceFee += productServiceFee;
+    });
   }
 
   const shippingCost =
-    shippingMode === "pickup" ? 0 : 10 * Object.keys(productsObject).length;
+    shippingMode === "Pickup" ? 0 : 10 * Object.keys(productsObject).length;
   const vat = (totalProductAmount + shippingCost + serviceFee) * VAT_RATE;
   const totalOrderCost = totalProductAmount + shippingCost + serviceFee + vat;
 
@@ -119,23 +121,28 @@ export const Order = () => {
   const maxReceiveDate = maxDate.toISOString().split("T")[0];
 
   const onSubmitOrder = async (data) => {
-    for (const productId in productsArray) {
-      const product = productsArray[productId];
+    let orderTotal = 0;
 
-      const serviceFee =
-        product.price * product.quantity * SERVICE_FEE_RATE;
+    for (const product of productsArray) {
+      const serviceFee = product.price * product.quantity * SERVICE_FEE_RATE;
       const shippingFee =
-        shippingMode === "delivery" ? 10 * product.quantity : 0;
+        shippingMode === "Delivery" ? 10 * product.quantity : 0;
       const vat =
-        (Number(product.subTotal) + serviceFee + shippingFee) * VAT_RATE;
+        (Number(product.price) * product.quantity + serviceFee + shippingFee) *
+        VAT_RATE;
       const totalPrice =
-        Number(product.subTotal) + serviceFee + shippingFee + vat;
+        Number(product.price) * product.quantity +
+        serviceFee +
+        shippingFee +
+        vat;
+
+      orderTotal += totalPrice;
 
       const orderData = {
         accountId: user.accountId,
         productId: product.productId,
         sizeId: product.sizeId,
-        orderDate: product.orderDate,
+        orderDate: new Date().toISOString().split("T")[0],
         shippingMode: shippingMode,
         receiveDate: data.receiveDate,
         status: product.status,
@@ -145,6 +152,12 @@ export const Order = () => {
 
       console.log(orderData);
     }
+
+    console.log("Total Order Cost:", orderTotal.toFixed(2));
+  };
+
+  const handleSubmitForm = () => {
+    handleSubmitAddress(onSubmitOrder)();
   };
 
   return (
@@ -226,7 +239,10 @@ export const Order = () => {
           </p>
         </div>
 
-        <form className="mt-10 flex flex-col items-center gap-3">
+        <form
+          onSubmit={handleSubmitAddress(onSubmitOrder)}
+          className="mt-10 flex flex-col items-center gap-3"
+        >
           <div className="w-full flex flex-col gap-2">
             <label
               htmlFor="street"
@@ -264,7 +280,7 @@ export const Order = () => {
                 }}
                 onChange={(selectedOption) => {
                   setSelectedMunicipality(selectedOption.value);
-                  setSelectedBarangay(""); // Clear barangay when municipality changes
+                  setSelectedBarangay("");
                 }}
               />
             </div>
@@ -397,7 +413,7 @@ export const Order = () => {
           </p>
 
           <button
-            onClick={onSubmitOrder}
+            onClick={handleSubmitForm}
             className="w-full font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out"
           >
             Checkout : Php {totalOrderCost.toFixed(2)}

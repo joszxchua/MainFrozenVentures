@@ -126,6 +126,19 @@ export const Order = () => {
 
   const onSubmitOrder = async (data) => {
     setIsLoading(true);
+
+    if (
+      !data.street ||
+      !selectedMunicipality ||
+      !selectedBarangay ||
+      !data.receiveDate
+    ) {
+      setMessageTitle("Error");
+      setMessage("Please fill in all the required fields");
+      setIsLoading(false);
+      return;
+    }
+
     let orderTotal = 0;
 
     for (const product of productsArray) {
@@ -159,10 +172,29 @@ export const Order = () => {
         province: data.province,
       };
 
-      console.log(orderData);
+      try {
+        const response = await axios.post(
+          "http://localhost:8081/order/placeOrder",
+          orderData
+        );
+        if (response.data.status === "success") {
+          
+        } else {
+          setMessageTitle("Error");
+          setMessage("Failed to place order");
+        }
+      } catch (error) {
+        console.error("There was an error placing the order:", error);
+        setMessageTitle("Error");
+        setMessage("Failed to place order");
+      }
     }
 
-    console.log("Total Order Cost:", orderTotal.toFixed(2));
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+    setIsLoading(false);
   };
 
   const handleSubmitForm = () => {
@@ -171,6 +203,9 @@ export const Order = () => {
 
   return (
     <div className="mt-20 min-h-[70vh] grid grid-cols-1 md:grid-cols-[70%_30%] px-10 pb-10">
+      {messageTitle && messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
       <div className="font-inter mr-10">
         <h2 className="text-4xl font-bold mb-4">My Order</h2>
         <div>

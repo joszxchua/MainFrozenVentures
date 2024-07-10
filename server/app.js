@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const accountRoutes = require("./routes/account");
 const productRoutes = require("./routes/product");
 const cartRoutes = require("./routes/cart");
+const orderRoutes = require("./routes/order");
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.static("public"));
 app.use("/account", accountRoutes);
 app.use("/product", productRoutes);
 app.use("/cart", cartRoutes);
+app.use("/order", orderRoutes);
 
 app.get("/", (req, res) => {
   return res.json("From backend side");

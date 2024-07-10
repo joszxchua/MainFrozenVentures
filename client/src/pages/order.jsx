@@ -73,9 +73,9 @@ export const Order = () => {
     if (selectedMunicipalityObj) {
       setBarangays(
         selectedMunicipalityObj.barangays.map((barangay) => barangay.name)
-      ); // Clear barangay when municipality changes
+      ); 
     } else {
-      setBarangays([]);// Clear barangay when municipality changes
+      setBarangays([]);
     }
   }, [selectedMunicipality]);
 

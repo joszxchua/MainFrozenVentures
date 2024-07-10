@@ -174,6 +174,7 @@ export const Order = () => {
         province: data.province,
       };
 
+      console.log(orderData);
       try {
         const response = await axios.post(
           "http://localhost:8081/order/placeOrder",
@@ -183,7 +184,7 @@ export const Order = () => {
           navigate("/order-invoice");
         } else {
           setMessageTitle("Error");
-          setMessage("Failed to place order");
+          setMessage(response.data.message);
         }
       } catch (error) {
         console.error("There was an error placing the order:", error);

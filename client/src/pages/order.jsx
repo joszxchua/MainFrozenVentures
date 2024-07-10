@@ -73,9 +73,9 @@ export const Order = () => {
     if (selectedMunicipalityObj) {
       setBarangays(
         selectedMunicipalityObj.barangays.map((barangay) => barangay.name)
-      );
+      ); // Clear barangay when municipality changes
     } else {
-      setBarangays([]);
+      setBarangays([]);// Clear barangay when municipality changes
     }
   }, [selectedMunicipality]);
 
@@ -228,9 +228,10 @@ export const Order = () => {
                   value: selectedMunicipality,
                   label: selectedMunicipality,
                 }}
-                onChange={(selectedOption) =>
-                  setSelectedMunicipality(selectedOption.value)
-                }
+                onChange={(selectedOption) => {
+                  setSelectedMunicipality(selectedOption.value);
+                  setSelectedBarangay(""); // Clear barangay when municipality changes
+                }}
               />
             </div>
 

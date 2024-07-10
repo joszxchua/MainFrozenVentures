@@ -152,6 +152,11 @@ export const Order = () => {
         status: product.status,
         quantity: product.quantity,
         totalPrice: totalPrice.toFixed(2),
+        street: data.street,
+        barangay: data.barangay,
+        municipality: data.municipality,
+        zipCode: data.zipCode,
+        province: data.province,
       };
 
       console.log(orderData);

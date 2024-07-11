@@ -144,7 +144,7 @@ export const PurchaseHistory = () => {
                     className="w-20 rounded-lg"
                   />
                   <div>
-                    <p className="text-xl font-semibold">{order.name}</p>
+                    <p className="text-xl font-bold">{order.name}</p>
                     <p className="text-sm text-gray-200">{order.brand}</p>
                     <p className="text-sm text-gray-200">
                       {order.flavor}, {order.size}
@@ -152,7 +152,7 @@ export const PurchaseHistory = () => {
                   </div>
                 </td>
                 <td className="w-1/12">{order.shopName}</td>
-                <td className="w-1/12">{order.totalPrice.toFixed(2)}</td>
+                <td className="w-1/12">Php {order.totalPrice.toFixed(2)}</td>
                 <td className="w-2/12">{formatDate(order.orderDate)}</td>
                 <td className="w-2/12">{formatDate(order.receiveDate)}</td>
                 <td className="w-1/12 flex justify-center">

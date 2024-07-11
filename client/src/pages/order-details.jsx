@@ -76,7 +76,7 @@ export const OrderDetails = () => {
           <img
             src={`http://localhost:8081/productImages/${order.productImage}`}
             alt={order.name}
-            className="rounded-lg shadow-md"
+            className="w-[550px] rounded-lg shadow-md"
           />
 
           <div className="pt-5 text-xl">

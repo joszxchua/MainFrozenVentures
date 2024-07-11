@@ -12,6 +12,7 @@ import { Cart } from "./pages/cart";
 import { Order } from "./pages/order";
 import { OrderInvoice } from "./pages/order-invoice";
 import { ProductDetails } from "./pages/product-details";
+import { OrderDetails } from "./pages/order-details";
 import { PurchaseHistory } from "./pages/purchase-history";
 import { HomeSeller } from "./pages/seller/home-seller";
 import { ManageProduct } from "./pages/seller/manage-product";
@@ -34,6 +35,10 @@ function App() {
               <Route
                 path="/product-details/:productId"
                 element={<ProductDetails />}
+              />
+              <Route
+                path="/order-details/:orderId"
+                element={<OrderDetails />}
               />
               <Route path="/purchase-history" element={<PurchaseHistory />} />
               <Route path="/home-seller" element={<HomeSeller />} />

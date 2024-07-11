@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../context/user-context";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowUp,
@@ -21,6 +22,7 @@ export const PurchaseHistory = () => {
     direction: "ascending",
   });
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
   const ordersPerPage = 5;
 
   useEffect(() => {
@@ -92,6 +94,10 @@ export const PurchaseHistory = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const handleOrderClick = (orderId) => {
+    navigate(`/order-details/${orderId}`);
+  };
+
   return (
     <div className="mt-20 px-10">
       <div>
@@ -104,7 +110,7 @@ export const PurchaseHistory = () => {
       <div className="my-5 bg-gray-100 p-5 rounded-lg">
         <table className="w-full">
           <thead className="w-full">
-            <tr className="w-full flex justify-between text-2xl pb-5 mb-5 border-b-2 border-black">
+            <tr className="w-full flex justify-between text-2xl px-5 pb-5 mb-5 border-b-2 border-black">
               <th className="w-2/12 text-left">Product</th>
               <th className="w-1/12">Shop</th>
               <th className="w-1/12">Total Price</th>
@@ -140,11 +146,12 @@ export const PurchaseHistory = () => {
             </tr>
           </thead>
           <tbody className="w-full">
-            <div className="min-h-[500px] max-h-[500px]">
-              {currentOrders.map((order, index) => (
+            <div className="min-h-[500px]">
+              {currentOrders.map((order) => (
                 <tr
-                  key={index}
-                  className="w-full flex items-center justify-between text-center text-xl font-medium mb-5"
+                  key={order.orderID}
+                  onClick={() => handleOrderClick(order.orderID)}
+                  className="w-full flex items-center justify-between text-center text-xl font-medium p-5 rounded-lg hover:shadow-2xl duration-300 ease-in-out"
                 >
                   <td className="w-2/12 text-left flex gap-5 items-center">
                     <img
@@ -187,7 +194,9 @@ export const PurchaseHistory = () => {
                 key={i}
                 onClick={() => paginate(i + 1)}
                 className={`mx-1 px-3 py-1 rounded-lg font-bold ${
-                  currentPage === i + 1 ? "bg-gray-200 text-white" : "bg-gray-300"
+                  currentPage === i + 1
+                    ? "bg-gray-200 text-white"
+                    : "bg-gray-300"
                 }`}
               >
                 {i + 1}

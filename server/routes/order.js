@@ -3,6 +3,45 @@ const db = require("../db");
 
 const router = express.Router();
 
+router.post("/fetchOrders", (req, res) => {
+  const { accountId } = req.body;
+
+  if (!accountId) {
+    return res.status(400).json({
+      status: "error",
+      message: "Account ID is missing.",
+    });
+  }
+
+  const fetchOrdersSql = `SELECT 
+                                uo.*, 
+                                pi.*, 
+                                si.*
+                          FROM 
+                                user_order AS uo
+                          INNER JOIN 
+                                product_info AS pi ON uo.productID = pi.productID
+                          INNER JOIN 
+                                shop_info AS si ON pi.accountID = si.accountID
+                          WHERE 
+                                uo.accountID = ?;`;
+
+  db.query(fetchOrdersSql, [accountId], (err, results) => {
+    if (err) {
+      console.error("Database fetch error:", err);
+      return res.status(500).json({
+        status: "error",
+        message: "Database fetch error",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      order: results,
+    });
+  });
+});
+
 router.post("/placeOrder", async (req, res) => {
   const {
     accountId,

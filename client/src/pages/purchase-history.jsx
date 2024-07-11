@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
+import axios from "axios";
+import { UserContext } from "../context/user-context";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowUp,
@@ -7,6 +9,32 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 export const PurchaseHistory = () => {
+  const { user } = useContext(UserContext);
+  const [ordersInfo, setOrdersInfo] = useState([]);
+
+  useEffect(() => {
+    const fetchOrderInfo = async () => {
+      if (user.accountId) {
+        try {
+          const response = await axios.post(
+            "http://localhost:8081/order/fetchOrders",
+            {
+              accountId: user.accountId,
+            }
+          );
+          if (response.data.status === "success") {
+            const orderData = response.data.order;
+            setOrdersInfo(orderData);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchOrderInfo();
+  }, [user.accountId]);
+
   return (
     <div className="mt-20 px-10">
       <div>

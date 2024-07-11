@@ -16,6 +16,10 @@ const formatDate = (dateString) => {
 export const PurchaseHistory = () => {
   const { user } = useContext(UserContext);
   const [ordersInfo, setOrdersInfo] = useState([]);
+  const [sortConfig, setSortConfig] = useState({
+    key: "orderDate",
+    direction: "ascending",
+  });
 
   useEffect(() => {
     const fetchOrderInfo = async () => {
@@ -23,9 +27,7 @@ export const PurchaseHistory = () => {
         try {
           const response = await axios.post(
             "http://localhost:8081/order/fetchOrders",
-            {
-              accountId: user.accountId,
-            }
+            { accountId: user.accountId }
           );
           if (response.data.status === "success") {
             const orderData = response.data.order;
@@ -38,8 +40,27 @@ export const PurchaseHistory = () => {
     };
 
     fetchOrderInfo();
-    console.log(ordersInfo);
   }, [user.accountId]);
+
+  const sortOrders = (key) => {
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+
+    const sortedOrders = [...ordersInfo].sort((a, b) => {
+      if (a[key] < b[key]) {
+        return direction === "ascending" ? -1 : 1;
+      }
+      if (a[key] > b[key]) {
+        return direction === "ascending" ? 1 : -1;
+      }
+      return 0;
+    });
+
+    setOrdersInfo(sortedOrders);
+  };
 
   return (
     <div className="mt-20 px-10">
@@ -57,11 +78,33 @@ export const PurchaseHistory = () => {
               <th className="w-2/12 text-left">Product</th>
               <th className="w-1/12">Shop</th>
               <th className="w-1/12">Total Price</th>
-              <th className="w-2/12">
-                Order Date <FontAwesomeIcon icon={faArrowUp} />
+              <th
+                className="w-2/12 cursor-pointer"
+                onClick={() => sortOrders("orderDate")}
+              >
+                Order Date{" "}
+                <FontAwesomeIcon
+                  icon={
+                    sortConfig.key === "orderDate" &&
+                    sortConfig.direction === "ascending"
+                      ? faArrowUp
+                      : faArrowDown
+                  }
+                />
               </th>
-              <th className="w-2/12">
-                Delivery Date <FontAwesomeIcon icon={faArrowUp} />
+              <th
+                className="w-2/12 cursor-pointer"
+                onClick={() => sortOrders("receiveDate")}
+              >
+                Delivery Date{" "}
+                <FontAwesomeIcon
+                  icon={
+                    sortConfig.key === "receiveDate" &&
+                    sortConfig.direction === "ascending"
+                      ? faArrowUp
+                      : faArrowDown
+                  }
+                />
               </th>
               <th className="w-1/12">Status</th>
             </tr>
@@ -81,7 +124,9 @@ export const PurchaseHistory = () => {
                   <div>
                     <p className="text-xl font-semibold">{order.name}</p>
                     <p className="text-sm text-gray-200">{order.brand}</p>
-                    <p className="text-sm text-gray-200">{order.flavor}, {order.size}</p>
+                    <p className="text-sm text-gray-200">
+                      {order.flavor}, {order.size}
+                    </p>
                   </div>
                 </td>
                 <td className="w-1/12">{order.shopName}</td>

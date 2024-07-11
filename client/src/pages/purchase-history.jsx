@@ -8,6 +8,11 @@ import {
   faCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
+const formatDate = (dateString) => {
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
+
 export const PurchaseHistory = () => {
   const { user } = useContext(UserContext);
   const [ordersInfo, setOrdersInfo] = useState([]);
@@ -33,6 +38,7 @@ export const PurchaseHistory = () => {
     };
 
     fetchOrderInfo();
+    console.log(ordersInfo);
   }, [user.accountId]);
 
   return (
@@ -61,19 +67,35 @@ export const PurchaseHistory = () => {
             </tr>
           </thead>
           <tbody className="w-full">
-            <tr className="w-full flex justify-between text-center text-xl font-medium">
-              <td className="w-2/12 text-left">1</td>
-              <td className="w-1/12">Ice Cream Shop</td>
-              <td className="w-1/12">Php 800.00</td>
-              <td className="w-2/12">June 24, 2024</td>
-              <td className="w-2/12">June 27, 2024</td>
-              <td className="w-1/12 flex justify-center">
-                <div className="w-fit flex items-center gap-3 rounded-3xl bg-gray-300 px-2 py-1 text-gray-200">
-                  <FontAwesomeIcon icon={faCircle} />
-                  <p className="font-bold text-xl">Pending</p>
-                </div>
-              </td>
-            </tr>
+            {ordersInfo.map((order, orderID) => (
+              <tr
+                key={orderID}
+                className="w-full flex items-center justify-between text-center text-xl font-medium mb-5"
+              >
+                <td className="w-2/12 text-left flex gap-5 items-center">
+                  <img
+                    src={`http://localhost:8081/productImages/${order.productImage}`}
+                    alt={order.name}
+                    className="w-20 rounded-lg"
+                  />
+                  <div>
+                    <p className="text-xl font-semibold">{order.name}</p>
+                    <p className="text-sm text-gray-200">{order.brand}</p>
+                    <p className="text-sm text-gray-200">{order.flavor}, {order.size}</p>
+                  </div>
+                </td>
+                <td className="w-1/12">{order.shopName}</td>
+                <td className="w-1/12">{order.totalPrice.toFixed(2)}</td>
+                <td className="w-2/12">{formatDate(order.orderDate)}</td>
+                <td className="w-2/12">{formatDate(order.receiveDate)}</td>
+                <td className="w-1/12 flex justify-center">
+                  <div className="w-fit h-fit flex items-center gap-3 rounded-3xl bg-gray-300 px-2 py-1 text-gray-200">
+                    <FontAwesomeIcon icon={faCircle} />
+                    <p className="font-bold text-xl">{order.status}</p>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

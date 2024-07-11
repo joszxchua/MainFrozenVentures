@@ -15,12 +15,15 @@ router.post("/fetchOrders", (req, res) => {
 
   const fetchOrdersSql = `SELECT 
                                 uo.*, 
-                                pi.*, 
-                                si.*
+                                pi.name,  pi.flavor,  pi.brand,  pi.productImage, 
+                                ps.size,
+                                si.shopName
                           FROM 
                                 user_order AS uo
                           INNER JOIN 
                                 product_info AS pi ON uo.productID = pi.productID
+                          INNER JOIN 
+                                product_size AS ps ON uo.sizeID = ps.sizeID
                           INNER JOIN 
                                 shop_info AS si ON pi.accountID = si.accountID
                           WHERE 

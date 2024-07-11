@@ -132,40 +132,42 @@ export const PurchaseHistory = () => {
             </tr>
           </thead>
           <tbody className="w-full">
-            {ordersInfo.map((order, orderID) => (
-              <tr
-                key={orderID}
-                className="w-full flex items-center justify-between text-center text-xl font-medium mb-5"
-              >
-                <td className="w-2/12 text-left flex gap-5 items-center">
-                  <img
-                    src={`http://localhost:8081/productImages/${order.productImage}`}
-                    alt={order.name}
-                    className="w-20 rounded-lg"
-                  />
-                  <div>
-                    <p className="text-xl font-bold">{order.name}</p>
-                    <p className="text-sm text-gray-200">{order.brand}</p>
-                    <p className="text-sm text-gray-200">
-                      {order.flavor}, {order.size}
-                    </p>
-                  </div>
-                </td>
-                <td className="w-1/12">{order.shopName}</td>
-                <td className="w-1/12">Php {order.totalPrice.toFixed(2)}</td>
-                <td className="w-2/12">{formatDate(order.orderDate)}</td>
-                <td className="w-2/12">{formatDate(order.receiveDate)}</td>
-                <td className="w-1/12 flex justify-center">
-                  <div
-                    className="w-fit h-fit flex items-center gap-3 rounded-3xl px-2 py-1"
-                    style={getStatusStyles(order.status)}
-                  >
-                    <FontAwesomeIcon icon={faCircle} className="text-sm"/>
-                    <p className="font-bold text-xl">{order.status}</p>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            <div className="min-h-[600px] max-h-[600px]">
+              {ordersInfo.map((order, orderID) => (
+                <tr
+                  key={orderID}
+                  className="w-full flex items-center justify-between text-center text-xl font-medium mb-5"
+                >
+                  <td className="w-2/12 text-left flex gap-5 items-center">
+                    <img
+                      src={`http://localhost:8081/productImages/${order.productImage}`}
+                      alt={order.name}
+                      className="w-20 rounded-lg"
+                    />
+                    <div>
+                      <p className="text-xl font-bold">{order.name}</p>
+                      <p className="text-sm text-gray-200">{order.brand}</p>
+                      <p className="text-sm text-gray-200">
+                        {order.flavor}, {order.size}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="w-1/12">{order.shopName}</td>
+                  <td className="w-1/12">Php {order.totalPrice.toFixed(2)}</td>
+                  <td className="w-2/12">{formatDate(order.orderDate)}</td>
+                  <td className="w-2/12">{formatDate(order.receiveDate)}</td>
+                  <td className="w-1/12 flex justify-center">
+                    <div
+                      className="w-fit h-fit flex items-center gap-3 rounded-3xl px-2 py-1"
+                      style={getStatusStyles(order.status)}
+                    >
+                      <FontAwesomeIcon icon={faCircle} className="text-sm" />
+                      <p className="font-bold text-xl">{order.status}</p>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </div>
           </tbody>
         </table>
       </div>

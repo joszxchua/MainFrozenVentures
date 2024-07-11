@@ -187,6 +187,13 @@ export const Order = () => {
           orderData
         );
         if (response.data.status === "success") {
+          const invoiceData = {
+            orderDate: new Date().toISOString().split("T")[0],
+            receiveDate: data.receiveDate,
+            shippingMode: shippingMode,
+            totalCost: orderTotal,
+          }
+          
           setMessageTitle("Success");
           setMessage(response.data.message);
 

@@ -10,8 +10,10 @@ router.post("/placeOrder", async (req, res) => {
     sizeId,
     quantity,
     totalPrice,
+    shippingMode,
     orderDate,
     receiveDate,
+    status,
     street,
     barangay,
     municipality,
@@ -25,8 +27,10 @@ router.post("/placeOrder", async (req, res) => {
     sizeId,
     quantity,
     totalPrice,
+    shippingMode,
     orderDate,
     receiveDate,
+    status,
     street,
     barangay,
     municipality,
@@ -36,28 +40,53 @@ router.post("/placeOrder", async (req, res) => {
 
   for (const [field, value] of Object.entries(requiredFields)) {
     if (!value) {
-      return res.status(200).json({
+      return res.status(400).json({
         status: "error",
         message: `Field ${field} is missing.`,
       });
     }
   }
 
-  try {
-    // Place your order placement logic here
-    // e.g., saving order details to the database
+  const insertOrderSql = `
+    INSERT INTO user_order (
+      accountID, productID, sizeID, quantity, totalPrice, shippingMode, orderDate,
+      receiveDate, status, street, barangay, municipality, province, zipCode
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
 
-    return res.status(200).json({
-      status: "success",
-      message: "Order placed successfully!",
-    });
-  } catch (error) {
-    console.error("Error placing order:", error);
-    return res.status(500).json({
-      status: "error",
-      message: "Internal server error. Please try again later.",
-    });
-  }
+  db.query(
+    insertOrderSql,
+    [
+      accountId,
+      productId,
+      sizeId,
+      quantity,
+      totalPrice,
+      shippingMode,
+      orderDate,
+      receiveDate,
+      status,
+      street,
+      barangay,
+      municipality,
+      province,
+      zipCode,
+    ],
+    (err, results) => {
+      if (err) {
+        console.error("Database insertion error:", err);
+        return res.status(500).json({
+          status: "error",
+          message: "Database insertion error",
+        });
+      }
+
+      return res.status(200).json({
+        status: "success",
+        message: "Order placed successfully",
+      });
+    }
+  );
 });
 
 module.exports = router;

@@ -5,6 +5,7 @@ import Select from "react-select";
 import { useForm } from "react-hook-form";
 import { UserContext } from "../context/user-context";
 import { OrderContext } from "../context/order-context";
+import { SuccessMessage } from "../components/success-message";
 import { ErrorMessage } from "../components/error-message";
 import { useNavigate } from "react-router-dom";
 
@@ -26,7 +27,7 @@ export const Order = () => {
     setValue: setValueAddress,
     getValues: getValuesAddress,
   } = useForm();
-  const { orderProducts } = useContext(OrderContext);
+  const { orderProducts, clearOrder } = useContext(OrderContext);
   const productsObject = orderProducts?.products || {};
   const productsArray = Object.values(productsObject);
   const [personalInfo, setPersonalInfo] = useState({});
@@ -137,6 +138,11 @@ export const Order = () => {
     ) {
       setMessageTitle("Error");
       setMessage("Please fill in all the required fields");
+
+      setTimeout(() => {
+        setMessageTitle("");
+        setMessage("");
+      }, 3000);
       setIsLoading(false);
       return;
     }
@@ -181,7 +187,13 @@ export const Order = () => {
           orderData
         );
         if (response.data.status === "success") {
-          navigate("/order-invoice");
+          setMessageTitle("Success");
+          setMessage(response.data.message);
+
+          setTimeout(() => {
+            clearOrder();
+            navigate("/order-invoice");
+          }, 1500);
         } else {
           setMessageTitle("Error");
           setMessage(response.data.message);
@@ -206,6 +218,9 @@ export const Order = () => {
 
   return (
     <div className="mt-20 min-h-[70vh] grid grid-cols-1 md:grid-cols-[70%_30%] px-10 pb-10">
+      {messageTitle && messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
       {messageTitle && messageTitle === "Error" && (
         <ErrorMessage title={messageTitle} message={message} />
       )}

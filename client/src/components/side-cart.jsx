@@ -175,7 +175,7 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
             size: curr.size,
             price: curr.price,
             totalPrice: (curr.quantity * curr.price).toFixed(2),
-            status: "pending",
+            status: "Pending",
             orderDate: currentDate,
           };
           return acc;

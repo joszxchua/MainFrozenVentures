@@ -170,7 +170,7 @@ export const Cart = () => {
             size: curr.size,
             price: curr.price,
             totalPrice: (curr.quantity * curr.price).toFixed(2),
-            status: "pending",
+            status: "Pending",
             orderDate: currentDate,
           };
           return acc;

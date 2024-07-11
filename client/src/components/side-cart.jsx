@@ -164,7 +164,7 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
             );
           }
 
-          acc[curr.productID] = {
+          acc[curr.sizeID] = {
             productId: curr.productID,
             sizeId: curr.sizeID,
             productImage: curr.productImage,

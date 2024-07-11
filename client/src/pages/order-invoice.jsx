@@ -87,7 +87,7 @@ export const OrderInvoice = () => {
           </p>
           <p className="flex justify-between text-lg font-semibold">
             <span className="text-gray-200">Total Cost</span>Php{" "}
-            {invoiceData.totalCost}
+            {invoiceData.totalCost.toFixed(2)}
           </p>
         </div>
 

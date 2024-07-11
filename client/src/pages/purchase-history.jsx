@@ -62,6 +62,28 @@ export const PurchaseHistory = () => {
     setOrdersInfo(sortedOrders);
   };
 
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case "Received":
+        return {
+          background: "#ADFF97",
+          color: "#239205",
+        };
+      case "Cancelled":
+        return {
+          background: "#FF9797",
+          color: "#B00D0D",
+        };
+      case "Pending":
+        return {
+          background: "#D1D5DB",
+          color: "#737373",
+        };
+      default:
+        return {};
+    }
+  };
+
   return (
     <div className="mt-20 px-10">
       <div>
@@ -134,8 +156,11 @@ export const PurchaseHistory = () => {
                 <td className="w-2/12">{formatDate(order.orderDate)}</td>
                 <td className="w-2/12">{formatDate(order.receiveDate)}</td>
                 <td className="w-1/12 flex justify-center">
-                  <div className="w-fit h-fit flex items-center gap-3 rounded-3xl bg-gray-300 px-2 py-1 text-gray-200">
-                    <FontAwesomeIcon icon={faCircle} />
+                  <div
+                    className="w-fit h-fit flex items-center gap-3 rounded-3xl px-2 py-1"
+                    style={getStatusStyles(order.status)}
+                  >
+                    <FontAwesomeIcon icon={faCircle} className="text-sm"/>
                     <p className="font-bold text-xl">{order.status}</p>
                   </div>
                 </td>

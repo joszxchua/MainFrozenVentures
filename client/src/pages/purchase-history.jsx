@@ -186,8 +186,8 @@ export const PurchaseHistory = () => {
               <button
                 key={i}
                 onClick={() => paginate(i + 1)}
-                className={`mx-1 px-3 py-1 rounded-lg ${
-                  currentPage === i + 1 ? "bg-gray-300" : "bg-gray-200"
+                className={`mx-1 px-3 py-1 rounded-lg font-bold ${
+                  currentPage === i + 1 ? "bg-gray-200 text-white" : "bg-gray-300"
                 }`}
               >
                 {i + 1}

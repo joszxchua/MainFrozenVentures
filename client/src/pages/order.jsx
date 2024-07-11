@@ -188,18 +188,19 @@ export const Order = () => {
         );
         if (response.data.status === "success") {
           const invoiceData = {
+            accountId: user.accountId,
             orderDate: new Date().toISOString().split("T")[0],
             receiveDate: data.receiveDate,
             shippingMode: shippingMode,
             totalCost: orderTotal,
-          }
-          
+          };
+  
           setMessageTitle("Success");
           setMessage(response.data.message);
-
+  
           setTimeout(() => {
             clearOrder();
-            navigate("/order-invoice");
+            navigate("/order-invoice", { state: { invoiceData } });
           }, 1500);
         } else {
           setMessageTitle("Error");

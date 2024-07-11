@@ -1,9 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import van from "../assets/van.png";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
+const formatDate = (dateString) => {
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
+
 export const OrderInvoice = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { invoiceData } = location.state || {};
+  const [userInfo, setUserInfo] = useState({});
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (invoiceData.accountId) {
+        try {
+          const response = await axios.post(
+            "http://localhost:8081/account/accountFetch",
+            {
+              accountId: invoiceData.accountId,
+            }
+          );
+          if (response.data.status === 1) {
+            const userData = response.data.account;
+
+            setUserInfo(userData);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [invoiceData.accountId]);
+
+  const handlePurchaseHistoryClick = () => {
+    navigate("/purchase-history");
+  };
+
+  const handleGoToShopClick = () => {
+    navigate("/shop");
+  };
+
   return (
     <div className="h-screen flex items-center justify-center pt-[100px] font-inter">
       <div className="relative w-[30%] m-auto bg-gray-100 px-10 pt-52 pb-10 rounded-lg">
@@ -14,36 +58,53 @@ export const OrderInvoice = () => {
         />
 
         <p className="flex justify-between text-xl font-semibold border-b pb-5">
-          <span>Customer Name</span>Ah Pedro Pedro
+          <span>Customer Name</span>
+          {userInfo.firstName} {userInfo.lastName}
         </p>
 
         <div className="flex flex-col items-center justify-center gap-2 my-10">
-          <h3 className="font-bold text-3xl">Thank you, First Name!</h3>
+          <h3 className="font-bold text-3xl">
+            Thank you, {userInfo.firstName}!
+          </h3>
           <p className="text-lg">Your order is being prepared</p>
         </div>
 
         <div className="my-2">
           <p className="flex justify-between text-lg font-medium">
-            <span className="text-gray-200">Order Date</span>Ah Pedro Pedro
+            <span className="text-gray-200">Order Date</span>
+            {formatDate(invoiceData.orderDate)}
           </p>
           <p className="flex justify-between text-lg font-medium">
-            <span className="text-gray-200">Receive Date</span>Ah Pedro Pedro
+            <span className="text-gray-200">Receive Date</span>
+            {formatDate(invoiceData.receiveDate)}
           </p>
         </div>
 
         <div className="my-2">
           <p className="flex justify-between text-lg font-medium">
-            <span className="text-gray-200">Shipping Method</span>Ah Pedro Pedro
+            <span className="text-gray-200">Shipping Method</span>
+            {invoiceData.shippingMode}
           </p>
           <p className="flex justify-between text-lg font-semibold">
-            <span className="text-gray-200">Total Cost</span>Ah Pedro Pedro
+            <span className="text-gray-200">Total Cost</span>Php{" "}
+            {invoiceData.totalCost}
           </p>
         </div>
 
         <div className="flex items-center justify-between text-xl text-purple-200 font-semibold mt-8">
-          <p className="w-full">Order History</p>
+          <p
+            onClick={handlePurchaseHistoryClick}
+            className="w-full cursor-pointer"
+          >
+            Purchase History
+          </p>
           <FontAwesomeIcon icon={faHeart} className="w-full" />
-          <p className="w-full text-right">Go To Shop</p>
+          <p
+            onClick={handleGoToShopClick}
+            className="w-full text-right cursor-pointer"
+          >
+            Go To Shop
+          </p>
         </div>
       </div>
     </div>

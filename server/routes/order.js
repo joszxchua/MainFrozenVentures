@@ -15,11 +15,17 @@ router.post("/fetchSingleOrder", (req, res) => {
 
   const fetchSingleOrderSql = `SELECT 
                                   uo.*, 
+                                  ai.*,
+                                  pei.*,
                                   pi.name, pi.flavor, pi.brand, pi.productImage, 
                                   ps.size,
                                   si.shopName
                                 FROM 
                                   user_order AS uo
+                                INNER JOIN 
+                                  account_info AS ai ON uo.accountID = ai.accountID
+                                INNER JOIN 
+                                  personal_info AS pei ON uo.accountID = pei.accountID
                                 INNER JOIN 
                                   product_info AS pi ON uo.productID = pi.productID
                                 INNER JOIN 

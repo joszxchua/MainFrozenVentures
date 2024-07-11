@@ -63,7 +63,7 @@ export const OrderDetails = () => {
   };
 
   return (
-    <div className="mt-20 px-10 pb-10 font-inter">
+    <div className="my-20 px-20 py-10 font-inter">
       <div className="flex justify-between items-center mb-5">
         <h1 className="text-4xl font-bold">Order Details</h1>
         <button className="bg-red-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-red-200 hover:bg-white hover:text-red-200 duration-300 ease-in-out">

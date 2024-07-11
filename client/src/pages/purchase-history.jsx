@@ -20,6 +20,8 @@ export const PurchaseHistory = () => {
     key: "orderDate",
     direction: "ascending",
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 5;
 
   useEffect(() => {
     const fetchOrderInfo = async () => {
@@ -84,6 +86,12 @@ export const PurchaseHistory = () => {
     }
   };
 
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = ordersInfo.slice(indexOfFirstOrder, indexOfLastOrder);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <div className="mt-20 px-10">
       <div>
@@ -132,10 +140,10 @@ export const PurchaseHistory = () => {
             </tr>
           </thead>
           <tbody className="w-full">
-            <div className="min-h-[600px] max-h-[600px]">
-              {ordersInfo.map((order, orderID) => (
+            <div className="min-h-[500px] max-h-[500px]">
+              {currentOrders.map((order, index) => (
                 <tr
-                  key={orderID}
+                  key={index}
                   className="w-full flex items-center justify-between text-center text-xl font-medium mb-5"
                 >
                   <td className="w-2/12 text-left flex gap-5 items-center">
@@ -170,6 +178,23 @@ export const PurchaseHistory = () => {
             </div>
           </tbody>
         </table>
+
+        <div className="mt-4 flex justify-center">
+          {Array.from(
+            { length: Math.ceil(ordersInfo.length / ordersPerPage) },
+            (_, i) => (
+              <button
+                key={i}
+                onClick={() => paginate(i + 1)}
+                className={`mx-1 px-3 py-1 rounded-lg ${
+                  currentPage === i + 1 ? "bg-gray-300" : "bg-gray-200"
+                }`}
+              >
+                {i + 1}
+              </button>
+            )
+          )}
+        </div>
       </div>
     </div>
   );

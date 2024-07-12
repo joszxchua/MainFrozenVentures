@@ -74,6 +74,7 @@ export const ProductDetails = () => {
             setPrice(lowestPriceOption.price);
             setStock(lowestPriceOption.stock);
             setSizeId(lowestPriceOption.sizeID);
+            setSize(lowestPriceOption.size);
           }
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -93,6 +94,7 @@ export const ProductDetails = () => {
     setPrice(selectedOption.value.price);
     setStock(selectedOption.value.stock);
     setSizeId(selectedOption.value.sizeID);
+    setSize(selectedOption.label);
   };
 
   const handleDescriptionClick = () => {
@@ -146,26 +148,65 @@ export const ProductDetails = () => {
   const handleBuyNow = async () => {
     clearOrder();
     try {
+      if (user.userRole === "retailer" || user.userRole === "distributor") {
+        const minQuantity = user.userRole === "retailer" ? 50 : 100;
+        if (quantity < minQuantity) {
+          setMessageTitle("Error");
+          setMessage(
+            `${
+              user.userRole.charAt(0).toUpperCase() + user.userRole.slice(1)
+            }s must order at least ${minQuantity} units of each product.`
+          );
+          setTimeout(() => {
+            setMessageTitle("");
+            setMessage("");
+          }, 3000);
+          return;
+        }
+      }
+
       const currentDate = new Date().toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
         year: "numeric",
       });
 
-      const buyNowDetails = {
-        productId: productId,
-        sizeId: sizeId,
-        productImage: product.productImage,
-        name: product.name,
-        brand: product.brand,
-        flavor: product.flavor,
-        quantity: quantity,
-        size: curr.size,
-        price: price,
-        totalPrice: (quantity * price).toFixed(2),
-        status: "Pending",
-        orderDate: currentDate,
+      const orderDetails = {
+        products: {
+          [sizeId]: (() => {
+            if (quantity > stock) {
+              setMessageTitle("Error");
+              setMessage(
+                `Quantity for ${product.name} ${size} exceeds available stock`
+              );
+              throw new Error(
+                `Quantity for ${product.name} ${size} exceeds available stock.`
+              );
+            }
+
+            return {
+              productId: productId,
+              sizeId: sizeId,
+              productImage: product.productImage,
+              name: product.name,
+              brand: product.brand,
+              flavor: product.flavor,
+              quantity: quantity,
+              size: size,
+              price: price,
+              totalPrice: (quantity * price).toFixed(2),
+              status: "Pending",
+              orderDate: currentDate,
+            };
+          })(),
+        },
       };
+
+      setOrder(orderDetails);
+
+      if (orderProducts) {
+        navigate("/order");
+      }
     } catch (error) {
       if (error.message.includes("exceeds available stock")) {
       } else {

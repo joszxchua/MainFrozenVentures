@@ -144,6 +144,10 @@ export const SignUp = () => {
             setMessageTitle("Success");
             setMessage(response.data.message);
             reset();
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
           } else {
             setMessageTitle("Error");
             setMessage(response.data.message);
@@ -151,19 +155,16 @@ export const SignUp = () => {
         })
         .catch((error) => {
           console.error("Sign-up error:", error);
-        })
-        .finally(() => {
-          setIsSigningUp(false);
         });
     } else {
       setMessageTitle("Error");
       setMessage("Invalid verification code");
     }
-    
+
     setTimeout(() => {
       setMessageTitle("");
       setMessage("");
-      isSigningUp(false);
+      setIsSigningUp(false);
     }, 3000);
   };
 

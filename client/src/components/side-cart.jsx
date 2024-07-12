@@ -156,11 +156,11 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
           if (curr.quantity > curr.stock) {
             setMessageTitle("Error");
             setMessage(
-              `Quantity for ${curr.productName} exceeds available stock`
+              `Quantity for ${curr.name} exceeds available stock`
             );
 
             throw new Error(
-              `Quantity for ${curr.productName} exceeds available stock.`
+              `Quantity for ${curr.name} exceeds available stock.`
             );
           }
 
@@ -248,6 +248,9 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
                   </p>
                   <p className="text-gray-200">
                     <strong>Size:</strong> {item.size}
+                  </p>
+                  <p className="text-gray-200">
+                    {item.stock} Items Left
                   </p>
                 </div>
 

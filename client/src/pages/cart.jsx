@@ -236,8 +236,9 @@ export const Cart = () => {
                       className="w-[150px] rounded-lg object-cover mr-5"
                     />
                     <div>
-                      <h4 className="font-bold text-xl">{item.name}</h4>
+                      <h4 className="font-bold text-lg">{item.name}</h4>
                       <p className="text-gray-200">{item.brand}</p>
+                      <p className="text-gray-200">{item.stock} Items Left</p>
                     </div>
                   </td>
                   <td className="text-center">{item.flavor}</td>

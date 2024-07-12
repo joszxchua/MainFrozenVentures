@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../context/user-context";
+import { OrderContext } from "../context/order-context";
 import Select from "react-select";
 import { useParams, useNavigate } from "react-router-dom";
 import { SuccessMessage } from "../components/success-message";
@@ -27,6 +28,7 @@ const customStyles = {
 
 export const ProductDetails = () => {
   const { user } = useContext(UserContext);
+  const { setOrder, orderProducts, clearOrder } = useContext(OrderContext);
   const { productId } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState({});
@@ -34,6 +36,7 @@ export const ProductDetails = () => {
   const [sizes, setSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(null);
   const [sizeId, setSizeId] = useState(null);
+  const [size, setSize] = useState(null);
   const [price, setPrice] = useState(0);
   const [stock, setStock] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -138,6 +141,43 @@ export const ProductDetails = () => {
       setMessageTitle("");
       setMessage("");
     }, 3000);
+  };
+
+  const handleBuyNow = async () => {
+    clearOrder();
+    try {
+      const currentDate = new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      const buyNowDetails = {
+        productId: productId,
+        sizeId: sizeId,
+        productImage: product.productImage,
+        name: product.name,
+        brand: product.brand,
+        flavor: product.flavor,
+        quantity: quantity,
+        size: curr.size,
+        price: price,
+        totalPrice: (quantity * price).toFixed(2),
+        status: "Pending",
+        orderDate: currentDate,
+      };
+    } catch (error) {
+      if (error.message.includes("exceeds available stock")) {
+      } else {
+        setMessageTitle("Error");
+        setMessage("Something went wrong");
+      }
+
+      setTimeout(() => {
+        setMessageTitle("");
+        setMessage("");
+      }, 3000);
+    }
   };
 
   return (
@@ -292,7 +332,10 @@ export const ProductDetails = () => {
               >
                 Add to cart
               </button>
-              <button className="font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out">
+              <button
+                onClick={handleBuyNow}
+                className="font-bold text-lg px-3 py-1 bg-purple-200 text-white rounded-md border-2 border-purple-200 hover:text-purple-200 hover:bg-white duration-300 ease-in-out"
+              >
                 Buy now
               </button>
             </div>

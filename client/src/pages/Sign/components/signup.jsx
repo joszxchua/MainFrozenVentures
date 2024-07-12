@@ -389,17 +389,25 @@ export const SignUp = () => {
 
               <div className="flex flex-col w-full">
                 <label className="font-semibold text-xl" htmlFor="phone">
-                  Phone Number:
+                  Phone:
                 </label>
                 <input
-                  {...register("phone", { required: true })}
-                  type="number"
+                  {...register("phone", {
+                    required: true,
+                    validate: {
+                      length: (value) =>
+                        value.length === 11 || "Phone number must be 11 digits",
+                    },
+                  })}
                   className={`mt-3 bg-gray-100 p-3 rounded-lg border-b-2 border-r-2 border-purple-200 focus:border-purple-200 outline-none ${
                     errors.phone ? "border-red-500" : ""
                   }`}
+                  type="text"
                 />
                 {errors.phone && (
-                  <span className="text-red-500">Phone number is required</span>
+                  <span className="text-red-500">
+                    {errors.phone.message || "Phone number is required"}
+                  </span>
                 )}
               </div>
 

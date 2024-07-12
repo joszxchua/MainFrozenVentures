@@ -142,6 +142,11 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
               user.userRole.charAt(0).toUpperCase() + user.userRole.slice(1)
             }s must order at least ${minQuantity} units of each product.`
           );
+          setTimeout(() => {
+            setMessageTitle("");
+            setMessage("");
+          }, 3000);
+          return;
         }
       }
 
@@ -156,11 +161,10 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
           if (curr.quantity > curr.stock) {
             setMessageTitle("Error");
             setMessage(
-              `Quantity for ${curr.name} exceeds available stock`
+              `Quantity for ${curr.name} ${curr.size} exceeds available stock`
             );
-
             throw new Error(
-              `Quantity for ${curr.name} exceeds available stock.`
+              `Quantity for ${curr.name} ${curr.size} exceeds available stock.`
             );
           }
 
@@ -186,17 +190,19 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
 
       if (orderProducts) {
         navigate("/order");
-        closeSideCart();
       }
     } catch (error) {
-      setMessageTitle("Error");
-      setMessage("Something went wrong");
-    }
+      if (error.message.includes("exceeds available stock")) {
+      } else {
+        setMessageTitle("Error");
+        setMessage("Something went wrong");
+      }
 
-    setTimeout(() => {
-      setMessageTitle("");
-      setMessage("");
-    }, 3000);
+      setTimeout(() => {
+        setMessageTitle("");
+        setMessage("");
+      }, 3000);
+    }
   };
 
   return (
@@ -249,9 +255,7 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
                   <p className="text-gray-200">
                     <strong>Size:</strong> {item.size}
                   </p>
-                  <p className="text-gray-200">
-                    {item.stock} Items Left
-                  </p>
+                  <p className="text-gray-200">{item.stock} Items Left</p>
                 </div>
 
                 <FontAwesomeIcon

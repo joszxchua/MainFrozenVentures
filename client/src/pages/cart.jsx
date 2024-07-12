@@ -137,6 +137,11 @@ export const Cart = () => {
               user.userRole.charAt(0).toUpperCase() + user.userRole.slice(1)
             }s must order at least ${minQuantity} units of each product.`
           );
+          setTimeout(() => {
+            setMessageTitle("");
+            setMessage("");
+          }, 3000);
+          return;
         }
       }
 
@@ -151,11 +156,10 @@ export const Cart = () => {
           if (curr.quantity > curr.stock) {
             setMessageTitle("Error");
             setMessage(
-              `Quantity for ${curr.productName} exceeds available stock`
+              `Quantity for ${curr.name} ${curr.size} exceeds available stock`
             );
-
             throw new Error(
-              `Quantity for ${curr.productName} exceeds available stock.`
+              `Quantity for ${curr.name} ${curr.size} exceeds available stock.`
             );
           }
 
@@ -183,14 +187,17 @@ export const Cart = () => {
         navigate("/order");
       }
     } catch (error) {
-      setMessageTitle("Error");
-      setMessage("Something went wrong");
-    }
+      if (error.message.includes("exceeds available stock")) {
+      } else {
+        setMessageTitle("Error");
+        setMessage("Something went wrong");
+      }
 
-    setTimeout(() => {
-      setMessageTitle("");
-      setMessage("");
-    }, 3000);
+      setTimeout(() => {
+        setMessageTitle("");
+        setMessage("");
+      }, 3000);
+    }
   };
 
   return (

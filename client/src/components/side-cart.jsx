@@ -189,6 +189,7 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
       setOrder(orderDetails);
 
       if (orderProducts) {
+        closeSideCart();
         navigate("/order");
       }
     } catch (error) {

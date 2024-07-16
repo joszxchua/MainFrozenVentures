@@ -154,7 +154,7 @@ export const Navbar = () => {
         >
           Shop
         </p>
-        {location.pathname !== "/cart" && (
+        {location.pathname !== "/cart" && location.pathname !== "/order" && (
           <p
             onClick={handleCartClick}
             className="font-inter font-bold text-lg cursor-pointer hover:text-purple-200 duration-300 ease-in-out"

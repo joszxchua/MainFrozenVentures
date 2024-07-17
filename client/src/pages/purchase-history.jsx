@@ -151,7 +151,7 @@ export const PurchaseHistory = () => {
                 <tr
                   key={order.orderID}
                   onClick={() => handleOrderClick(order.orderID)}
-                  className="w-full flex items-center justify-between text-center text-xl font-medium p-5 rounded-lg hover:shadow-2xl duration-300 cursor-pointer ease-in-out"
+                  className="w-full flex items-center justify-between text-center text-xl font-medium p-5 rounded-lg hover:text-white hover:bg-purple-200 duration-300 cursor-pointer ease-in-out group"
                 >
                   <td className="w-2/12 text-left flex gap-5 items-center">
                     <img
@@ -161,8 +161,8 @@ export const PurchaseHistory = () => {
                     />
                     <div>
                       <p className="text-xl font-bold">{order.name}</p>
-                      <p className="text-sm text-gray-200">{order.brand}</p>
-                      <p className="text-sm text-gray-200">
+                      <p className="text-sm text-gray-200 group-hover:text-white duration-300">{order.brand}</p>
+                      <p className="text-sm text-gray-200 group-hover:text-white duration-300">
                         {order.flavor}, {order.size}, x{order.quantity}
                       </p>
                     </div>

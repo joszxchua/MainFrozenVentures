@@ -131,7 +131,7 @@ export const Navbar = () => {
         />
       )}
       {showSideCart && (
-        <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30 backdrop-blur-sm">
+        <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30">
           <SideCart
             ref={sideCartRef}
             closeSideCart={handleCloseSideCart}

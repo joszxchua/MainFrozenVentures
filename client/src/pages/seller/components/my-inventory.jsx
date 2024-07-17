@@ -126,7 +126,7 @@ export const MyInventory = () => {
         <SuccessMessage title={messageTitle} message={message} />
       )}
       {showRestock && (
-        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-30">
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 z-30">
           <Restock
             productInfo={product}
             sizeInfo={size}

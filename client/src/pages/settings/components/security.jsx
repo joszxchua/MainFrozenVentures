@@ -265,7 +265,7 @@ export const Security = () => {
               </div>
 
               {showCode && (
-                <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30 backdrop-blur-sm">
+                <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30">
                   <div className="min-w-[600px] fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-40 bg-white p-10 border-4 border-purple-200 rounded-lg">
                     <h3 className="font-bold text-3xl">Verification Code</h3>
                     {code && (

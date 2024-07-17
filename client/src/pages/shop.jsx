@@ -32,7 +32,7 @@ export const Shop = () => {
             alt="Shop"
             className="absolute top-[-240px] right-[220px] w-[300px] z-20"
           />
-          <div className="absolute top-[-40px] right-[120px] w-[650px] h-[250px] rounded-lg bg-gray-100 z-10"></div>
+          <div className="absolute top-[-40px] right-[120px] w-[650px] h-[250px] rounded-lg bg-purple-100 z-10"></div>
         </div>
       </div>
 

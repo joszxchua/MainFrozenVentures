@@ -206,7 +206,7 @@ export const ManageProduct = () => {
         <SuccessMessage title={messageTitle} message={message} />
       )}
       {confirmationTitle && (
-        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-30">
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 z-30">
           <Confirmation
             confirmationTitle={confirmationTitle}
             confirmationMessage={confirmationMessage}
@@ -217,7 +217,7 @@ export const ManageProduct = () => {
       )}
 
       {showEditProduct && (
-        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-30">
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 z-30">
           <EditProduct
             productId={productId}
             product={product}

@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../context/user-context";
 import { Confirmation } from "../components/confirmation";
+import { ReviewProduct } from "../components/review-product";
 import { ErrorMessage } from "../components/error-message";
 import { SuccessMessage } from "../components/success-message";
 import { useParams } from "react-router-dom";
@@ -25,6 +26,7 @@ export const OrderDetails = () => {
   const [confirmationTitle, setConfirmationTitle] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [confirmation, setConfirmation] = useState(false);
+  const [reviewProduct, setReviewProduct] = useState(false);
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
 
@@ -77,26 +79,43 @@ export const OrderDetails = () => {
   };
 
   const handleCancelConfirmation = () => {
-    setConfirmation(!confirmation);
+    setConfirmation(false);
+  };
+
+  const handleReviewProduct = () => {
+    setReviewProduct(true);
+  };
+
+  const handleCancelReview = () => {
+    setReviewProduct(false);
   };
 
   const handleYesConfirmation = async () => {
     if (confirmationTitle === "Receive Order") {
-      const response = await axios.post(
-        "http://localhost:8081/order/receiveOrder",
-        {
-          orderId: orderId,
+      try {
+        const response = await axios.post(
+          "http://localhost:8081/order/receiveOrder",
+          {
+            orderId: orderId,
+          }
+        );
+        if (response.data.status === "success") {
+          setMessageTitle("Success");
+          setMessage(response.data.message);
+          setOrder((prevOrder) => ({
+            ...prevOrder,
+            status: "Received",
+          }));
+        } else {
+          setMessageTitle("Error");
+          setMessage("Something went wrong");
         }
-      );
-      if (response.data.status === "success") {
-        setMessageTitle("Success");
-        setMessage(response.data.message);
-      } else {
+      } catch (error) {
         setMessageTitle("Error");
         setMessage("Something went wrong");
       }
     }
-    
+
     setConfirmation(false);
     setTimeout(() => {
       setMessageTitle("");
@@ -119,6 +138,14 @@ export const OrderDetails = () => {
             confirmationMessage={confirmationMessage}
             cancelConfirmation={handleCancelConfirmation}
             yesConfirmation={handleYesConfirmation}
+          />
+        </div>
+      )}
+      {reviewProduct && (
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 z-30">
+          <ReviewProduct
+            productName={order.name}
+            cancelReview={handleCancelReview}
           />
         </div>
       )}
@@ -206,10 +233,16 @@ export const OrderDetails = () => {
                 <p className="font-bold text-xl">{order.status}</p>
               </div>
               <button
-                onClick={handleReceiveOrder}
+                onClick={
+                  order.status === "Received"
+                    ? handleReviewProduct
+                    : handleReceiveOrder
+                }
                 className="bg-green-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-green-200 hover:bg-white hover:text-green-200 duration-300 ease-in-out"
               >
-                Receive Order
+                {order.status === "Received"
+                  ? "Review Product"
+                  : "Receive Order"}
               </button>
             </div>
           </div>

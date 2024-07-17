@@ -93,6 +93,7 @@ export const OrderDetails = () => {
   const handleReviewResult = (title, message) => {
     setMessageTitle(title);
     setMessage(message);
+    setReviewProduct(false);
 
     setTimeout(() => {
       setMessageTitle("");

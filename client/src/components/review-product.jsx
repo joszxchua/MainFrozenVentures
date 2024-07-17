@@ -32,12 +32,13 @@ export const ReviewProduct = ({ cancelReview, order, onResult }) => {
         {
           ...data,
           accountId: user.accountId,
+          orderId: order.orderID,
           productId: order.productID,
           sizeId: order.sizeID,
         }
       );
       if (response.data.status === "success") {
-        onSuccess("Success", response.data.message);
+        onResult("Success", response.data.message);
       } else if (response.data.status === "error") {
         onResult("Error", response.data.message);
       }

@@ -4,23 +4,22 @@ const db = require("../db");
 const router = express.Router();
 
 router.post("/reviewProduct", (req, res) => {
-  const { accountId, productId, sizeId, rating, reviewText } = req.body;
+  const { accountId, orderId, productId, sizeId, rating, reviewText } = req.body;
 
-  if (!accountId || !productId || !sizeId) {
+  if (!accountId || !orderId || !productId || !sizeId) {
     return res.status(400).json({
       status: "error",
-      message: "Account ID, Product ID and Size ID is missing.",
+      message: "One of the ID's is missing",
     });
   }
 
   const insertReviewSql = `
-      INSERT INTO review_product (accountID, productID, sizeID, rating, reviewText)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO review_product (accountID, orderID, productID, sizeID, rating, reviewText)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
 
-  db.query(insertReviewSql, [accountId, productId, sizeId, rating, reviewText], (err, results) => {
+  db.query(insertReviewSql, [accountId, orderId, productId, sizeId, rating, reviewText], (err, results) => {
     if (err) {
-      console.error("Database insert error:", err);
       return res.status(500).json({
         status: "error",
         message: "Database insert error",
@@ -52,7 +51,6 @@ router.post("/receiveOrder", (req, res) => {
 
   db.query(updateOrderStatusSql, [orderId], (err, results) => {
     if (err) {
-      console.error("Database update error:", err);
       return res.status(500).json({
         status: "error",
         message: "Database update error",

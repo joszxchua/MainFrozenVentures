@@ -9,7 +9,7 @@ export const Restock = ({
   cancelRestock,
   onSuccess,
   onError,
-  updateStock, // Receive the function here
+  updateStock,
 }) => {
   const [stock, setStock] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +27,7 @@ export const Restock = ({
       );
       if (response.data.status === "success") {
         const newStock = Number(sizeInfo.stock) + Number(stock);
-        updateStock(sizeInfo.sizeID, newStock); // Update the stock here
+        updateStock(sizeInfo.sizeID, newStock);
         onSuccess("Success", response.data.message);
       } else if (response.data.status === "error") {
         onError("Error", response.data.message);

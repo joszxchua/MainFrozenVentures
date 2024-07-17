@@ -1,6 +1,9 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../context/user-context";
+import { Confirmation } from "../components/confirmation";
+import { ErrorMessage } from "../components/error-message";
+import { SuccessMessage } from "../components/success-message";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -19,6 +22,11 @@ export const OrderDetails = () => {
   const { user } = useContext(UserContext);
   const { orderId } = useParams();
   const [order, setOrder] = useState({});
+  const [confirmationTitle, setConfirmationTitle] = useState("");
+  const [confirmationMessage, setConfirmationMessage] = useState("");
+  const [confirmation, setConfirmation] = useState(false);
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,8 +70,58 @@ export const OrderDetails = () => {
     }
   };
 
+  const handleReceiveOrder = () => {
+    setConfirmation(true);
+    setConfirmationTitle("Receive Order");
+    setConfirmationMessage("Are you sure that you want to receive this order?");
+  };
+
+  const handleCancelConfirmation = () => {
+    setConfirmation(!confirmation);
+  };
+
+  const handleYesConfirmation = async () => {
+    if (confirmationTitle === "Receive Order") {
+      const response = await axios.post(
+        "http://localhost:8081/order/receiveOrder",
+        {
+          orderId: orderId,
+        }
+      );
+      if (response.data.status === "success") {
+        setMessageTitle("Success");
+        setMessage(response.data.message);
+      } else {
+        setMessageTitle("Error");
+        setMessage("Something went wrong");
+      }
+    }
+    
+    setConfirmation(false);
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
   return (
     <div className="my-20 px-20 py-5 font-inter">
+      {messageTitle && messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle && messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
+      {confirmation && (
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 z-30">
+          <Confirmation
+            confirmationTitle={confirmationTitle}
+            confirmationMessage={confirmationMessage}
+            cancelConfirmation={handleCancelConfirmation}
+            yesConfirmation={handleYesConfirmation}
+          />
+        </div>
+      )}
       <div className="flex justify-between items-center mb-5">
         <h1 className="text-4xl font-bold">Order Details</h1>
         <button className="bg-red-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-red-200 hover:bg-white hover:text-red-200 duration-300 ease-in-out">
@@ -147,7 +205,10 @@ export const OrderDetails = () => {
                 <FontAwesomeIcon icon={faCircle} className="text-sm" />
                 <p className="font-bold text-xl">{order.status}</p>
               </div>
-              <button className="bg-green-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-green-200 hover:bg-white hover:text-green-200 duration-300 ease-in-out">
+              <button
+                onClick={handleReceiveOrder}
+                className="bg-green-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-green-200 hover:bg-white hover:text-green-200 duration-300 ease-in-out"
+              >
                 Receive Order
               </button>
             </div>

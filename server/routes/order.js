@@ -3,6 +3,45 @@ const db = require("../db");
 
 const router = express.Router();
 
+router.post("/receiveOrder", (req, res) => {
+  const { orderId } = req.body;
+
+  if (!orderId) {
+    return res.status(400).json({
+      status: "error",
+      message: "Order ID is missing.",
+    });
+  }
+
+  const updateOrderStatusSql = `
+    UPDATE user_order
+    SET status = 'Received'
+    WHERE orderID = ?
+  `;
+
+  db.query(updateOrderStatusSql, [orderId], (err, results) => {
+    if (err) {
+      console.error("Database update error:", err);
+      return res.status(500).json({
+        status: "error",
+        message: "Database update error",
+      });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Order not found.",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Order status updated successfully",
+    });
+  });
+});
+
 router.post("/fetchSingleOrder", (req, res) => {
   const { accountId, orderId } = req.body;
 

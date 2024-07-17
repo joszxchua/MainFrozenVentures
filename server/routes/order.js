@@ -3,6 +3,37 @@ const db = require("../db");
 
 const router = express.Router();
 
+router.post("/reviewProduct", (req, res) => {
+  const { accountId, productId, sizeId, rating, reviewText } = req.body;
+
+  if (!accountId || !productId || !sizeId) {
+    return res.status(400).json({
+      status: "error",
+      message: "Account ID, Product ID and Size ID is missing.",
+    });
+  }
+
+  const insertReviewSql = `
+      INSERT INTO review_product (accountID, productID, sizeID, rating, reviewText)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+  db.query(insertReviewSql, [accountId, productId, sizeId, rating, reviewText], (err, results) => {
+    if (err) {
+      console.error("Database insert error:", err);
+      return res.status(500).json({
+        status: "error",
+        message: "Database insert error",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Review has been successfully submited",
+    });
+  });
+});
+
 router.post("/receiveOrder", (req, res) => {
   const { orderId } = req.body;
 

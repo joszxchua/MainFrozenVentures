@@ -21,15 +21,21 @@ export const ReviewProduct = ({ cancelReview, order, onResult }) => {
   const onSubmit = async (data) => {
     if (rating === 0) {
       setRatingError(true);
+      return;
     }
 
     setIsLoading(true);
 
     try {
-      const response = await axios.post("/api/reviews", {
-        ...data,
-        user: user.id,
-      });
+      const response = await axios.post(
+        "http://localhost:8081/order/reviewProduct",
+        {
+          ...data,
+          accountId: user.accountId,
+          productId: order.productID,
+          sizeId: order.sizeID,
+        }
+      );
       if (response.data.status === "success") {
         onSuccess("Success", response.data.message);
       } else if (response.data.status === "error") {
@@ -38,7 +44,7 @@ export const ReviewProduct = ({ cancelReview, order, onResult }) => {
     } catch (error) {
       onResult("Error", "Something went wrong");
     }
-    
+
     setIsLoading(false);
   };
 
@@ -97,7 +103,6 @@ export const ReviewProduct = ({ cancelReview, order, onResult }) => {
           className="bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
         >
           {isLoading ? "Loading..." : "Submit Review"}
-
         </button>
       </div>
     </form>

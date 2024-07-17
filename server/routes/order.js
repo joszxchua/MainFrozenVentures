@@ -4,32 +4,59 @@ const db = require("../db");
 const router = express.Router();
 
 router.post("/reviewProduct", (req, res) => {
-  const { accountId, orderId, productId, sizeId, rating, reviewText } = req.body;
+  const { accountId, orderId, productId, sizeId, rating, reviewText } =
+    req.body;
 
   if (!accountId || !orderId || !productId || !sizeId) {
     return res.status(400).json({
       status: "error",
-      message: "One of the ID's is missing",
+      message: "One of the IDs is missing",
     });
   }
 
-  const insertReviewSql = `
+  const updateOrderSql = `
+    UPDATE user_order
+    SET isReviewed = 1
+    WHERE orderID = ?
+  `;
+
+  db.query(updateOrderSql, [orderId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        status: "error",
+        message: "Database update error",
+      });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Order not found.",
+      });
+    }
+
+    const insertReviewSql = `
       INSERT INTO review_product (accountID, orderID, productID, sizeID, rating, reviewText)
       VALUES (?, ?, ?, ?, ?, ?)
     `;
 
-  db.query(insertReviewSql, [accountId, orderId, productId, sizeId, rating, reviewText], (err, results) => {
-    if (err) {
-      return res.status(500).json({
-        status: "error",
-        message: "Database insert error",
-      });
-    }
+    db.query(
+      insertReviewSql,
+      [accountId, orderId, productId, sizeId, rating, reviewText],
+      (err, results) => {
+        if (err) {
+          return res.status(500).json({
+            status: "error",
+            message: "Database insert error",
+          });
+        }
 
-    return res.status(200).json({
-      status: "success",
-      message: "Review has been successfully submited",
-    });
+        return res.status(200).json({
+          status: "success",
+          message: "Review has been successfully submitted",
+        });
+      }
+    );
   });
 });
 

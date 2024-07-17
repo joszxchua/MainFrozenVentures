@@ -244,18 +244,25 @@ export const OrderDetails = () => {
                 <FontAwesomeIcon icon={faCircle} className="text-sm" />
                 <p className="font-bold text-xl">{order.status}</p>
               </div>
-              <button
-                onClick={
-                  order.status === "Received"
-                    ? handleReviewProduct
-                    : handleReceiveOrder
-                }
-                className="bg-green-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-green-200 hover:bg-white hover:text-green-200 duration-300 ease-in-out"
-              >
-                {order.status === "Received"
-                  ? "Review Product"
-                  : "Receive Order"}
-              </button>
+
+              {order.isReviewed === 0 ? (
+                <button
+                  onClick={
+                    order.status === "Received"
+                      ? handleReviewProduct
+                      : handleReceiveOrder
+                  }
+                  className="bg-green-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-green-200 hover:bg-white hover:text-green-200 duration-300 ease-in-out"
+                >
+                  {order.status === "Received"
+                    ? "Review Product"
+                    : "Receive Order"}
+                </button>
+              ) : (
+                <button className="bg-green-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-green-200 hover:bg-white hover:text-green-200 duration-300 ease-in-out">
+                  View Review
+                </button>
+              )}
             </div>
           </div>
         </div>

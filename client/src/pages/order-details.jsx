@@ -90,6 +90,16 @@ export const OrderDetails = () => {
     setReviewProduct(false);
   };
 
+  const handleReviewResult = (title, message) => {
+    setMessageTitle(title);
+    setMessage(message);
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
   const handleYesConfirmation = async () => {
     if (confirmationTitle === "Receive Order") {
       try {
@@ -144,8 +154,9 @@ export const OrderDetails = () => {
       {reviewProduct && (
         <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 z-30">
           <ReviewProduct
-            productName={order.name}
             cancelReview={handleCancelReview}
+            order={order}
+            onResult={handleReviewResult}
           />
         </div>
       )}

@@ -43,6 +43,7 @@ export const ReviewProduct = ({ cancelReview, order, onResult }) => {
         onResult("Error", response.data.message);
       }
     } catch (error) {
+      console.error("Error reviewing order: ", error);
       onResult("Error", "Something went wrong");
     }
 

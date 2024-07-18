@@ -140,6 +140,21 @@ export const OrderDetails = () => {
     setShowCancelOrder(true);
   };
 
+  const handleCancelCancel = () => {
+    setShowCancelOrder(false);
+  };
+
+  const handleCancelResult = (title, message) => {
+    setMessageTitle(title);
+    setMessage(message);
+    setReviewProduct(false);
+
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
   return (
     <div className="my-20 px-20 py-5 font-inter">
       {messageTitle && messageTitle === "Error" && (
@@ -169,7 +184,11 @@ export const OrderDetails = () => {
       )}
       {showCancelOrder && (
         <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 z-30">
-          <CancelOrder />
+          <CancelOrder
+            cancelCancel={handleCancelCancel}
+            order={order}
+            onResult={handleCancelResult}
+          />
         </div>
       )}
       <div className="flex justify-between items-center mb-5">

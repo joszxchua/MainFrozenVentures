@@ -244,7 +244,7 @@ export const ProductDetails = () => {
 
       <div className="my-20 pt-10 min-h-[70vh] flex justify-center gap-20">
         <div className="flex flex-col justify-between w-[30vw] p-10 rounded-lg shadow-2xl">
-          <div className="flex flex-col gap-5">
+          <div className="h-full flex flex-col gap-5">
             <div className="flex justify-between items-start">
               <div>
                 <h2 className="font-bold text-4xl">{product.name}</h2>
@@ -298,7 +298,7 @@ export const ProductDetails = () => {
               </p>
             </div>
 
-            <p className="py-5 text-xl text-justify">{product.description}</p>
+            <p className="py-5 text-xl text-justify leading-10">{product.description}</p>
           </div>
         </div>
 

@@ -3,6 +3,7 @@ import axios from "axios";
 import { UserContext } from "../context/user-context";
 import { Confirmation } from "../components/confirmation";
 import { ReviewProduct } from "../components/review-product";
+import { CancelOrder } from "../components/cancel-order";
 import { ErrorMessage } from "../components/error-message";
 import { SuccessMessage } from "../components/success-message";
 import { useParams } from "react-router-dom";
@@ -29,6 +30,7 @@ export const OrderDetails = () => {
   const [reviewProduct, setReviewProduct] = useState(false);
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [showCancelOrder, setShowCancelOrder] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,6 +136,10 @@ export const OrderDetails = () => {
     }, 3000);
   };
 
+  const handleCancelOrder = () => {
+    setShowCancelOrder(true);
+  };
+
   return (
     <div className="my-20 px-20 py-5 font-inter">
       {messageTitle && messageTitle === "Error" && (
@@ -161,11 +167,21 @@ export const OrderDetails = () => {
           />
         </div>
       )}
+      {showCancelOrder && (
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 z-30">
+          <CancelOrder />
+        </div>
+      )}
       <div className="flex justify-between items-center mb-5">
         <h1 className="text-4xl font-bold">Order Details</h1>
-        <button className="bg-red-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-red-200 hover:bg-white hover:text-red-200 duration-300 ease-in-out">
-          Cancel Order
-        </button>
+        {order.status === "Pending" && (
+          <button
+            onClick={handleCancelOrder}
+            className="bg-red-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-red-200 hover:bg-white hover:text-red-200 duration-300 ease-in-out"
+          >
+            Cancel Order
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col md:flex-row gap-10">

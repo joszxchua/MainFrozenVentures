@@ -189,11 +189,17 @@ router.post("/sellerProductFetch", (req, res) => {
     });
   }
 
-  const sql = `SELECT pi.*, COUNT(ps.size) AS totalSizes, SUM(ps.stock) AS totalStock
-              FROM product_info pi
-              LEFT JOIN product_size ps ON pi.productID = ps.productID
-              WHERE pi.accountID = ? AND pi.isDeleted = 0 AND ps.isDeleted = 0 
-              GROUP BY pi.productID;`;
+  const sql = `SELECT 
+                pi.*, COUNT(ps.size) AS totalSizes, 
+                SUM(ps.stock) AS totalStock
+              FROM 
+                product_info pi
+              LEFT JOIN 
+                product_size ps ON pi.productID = ps.productID
+              WHERE 
+                pi.accountID = ? AND pi.isDeleted = 0 AND ps.isDeleted = 0 
+              GROUP BY 
+                pi.productID;`;
 
   db.query(sql, [accountId], (err, results) => {
     if (err) {
@@ -225,12 +231,23 @@ router.post("/productFetch", (req, res) => {
     });
   }
 
-  const sql = `SELECT pi.*, COUNT(ps.size) AS totalSizes, SUM(ps.stock) AS totalStock, si.shopName
-              FROM product_info pi
-              LEFT JOIN product_size ps ON pi.productID = ps.productID
-              INNER JOIN shop_info si ON pi.accountID = si.accountID
-              WHERE pi.productID = ? AND pi.isDeleted = 0
-              GROUP BY pi.productID;`;
+  const sql = `SELECT 
+                pi.*, COUNT(ps.size) AS totalSizes, 
+                SUM(ps.stock) AS totalStock, 
+                IFNULL(ROUND(AVG(rp.rating), 2), 0) AS avgRating,
+                si.shopName
+              FROM 
+                product_info pi
+              LEFT JOIN 
+                product_size ps ON pi.productID = ps.productID 
+              LEFT JOIN 
+                review_product rp ON pi.productID = rp.productID
+              INNER JOIN 
+                shop_info si ON pi.accountID = si.accountID
+              WHERE 
+                pi.productID = ? AND pi.isDeleted = 0
+              GROUP BY 
+                pi.productID;`;
 
   db.query(sql, [productId], (err, results) => {
     if (err) {
@@ -444,12 +461,15 @@ router.post("/productShopFetch", (req, res) => {
                                 COUNT(ps.size) AS totalSizes, 
                                 SUM(ps.stock) AS totalStock,
                                 MIN(ps.price) AS lowestPrice,
+                                IFNULL(ROUND(AVG(rp.rating), 2), 0) AS avgRating,
                                 s.shopName, 
                                 a.userRole
                             FROM 
                                 product_info pi
                             LEFT JOIN 
                                 product_size ps ON pi.productID = ps.productID AND ps.isDeleted = 0
+                            LEFT JOIN 
+                                review_product rp ON pi.productID = rp.productID
                             INNER JOIN 
                                 shop_info s ON pi.accountID = s.accountID 
                             INNER JOIN 

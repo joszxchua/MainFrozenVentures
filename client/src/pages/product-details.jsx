@@ -251,7 +251,7 @@ export const ProductDetails = () => {
                   icon={faStar}
                   className="text-yellow-500 text-3xl"
                 />
-                <p className="text-xl">(3.5/5)</p>
+                <p className="text-xl">( {product.avgRating} / 5 )</p>
               </div>
             </div>
 

@@ -65,7 +65,7 @@ export const Products = () => {
                 icon={faStar}
                 className="text-yellow-500 text-2xl"
               />
-              <p>(3.5/5)</p>
+              <p>( {product.avgRating} / 5 )</p>
             </div>
 
             <div className="flex justify-between items-center">

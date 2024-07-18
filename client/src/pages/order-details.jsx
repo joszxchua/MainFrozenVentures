@@ -147,7 +147,14 @@ export const OrderDetails = () => {
   const handleCancelResult = (title, message) => {
     setMessageTitle(title);
     setMessage(message);
-    setReviewProduct(false);
+    setShowCancelOrder(false);
+
+    if (title === "Success") {
+      setOrder((prevOrder) => ({
+        ...prevOrder,
+        status: "Cancelled",
+      }));
+    }
 
     setTimeout(() => {
       setMessageTitle("");
@@ -280,7 +287,7 @@ export const OrderDetails = () => {
                 <p className="font-bold text-xl">{order.status}</p>
               </div>
 
-              {order.isReviewed === 0 && (
+              {order.status === "Pending" && order.isReviewed === 0 && (
                 <button
                   onClick={
                     order.status === "Received"

@@ -3,6 +3,44 @@ const db = require("../db");
 
 const router = express.Router();
 
+router.post("/cancelOrder", (req, res) => {
+  const { accountId, orderId, reason } = req.body;
+
+  if (!accountId || !orderId) {
+    return res.status(400).json({
+      status: "error",
+      message: "One of the IDs is missing",
+    });
+  }
+
+  const updateOrderSql = `
+    UPDATE user_order
+    SET status = "Cancelled", cancelReason = ?
+    WHERE accountID = ? AND orderID = ?
+  `;
+
+  db.query(updateOrderSql, [reason, accountId, orderId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        status: "error",
+        message: "Database update error",
+      });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Order not found.",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Order has been successfully cancelled",
+    });
+  });
+});
+
 router.post("/reviewProduct", (req, res) => {
   const { accountId, orderId, productId, sizeId, rating, reviewText } =
     req.body;

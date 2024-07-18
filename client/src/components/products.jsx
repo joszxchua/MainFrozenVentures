@@ -46,7 +46,7 @@ export const Products = () => {
         <div
           key={product.productID}
           onClick={() => handleProductClick(product.productID)}
-          className="flex flex-col w-fit cursor-pointer px-4 py-3 rounded-lg hover:shadow-2xl duration-300"
+          className="flex flex-col bg-gray-100 w-fit cursor-pointer px-4 py-3 rounded-lg hover:shadow-2xl duration-300"
         >
           <img
             src={`http://localhost:8081/productImages/${product.productImage}`}
@@ -60,27 +60,12 @@ export const Products = () => {
               <p className="text-gray-200">{product.shopName}</p>
             </div>
 
-            <div className="py-5 flex gap-2">
+            <div className="py-2 flex items-center gap-2">
               <FontAwesomeIcon
                 icon={faStar}
-                className="text-purple-200 text-3xl"
+                className="text-yellow-500 text-2xl"
               />
-              <FontAwesomeIcon
-                icon={faStar}
-                className="text-purple-200 text-3xl"
-              />
-              <FontAwesomeIcon
-                icon={faStar}
-                className="text-purple-200 text-3xl"
-              />
-              <FontAwesomeIcon
-                icon={faStar}
-                className="text-gray-100 text-3xl"
-              />
-              <FontAwesomeIcon
-                icon={faStar}
-                className="text-gray-100 text-3xl"
-              />
+              <p>(3.5/5)</p>
             </div>
 
             <div className="flex justify-between items-center">

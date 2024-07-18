@@ -246,27 +246,12 @@ export const ProductDetails = () => {
                 <p className="text-xl text-gray-200">{product.shopName}</p>
               </div>
 
-              <div className="flex gap-2">
+              <div className="py-2 flex items-center gap-2">
                 <FontAwesomeIcon
                   icon={faStar}
-                  className="text-purple-200 text-3xl"
+                  className="text-yellow-500 text-3xl"
                 />
-                <FontAwesomeIcon
-                  icon={faStar}
-                  className="text-purple-200 text-3xl"
-                />
-                <FontAwesomeIcon
-                  icon={faStar}
-                  className="text-purple-200 text-3xl"
-                />
-                <FontAwesomeIcon
-                  icon={faStar}
-                  className="text-gray-100 text-3xl"
-                />
-                <FontAwesomeIcon
-                  icon={faStar}
-                  className="text-gray-100 text-3xl"
-                />
+                <p className="text-xl">(3.5/5)</p>
               </div>
             </div>
 

@@ -186,7 +186,18 @@ export const SideCart = forwardRef(({ closeSideCart, cartClick }, ref) => {
         }, {}),
       };
 
-      setOrder(orderDetails);
+      if (Object.keys(orderDetails.products).length > 0) {
+        setOrder(orderDetails);
+      } else {
+        setMessageTitle("Error");
+        setMessage("Your cart is empty");
+
+        setTimeout(() => {
+          setMessageTitle("");
+          setMessage("");
+        }, 3000);
+        return;
+      }
 
       if (orderProducts) {
         closeSideCart();

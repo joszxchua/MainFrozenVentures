@@ -194,10 +194,10 @@ export const Order = () => {
             shippingMode: shippingMode,
             totalCost: orderTotal,
           };
-  
+
           setMessageTitle("Success");
           setMessage(response.data.message);
-  
+
           setTimeout(() => {
             clearOrder();
             navigate("/order-invoice", { state: { invoiceData } });

@@ -97,6 +97,13 @@ export const OrderDetails = () => {
     setMessage(message);
     setReviewProduct(false);
 
+    if (title === "Success") {
+      setOrder((prevOrder) => ({
+        ...prevOrder,
+        isReviewed: 1,
+      }));
+    }
+
     setTimeout(() => {
       setMessageTitle("");
       setMessage("");
@@ -289,16 +296,18 @@ export const OrderDetails = () => {
 
               {order.status === "Pending" && order.isReviewed === 0 && (
                 <button
-                  onClick={
-                    order.status === "Received"
-                      ? handleReviewProduct
-                      : handleReceiveOrder
-                  }
+                  onClick={handleReceiveOrder}
                   className="bg-green-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-green-200 hover:bg-white hover:text-green-200 duration-300 ease-in-out"
                 >
-                  {order.status === "Received"
-                    ? "Review Product"
-                    : "Receive Order"}
+                  Receive Order
+                </button>
+              )}
+              {order.status === "Received" && order.isReviewed === 0 && (
+                <button
+                  onClick={handleReviewProduct}
+                  className="bg-green-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-green-200 hover:bg-white hover:text-green-200 duration-300 ease-in-out"
+                >
+                  Review Product
                 </button>
               )}
             </div>

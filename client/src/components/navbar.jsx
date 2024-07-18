@@ -58,6 +58,11 @@ export const Navbar = () => {
     navigate("/cart");
   };
 
+  const handleShopCartClick = () => {
+    setShowSideCart(false);
+    navigate("/shop");
+  };
+
   const toggleMenuDropdown = () => {
     setShowMenuDropdown((prev) => !prev);
   };
@@ -136,6 +141,7 @@ export const Navbar = () => {
             ref={sideCartRef}
             closeSideCart={handleCloseSideCart}
             cartClick={handleViewCartClick}
+            shopClick={handleShopCartClick}
           />
         </div>
       )}

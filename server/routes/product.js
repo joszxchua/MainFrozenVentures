@@ -221,6 +221,45 @@ router.post("/sellerProductFetch", (req, res) => {
   });
 });
 
+router.post("/reviewFetch", (req, res) => {
+  const { productId } = req.body;
+
+  if (!productId) {
+    return res.status(500).json({
+      status: 0,
+      message: "Product ID is required",
+    });
+  }
+
+  const fetchReviewsSql = `SELECT 
+                            rp.*,
+                            ps.*,
+                            pi.*
+                          FROM 
+                             review_product rp 
+                          INNER JOIN 
+                             product_size ps ON rp.sizeID = ps.sizeID 
+                          INNER JOIN 
+                             personal_info pi ON rp.accountID = pi.accountID 
+                          WHERE 
+                             rp.productID = ?`;
+
+  db.query(fetchReviewsSql, [productId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        status: 0,
+        message: "Database query error",
+      });
+    }
+
+    return res.status(200).json({
+      status: 1,
+      message: "Reviews information fetched successfully",
+      reviews: results,
+    });
+  });
+});
+
 router.post("/productFetch", (req, res) => {
   const { productId } = req.body;
 
@@ -442,41 +481,6 @@ router.post("/addProductSize", (req, res) => {
         status: "success",
         message: "Product size added successfully",
       });
-    });
-  });
-});
-
-router.post("/reviewFetch", (req, res) => {
-  const { productId } = req.body;
-
-  if (!productId) {
-    return res.status(500).json({
-      status: "error",
-      message: "Product ID is required",
-    });
-  }
-
-  const fetchReviewsSql = `SELECT 
-                            rp.*,
-                            ps.*
-                           FROM 
-                             review_product rp 
-                           INNER JOIN 
-                             product_size ps ON rp.sizeID = ps.sizeID 
-                           WHERE 
-                             rp.productID = ?`;
-
-  db.query(fetchReviewsSql, [productId], (err, results) => {
-    if (err) {
-      return res.status(500).json({
-        status: "error",
-        message: "Database query error",
-      });
-    }
-
-    return res.status(200).json({
-      status: "success",
-      data: results,
     });
   });
 });

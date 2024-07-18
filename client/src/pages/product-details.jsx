@@ -8,13 +8,17 @@ import { SuccessMessage } from "../components/success-message";
 import { ErrorMessage } from "../components/error-message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowLeft,
   faStar,
   faIceCream,
   faScroll,
   faMinus,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
+
+const formatDate = (dateString) => {
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
 
 const customStyles = {
   control: (provided, state) => ({
@@ -40,7 +44,6 @@ export const ProductDetails = () => {
   const [price, setPrice] = useState(0);
   const [stock, setStock] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [activeDescRev, setActiveDescRev] = useState("description");
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
 
@@ -75,6 +78,27 @@ export const ProductDetails = () => {
             setStock(lowestPriceOption.stock);
             setSizeId(lowestPriceOption.sizeID);
             setSize(lowestPriceOption.size);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [productId]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (productId) {
+        try {
+          const reviewsResponse = await axios.post(
+            "http://localhost:8081/product/reviewFetch",
+            { productId: productId }
+          );
+          if (reviewsResponse.data.status === 1) {
+            const reviewsData = reviewsResponse.data.reviews;
+            setReviews(reviewsData);
           }
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -325,12 +349,50 @@ export const ProductDetails = () => {
           </div>
         </div>
 
-        <div className="ml-20 flex flex-col justify-between w-[25vw] p-5 rounded-lg shadow-2xl">
-          <h3 className="font-bold text-2xl">Reviews:</h3>
-          <div className="h-full flex items-center justify-center text-3xl gap-5">
-            <p className="font-bold">No reviews yet</p>
-            <FontAwesomeIcon icon={faScroll} className="text-purple-200" />
-          </div>
+        <div className="ml-20 w-[25vw] max-h-[75vh] p-5 rounded-lg shadow-2xl overflow-auto">
+          {reviews && reviews.length > 0 && <h3 className="mb-5 font-bold text-2xl">Reviews:</h3>}
+          {reviews && reviews.length > 0 ? (
+            reviews.map((review) => (
+              <div key={review.reviewID} className="mb-5 flex flex-col">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={`http://localhost:8081/profileImages/${review.profilePicture}`}
+                    alt={review.firstName + " " + review.lastName}
+                    className="w-10 h-10 rounded-full"
+                  />
+
+                  <div className="w-full flex justify-between">
+                    <div>
+                      <p className="font-semibold text-lg">
+                        {review.firstName} {review.lastName}
+                      </p>
+
+                      <div className="flex items-center gap-2">
+                        <FontAwesomeIcon
+                          icon={faStar}
+                          className="text-yellow-500"
+                        />
+                        <p className="text-sm">( {review.rating} / 5 )</p>
+                      </div>
+                    </div>
+
+                    <p>{formatDate(review.createdAt)}</p>
+                  </div>
+                </div>
+
+                {review.reviewText === "" ? (
+                  <p className="mt-3 w-full">No feedback.</p>
+                ) : (
+                  <p className="mt-3 w-full break-words">{review.reviewText}</p>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="h-full flex items-center justify-center text-3xl gap-5">
+              <p className="font-bold">No reviews yet</p>
+              <FontAwesomeIcon icon={faScroll} className="text-purple-200" />
+            </div>
+          )}
         </div>
       </div>
     </>

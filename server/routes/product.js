@@ -446,6 +446,41 @@ router.post("/addProductSize", (req, res) => {
   });
 });
 
+router.post("/reviewFetch", (req, res) => {
+  const { productId } = req.body;
+
+  if (!productId) {
+    return res.status(500).json({
+      status: "error",
+      message: "Product ID is required",
+    });
+  }
+
+  const fetchReviewsSql = `SELECT 
+                            rp.*,
+                            ps.*
+                           FROM 
+                             review_product rp 
+                           INNER JOIN 
+                             product_size ps ON rp.sizeID = ps.sizeID 
+                           WHERE 
+                             rp.productID = ?`;
+
+  db.query(fetchReviewsSql, [productId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        status: "error",
+        message: "Database query error",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      data: results,
+    });
+  });
+});
+
 router.post("/productShopFetch", (req, res) => {
   const { userRole } = req.body;
 

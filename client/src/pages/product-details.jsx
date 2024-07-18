@@ -85,24 +85,12 @@ export const ProductDetails = () => {
     fetchData();
   }, [productId]);
 
-  const handleReturnShop = () => {
-    navigate("/shop");
-  };
-
   const handleSizeChange = (selectedOption) => {
     setSelectedSize(selectedOption);
     setPrice(selectedOption.value.price);
     setStock(selectedOption.value.stock);
     setSizeId(selectedOption.value.sizeID);
     setSize(selectedOption.label);
-  };
-
-  const handleDescriptionClick = () => {
-    setActiveDescRev("description");
-  };
-
-  const handleReviewsClick = () => {
-    setActiveDescRev("reviews");
   };
 
   const handleQuantityChange = (event) => {
@@ -229,15 +217,8 @@ export const ProductDetails = () => {
       {messageTitle && messageTitle === "Success" && (
         <SuccessMessage title={messageTitle} message={message} />
       )}
-      <div
-        onClick={handleReturnShop}
-        className="mt-20 ml-5 flex items-center gap-3 text-xl cursor-pointer"
-      >
-        <FontAwesomeIcon icon={faArrowLeft} />
-        <p className="font-semibold">Return to shop</p>
-      </div>
 
-      <div className="mt-10 mb-10 pb-10 min-h-[70vh] flex justify-center gap-24">
+      <div className="my-20 pt-10 min-h-[70vh] flex justify-center gap-20">
         <div className="flex flex-col justify-between w-[30vw] p-10 rounded-lg shadow-2xl">
           <div className="flex flex-col gap-5">
             <div className="flex justify-between items-start">
@@ -288,36 +269,12 @@ export const ProductDetails = () => {
 
           <div className="h-full my-10">
             <div className="flex justify-between pb-5 border-b-2 border-gray-200">
-              <p
-                onClick={handleDescriptionClick}
-                className={`w-full font-semibold text-center text-lg ${
-                  activeDescRev === "description"
-                    ? "text-purple-200"
-                    : "text-gray-200"
-                } cursor-pointer`}
-              >
+              <p className="w-full font-semibold text-center text-lg text-gray-200">
                 Description
-              </p>
-              <p
-                onClick={handleReviewsClick}
-                className={`w-full font-semibold text-center text-lg ${
-                  activeDescRev === "reviews"
-                    ? "text-purple-200"
-                    : "text-gray-200"
-                } cursor-pointer`}
-              >
-                Reviews
               </p>
             </div>
 
-            {activeDescRev === "description" ? (
-              <p className="py-5 text-xl text-justify">{product.description}</p>
-            ) : (
-              <div className="h-full flex items-center justify-center text-3xl gap-5">
-                <p className="font-bold">No reviews yet</p>
-                <FontAwesomeIcon icon={faScroll} className="text-purple-200" />
-              </div>
-            )}
+            <p className="py-5 text-xl text-justify">{product.description}</p>
           </div>
         </div>
 
@@ -365,6 +322,14 @@ export const ProductDetails = () => {
                 Buy now
               </button>
             </div>
+          </div>
+        </div>
+
+        <div className="ml-20 flex flex-col justify-between w-[25vw] p-5 rounded-lg shadow-2xl">
+          <h3 className="font-bold text-2xl">Reviews:</h3>
+          <div className="h-full flex items-center justify-center text-3xl gap-5">
+            <p className="font-bold">No reviews yet</p>
+            <FontAwesomeIcon icon={faScroll} className="text-purple-200" />
           </div>
         </div>
       </div>

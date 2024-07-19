@@ -77,7 +77,11 @@ export const Dashboard = () => {
           {orders && orders.length > 0 ? (
             orders.slice(0, 5).map((order, orderID) => (
               <div key={orderID} className="flex items-center gap-3 pb-5 mb-5">
-                <img src={`http://localhost:8081/profileImages/${order.profilePicture}`} alt="" className="w-16 h-16 rounded-full" />
+                <img
+                  src={`http://localhost:8081/profileImages/${order.profilePicture}`}
+                  alt=""
+                  className="w-16 h-16 rounded-full"
+                />
                 <div className="w-full">
                   <p className="text-xl font-bold">
                     {order.firstName} {order.lastName}
@@ -106,7 +110,14 @@ export const Dashboard = () => {
               </div>
             ))
           ) : (
-            <div className="flex flex-col items-center gap-5"></div>
+            <div className="flex flex-col gap-4 py-10">
+              <div className="flex justify-center text-4xl text-purple-200">
+                <p className="font-bold">Nothing Here</p>
+              </div>
+              <p className="text-xl text-center font-semibold">
+                It seems like there is no order yet
+              </p>
+            </div>
           )}
         </div>
       </div>

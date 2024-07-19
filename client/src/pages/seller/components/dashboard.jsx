@@ -69,15 +69,15 @@ export const Dashboard = () => {
           <h3 className="text-4xl font-bold">Summary</h3>
         </div>
 
-        <div className="w-full px-5">
+        <div className="w-[70%] px-5">
           <h3 className="text-4xl font-bold pb-5 mb-5 border-b-2">
             Recent Orders
           </h3>
 
           {orders && orders.length > 0 ? (
-            orders.map((order, orderID) => (
+            orders.slice(0, 5).map((order, orderID) => (
               <div key={orderID} className="flex items-center gap-3 pb-5 mb-5">
-                <img src={logo} alt="" className="w-16 h-16" />
+                <img src={`http://localhost:8081/profileImages/${order.profilePicture}`} alt="" className="w-16 h-16 rounded-full" />
                 <div className="w-full">
                   <p className="text-xl font-bold">
                     {order.firstName} {order.lastName}

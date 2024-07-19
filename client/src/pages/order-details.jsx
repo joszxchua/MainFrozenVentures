@@ -294,6 +294,14 @@ export const OrderDetails = () => {
                 <p className="font-bold text-xl">{order.status}</p>
               </div>
 
+              {order.status === "Received" && order.isReviewed === 1 && <div
+                className="w-fit h-fit flex items-center gap-3 rounded-3xl px-2 py-1"
+                style={getStatusStyles(order.status)}
+              >
+                <FontAwesomeIcon icon={faCircle} className="text-sm" />
+                <p className="font-bold text-xl">Reviewed</p>
+              </div>}
+
               {order.status === "Pending" && order.isReviewed === 0 && (
                 <button
                   onClick={handleReceiveOrder}

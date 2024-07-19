@@ -1,12 +1,15 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { UserContext } from "../context/user-context";
+import { StatusDropdown } from "../components/status-dropdown";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowUp,
   faArrowDown,
   faCircle,
+  faChevronDown,
+  faChevronUp,
 } from "@fortawesome/free-solid-svg-icons";
 
 const formatDate = (dateString) => {
@@ -21,6 +24,8 @@ export const PurchaseHistory = () => {
     key: "orderDate",
     direction: "ascending",
   });
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const statusDropdownRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   const ordersPerPage = 5;
@@ -88,6 +93,31 @@ export const PurchaseHistory = () => {
     }
   };
 
+  const handleClickOutside = (event) => {
+    if (
+      statusDropdownRef.current &&
+      !statusDropdownRef.current.contains(event.target)
+    ) {
+      setShowStatusDropdown(false);
+    }
+  };
+
+  const handleStatusClick = () => {
+    setShowStatusDropdown(!showStatusDropdown);
+  };
+
+  useEffect(() => {
+    if (showStatusDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showStatusDropdown]);
+
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = ordersInfo.slice(indexOfFirstOrder, indexOfLastOrder);
@@ -142,7 +172,18 @@ export const PurchaseHistory = () => {
                   }
                 />
               </th>
-              <th className="w-1/12">Status</th>
+              <th
+                onClick={handleStatusClick}
+                className="relative w-1/12 cursor-pointer"
+              >
+                Status{" "}
+                <FontAwesomeIcon
+                  icon={showStatusDropdown ? faChevronUp : faChevronDown}
+                />
+                {showStatusDropdown && (
+                  <StatusDropdown ref={statusDropdownRef} />
+                )}
+              </th>
             </tr>
           </thead>
           <tbody className="w-full">
@@ -161,7 +202,9 @@ export const PurchaseHistory = () => {
                     />
                     <div>
                       <p className="text-xl font-bold">{order.name}</p>
-                      <p className="text-sm text-gray-200 group-hover:text-white duration-300">{order.brand}</p>
+                      <p className="text-sm text-gray-200 group-hover:text-white duration-300">
+                        {order.brand}
+                      </p>
                       <p className="text-sm text-gray-200 group-hover:text-white duration-300">
                         {order.flavor}, {order.size}, x{order.quantity}
                       </p>

@@ -64,7 +64,7 @@ export const Navbar = () => {
   };
 
   const toggleMenuDropdown = () => {
-    setShowMenuDropdown((prev) => !prev);
+    setShowMenuDropdown(!showMenuDropdown);
   };
 
   useEffect(() => {

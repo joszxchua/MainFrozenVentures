@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../../context/user-context";
 import { Dashboard } from "./components/dashboard";
+import { IncomingOrders } from "./components/incoming-orders";
 import { MyShop } from "./components/my-shop";
 import { MyProducts } from "./components/my-products";
 import { MyInventory } from "./components/my-inventory";
@@ -14,6 +15,7 @@ import {
   faIceCream,
   faCubes,
   faComment,
+  faShoppingBag,
 } from "@fortawesome/free-solid-svg-icons";
 
 export const HomeSeller = () => {
@@ -49,6 +51,10 @@ export const HomeSeller = () => {
 
   const handleDashboardClick = () => {
     setActiveTab("dashboard");
+  };
+
+  const handleIncomingOrdersClick = () => {
+    setActiveTab("incoming-orders");
   };
 
   const handleMyShopClick = () => {
@@ -107,6 +113,15 @@ export const HomeSeller = () => {
               Dashboard
             </li>
             <li
+              onClick={handleIncomingOrdersClick}
+              className={`${
+                activeTab === "incoming-orders" ? "text-purple-200" : "text-gray-900"
+              } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
+            >
+              <FontAwesomeIcon icon={faShoppingBag} className="mr-3" />
+              Incoming Orders
+            </li>
+            <li
               onClick={handleMyShopClick}
               className={`${
                 activeTab === "myShop" ? "text-purple-200" : "text-gray-900"
@@ -151,6 +166,7 @@ export const HomeSeller = () => {
       <div className="p-5">
         <div className="rounded-lg shadow-2xl p-8">
           {activeTab === "dashboard" && <Dashboard />}
+          {activeTab === "incoming-orders" && <IncomingOrders />}
           {activeTab === "myShop" && <MyShop />}
           {activeTab === "myProducts" && <MyProducts />}
           {activeTab === "myInventory" && <MyInventory />}

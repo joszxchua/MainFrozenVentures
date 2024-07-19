@@ -3,6 +3,54 @@ const db = require("../db");
 
 const router = express.Router();
 
+router.post("/sellerFetchOrders", (req,res) => {
+  const { accountId } = req.body;
+
+  if (!accountId) {
+    return res.status(400).json({
+      status: "error",
+      message: "Account ID is missing",
+    });
+  }
+
+  const fetchSingleOrderSql = `SELECT 
+                                  uo.*, 
+                                  ai.*,
+                                  pei.*,
+                                  pi.name, pi.flavor, pi.brand, pi.productImage, 
+                                  ps.size,
+                                  si.shopName
+                                FROM 
+                                  user_order AS uo
+                                INNER JOIN 
+                                  account_info AS ai ON uo.accountID = ai.accountID
+                                INNER JOIN 
+                                  personal_info AS pei ON uo.accountID = pei.accountID
+                                INNER JOIN 
+                                  product_info AS pi ON uo.productID = pi.productID
+                                INNER JOIN 
+                                  product_size AS ps ON uo.sizeID = ps.sizeID
+                                INNER JOIN 
+                                  shop_info AS si ON pi.accountID = si.accountID
+                                WHERE 
+                                  pi.accountID = ?`;
+
+  db.query(fetchSingleOrderSql, [accountId], (err, results) => {
+    if (err) {
+      console.error("Database fetch error:", err);
+      return res.status(500).json({
+        status: "error",
+        message: "Database fetch error",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      order: results,
+    });
+  });
+})
+
 router.post("/cancelOrder", (req, res) => {
   const { accountId, orderId, reason } = req.body;
 

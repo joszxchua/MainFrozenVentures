@@ -27,6 +27,7 @@ export const PurchaseHistory = () => {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const statusDropdownRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState("All");
   const navigate = useNavigate();
   const ordersPerPage = 5;
 
@@ -120,12 +121,24 @@ export const PurchaseHistory = () => {
 
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = ordersInfo.slice(indexOfFirstOrder, indexOfLastOrder);
+  const filteredOrders =
+    statusFilter === "All"
+      ? ordersInfo
+      : ordersInfo.filter((order) => order.status === statusFilter);
+  const currentOrders = filteredOrders.slice(
+    indexOfFirstOrder,
+    indexOfLastOrder
+  );
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleOrderClick = (orderId) => {
     navigate(`/order-details/${orderId}`);
+  };
+
+  const handleStatusSelect = (status) => {
+    setStatusFilter(status);
+    setShowStatusDropdown(false);
   };
 
   return (
@@ -137,7 +150,7 @@ export const PurchaseHistory = () => {
         </p>
       </div>
 
-      <div className="my-5 bg-gray-100 p-5 rounded-lg">
+      <div className="my-5 flex flex-col justify-between bg-gray-100 p-5 rounded-lg min-h-[85vh]">
         <table className="w-full">
           <thead className="w-full">
             <tr className="w-full flex justify-between text-2xl px-5 pb-5 mb-5 border-b-2 border-black">
@@ -181,7 +194,10 @@ export const PurchaseHistory = () => {
                   icon={showStatusDropdown ? faChevronUp : faChevronDown}
                 />
                 {showStatusDropdown && (
-                  <StatusDropdown ref={statusDropdownRef} />
+                  <StatusDropdown
+                    ref={statusDropdownRef}
+                    handleStatusSelect={handleStatusSelect}
+                  />
                 )}
               </th>
             </tr>
@@ -231,7 +247,7 @@ export const PurchaseHistory = () => {
 
         <div className="mt-4 flex justify-center">
           {Array.from(
-            { length: Math.ceil(ordersInfo.length / ordersPerPage) },
+            { length: Math.ceil(filteredOrders.length / ordersPerPage) },
             (_, i) => (
               <button
                 key={i}

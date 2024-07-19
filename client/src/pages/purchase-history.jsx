@@ -104,7 +104,7 @@ export const PurchaseHistory = () => {
   };
 
   const handleStatusClick = () => {
-    setShowStatusDropdown(!showStatusDropdown);
+    setShowStatusDropdown((prevShowStatusDropdown) => !prevShowStatusDropdown);
   };
 
   useEffect(() => {

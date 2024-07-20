@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../../../context/user-context";
+import { Confirmation } from "../../../components/confirmation";
 import { SuccessMessage } from "../../../components/success-message";
 import { ErrorMessage } from "../../../components/error-message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,6 +20,8 @@ export const IncomingOrders = () => {
   const { user } = useContext(UserContext);
   const [orders, setOrders] = useState([]);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const [confirmationTitle, setConfirmationTitle] = useState("");
+  const [confirmationMessage, setConfirmationMessage] = useState("");
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
 
@@ -53,8 +56,33 @@ export const IncomingOrders = () => {
     setExpandedOrderId(null);
   };
 
+  const handleChangeStatus = (shippingMode) => {
+    setConfirmationTitle(
+      shippingMode === "Pickup" ? "Ready For Pickup" : "Ship Product"
+    );
+    setConfirmationMessage(
+      shippingMode === "Pickup"
+        ? "Is this product ready for pickup?"
+        : "Is this product ready to be shipped?"
+    );
+  };
+
+  const handleCloseChangeStatus = () => {
+    setConfirmationTitle("");
+    setConfirmationMessage("");
+  };
+
   return (
     <>
+      {confirmationTitle && (
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 z-30">
+          <Confirmation
+            confirmationTitle={confirmationTitle}
+            confirmationMessage={confirmationMessage}
+            cancelConfirmation={handleCloseChangeStatus}
+          />
+        </div>
+      )}
       <div className="flex gap-3 text-5xl font-bold">
         <FontAwesomeIcon icon={faShoppingBag} />
         <h2>Incoming Orders</h2>
@@ -124,8 +152,13 @@ export const IncomingOrders = () => {
                     </p>
 
                     <div className="w-[50%] flex items-center justify-end">
-                      <button className="w-fit bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
-                        {order.shippingMode === "Pickup" ? "Ready To Pickup" : "Ship Ice Cream"}
+                      <button
+                        onClick={() => handleChangeStatus(order.shippingMode)}
+                        className="w-fit bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                      >
+                        {order.shippingMode === "Pickup"
+                          ? "Ready For Pickup"
+                          : "Ship Ice Cream"}
                       </button>
                     </div>
                   </div>

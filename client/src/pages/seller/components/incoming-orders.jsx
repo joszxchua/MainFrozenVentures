@@ -31,7 +31,10 @@ export const IncomingOrders = () => {
             { accountId: user.accountId }
           );
           if (productResponse.data.status === "success") {
-            setOrders(productResponse.data.order);
+            const pendingOrders = productResponse.data.order.filter(
+              (order) => order.status === "Pending"
+            );
+            setOrders(pendingOrders);
           }
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -122,7 +125,7 @@ export const IncomingOrders = () => {
 
                     <div className="w-[50%] flex items-center justify-end">
                       <button className="w-fit bg-purple-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
-                        Restock
+                        {order.shippingMode === "Pickup" ? "Ready To Pickup" : "Ship Ice Cream"}
                       </button>
                     </div>
                   </div>

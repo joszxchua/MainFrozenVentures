@@ -158,7 +158,7 @@ export const MyInventory = () => {
         <div className="w-full"></div>
       </div>
 
-      <div className="mt-10 min-h-[365px] font-inter">
+      <div className="mt-10 min-h-[70vh] max-h-[70vh] font-inter">
         {products.length > 0 ? (
           products.map((product) => (
             <div

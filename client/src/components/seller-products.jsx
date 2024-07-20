@@ -38,13 +38,13 @@ export const SellerProducts = () => {
   };
 
   return (
-    <>
+    <div className=" flex flex-wrap gap-10 m-auto">
       {products.length > 0 ? (
         products.map((product) => (
           <div
             key={product.productID}
             onClick={() => handleProductClick(product.productID)}
-            className="flex flex-col w-fit cursor-pointer px-4 py-3 rounded-lg shadow-none hover:shadow-2xl transition-shadow duration-300 ease-in-out"
+            className="flex flex-col bg-gray-100 w-fit cursor-pointer px-4 py-3 rounded-lg shadow-none hover:shadow-2xl transition-shadow duration-300 ease-in-out"
           >
             <img
               src={`http://localhost:8081/productImages/${product.productImage}`}
@@ -82,6 +82,6 @@ export const SellerProducts = () => {
           </p>
         </div>
       )}
-    </>
+    </div>
   );
 };

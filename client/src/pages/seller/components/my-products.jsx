@@ -91,7 +91,7 @@ export const MyProducts = () => {
         </div>
       </div>
 
-      <div className="relative mt-10 min-h-[365px] flex flex-wrap gap-10 m-auto">
+      <div className="relative mt-10 min-h-[70vh] max-h-[70vh]">
         <SellerProducts />
       </div>
     </>

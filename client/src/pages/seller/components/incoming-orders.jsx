@@ -78,12 +78,18 @@ export const IncomingOrders = () => {
 
     if (expandedOrderId) {
       try {
-        const statusResponse = await axios.post("http://localhost:8081/order/updateOrderStatus", {
-          orderId: expandedOrderId,
-        });
+        const statusResponse = await axios.post(
+          "http://localhost:8081/order/updateOrderStatus",
+          {
+            orderId: expandedOrderId,
+          }
+        );
         if (statusResponse.data.status === "success") {
           setMessageTitle("Success");
           setMessage(statusResponse.data.message);
+          setOrders((prevOrders) =>
+            prevOrders.filter((order) => order.orderID !== expandedOrderId)
+          );
         } else {
           setMessageTitle("Error");
           setMessage("Something went wrong");

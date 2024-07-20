@@ -72,14 +72,49 @@ export const IncomingOrders = () => {
     setConfirmationMessage("");
   };
 
+  const handleYesConfirmation = async () => {
+    setConfirmationTitle("");
+    setConfirmationMessage("");
+
+    if (expandedOrderId) {
+      try {
+        const statusResponse = await axios.post("http://localhost:8081/order/updateOrderStatus", {
+          orderId: expandedOrderId,
+        });
+        if (statusResponse.data.status === "success") {
+          setMessageTitle("Success");
+          setMessage(statusResponse.data.message);
+        } else {
+          setMessageTitle("Error");
+          setMessage("Something went wrong");
+        }
+      } catch (error) {
+        console.log(error);
+        setMessageTitle("Error");
+        setMessage("Something went wrong");
+      }
+    }
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
   return (
     <>
+      {messageTitle && messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle && messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
       {confirmationTitle && (
         <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 z-30">
           <Confirmation
             confirmationTitle={confirmationTitle}
             confirmationMessage={confirmationMessage}
             cancelConfirmation={handleCloseChangeStatus}
+            yesConfirmation={handleYesConfirmation}
           />
         </div>
       )}

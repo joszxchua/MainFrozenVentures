@@ -131,6 +131,7 @@ export const OrderDetails = () => {
           setMessage("Something went wrong");
         }
       } catch (error) {
+        console.log(error)
         setMessageTitle("Error");
         setMessage("Something went wrong");
       }

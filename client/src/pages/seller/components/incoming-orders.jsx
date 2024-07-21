@@ -140,7 +140,7 @@ export const IncomingOrders = () => {
                 <img
                   src={`http://localhost:8081/profileImages/${order.profilePicture}`}
                   alt="Product Image"
-                  className="w-[70px] h-[70px] rounded-full"
+                  className="w-[70px] h-[70px] rounded-2xl"
                 />
 
                 <div className="w-full flex justify-between gap-1 px-5">

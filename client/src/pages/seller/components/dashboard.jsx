@@ -79,7 +79,7 @@ export const Dashboard = () => {
                 <img
                   src={`http://localhost:8081/profileImages/${order.profilePicture}`}
                   alt=""
-                  className="w-16 h-16 rounded-full"
+                  className="w-16 h-16 rounded-2xl"
                 />
                 <div className="w-full">
                   <p className="text-xl font-bold">

@@ -128,7 +128,7 @@ export const HomeSeller = () => {
               } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
             >
               <FontAwesomeIcon icon={faShop} className="mr-3" />
-              My Shop
+              Shop
             </li>
             <li
               onClick={handleMyProductsClick}
@@ -137,7 +137,7 @@ export const HomeSeller = () => {
               } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
             >
               <FontAwesomeIcon icon={faIceCream} className="mr-3" />
-              My Products
+              Products
             </li>
             <li
               onClick={handleMyInventoryClick}
@@ -148,7 +148,7 @@ export const HomeSeller = () => {
               } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
             >
               <FontAwesomeIcon icon={faCubes} className="mr-3" />
-              My Inventory
+              Inventory
             </li>
             <li
               onClick={handleInboxClick}

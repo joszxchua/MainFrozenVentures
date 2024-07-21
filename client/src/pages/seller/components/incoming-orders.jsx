@@ -9,6 +9,8 @@ import {
   faShoppingBag,
   faChevronDown,
   faChevronUp,
+  faArrowUp,
+  faArrowDown,
 } from "@fortawesome/free-solid-svg-icons";
 
 const formatDate = (dateString) => {
@@ -19,11 +21,14 @@ const formatDate = (dateString) => {
 export const IncomingOrders = () => {
   const { user } = useContext(UserContext);
   const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [confirmationTitle, setConfirmationTitle] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [currentFilter, setCurrentFilter] = useState("All");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,10 +39,12 @@ export const IncomingOrders = () => {
             { accountId: user.accountId }
           );
           if (productResponse.data.status === "success") {
-            const pendingOrders = productResponse.data.order.filter(
-              (order) => order.status === "Pending"
+            setOrders(productResponse.data.order);
+            setFilteredOrders(
+              productResponse.data.order.filter(
+                (order) => order.status === currentFilter
+              )
             );
-            setOrders(pendingOrders);
           }
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -47,6 +54,28 @@ export const IncomingOrders = () => {
 
     fetchData();
   }, [user.accountId]);
+
+  useEffect(() => {
+    let sortedOrders = [...filteredOrders];
+
+    sortedOrders.sort((a, b) =>
+      sortOrder === "asc"
+        ? new Date(a.orderDate) - new Date(b.orderDate)
+        : new Date(b.orderDate) - new Date(a.orderDate)
+    );
+
+    setFilteredOrders(sortedOrders);
+  }, [sortOrder, filteredOrders]);
+
+  useEffect(() => {
+    if (currentFilter === "All") {
+      setFilteredOrders(orders);
+    } else {
+      setFilteredOrders(
+        orders.filter((order) => order.status === currentFilter)
+      );
+    }
+  }, [currentFilter, orders]);
 
   const handleShowButton = (orderID) => {
     setExpandedOrderId(expandedOrderId === orderID ? null : orderID);
@@ -90,6 +119,9 @@ export const IncomingOrders = () => {
           setOrders((prevOrders) =>
             prevOrders.filter((order) => order.orderID !== expandedOrderId)
           );
+          setFilteredOrders((prevOrders) =>
+            prevOrders.filter((order) => order.orderID !== expandedOrderId)
+          );
         } else {
           setMessageTitle("Error");
           setMessage("Something went wrong");
@@ -104,6 +136,14 @@ export const IncomingOrders = () => {
       setMessageTitle("");
       setMessage("");
     }, 3000);
+  };
+
+  const handleFilterChange = (filter) => {
+    setCurrentFilter(filter);
+  };
+
+  const handleSortChange = () => {
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
   return (
@@ -129,9 +169,36 @@ export const IncomingOrders = () => {
         <h2>Incoming Orders</h2>
       </div>
 
-      <div className="relative mt-10 min-h-[70vh] max-h-[70vh] font-inter overflow-auto">
-        {orders.length > 0 ? (
-          orders.map((order) => (
+      <div className="flex items-center justify-between mt-5">
+        <div className="flex gap-5">
+          {["All", "Pending", "To Receive", "Cancelled"].map((filter) => (
+            <button
+              key={filter}
+              onClick={() => handleFilterChange(filter)}
+              className={`w-fit px-3 py-1 rounded-md border-2 font-bold text-lg ${
+                currentFilter === filter
+                  ? "bg-purple-200 text-white border-purple-200"
+                  : "bg-white text-purple-200 border-purple-200 hover:bg-purple-200 duration-300 hover:text-white ease-in-out"
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={handleSortChange}
+          className="flex items-center gap-1 font-bold text-lg"
+        >
+          Order Date
+          <FontAwesomeIcon
+            icon={sortOrder === "asc" ? faArrowUp : faArrowDown}
+          />
+        </button>
+      </div>
+
+      <div className="relative mt-5 min-h-[70vh] max-h-[70vh] font-inter overflow-auto">
+        {filteredOrders.length > 0 ? (
+          filteredOrders.map((order) => (
             <div
               key={order.orderID}
               className="bg-gray-100 mt-5 px-4 py-3 rounded-lg"
@@ -148,6 +215,7 @@ export const IncomingOrders = () => {
                     <h3 className="font-bold text-xl">
                       {order.firstName} {order.lastName}
                     </h3>
+                    <p>{order.status}</p>
                   </div>
 
                   <div className="w-full">

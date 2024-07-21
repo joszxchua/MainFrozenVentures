@@ -77,7 +77,7 @@ export const HomeSeller = () => {
     <div className="mt-20 grid grid-cols-[25%_75%] font-inter">
       {shopData?.isVerified === 0 && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30">
-          <div className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] flex flex-col items-center bg-red-100 rounded-lg p-5">
+          <div className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] flex flex-col items-center bg-white rounded-lg px-10 py-5">
             <h3 className="text-5xl text-red-200 font-bold">
               Verify Your Shop
             </h3>

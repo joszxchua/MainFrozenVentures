@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../../context/user-context";
 import { Dashboard } from "./components/dashboard";
-import { IncomingOrders } from "./components/incoming-orders";
+import { Orders } from "./components/orders";
 import { MyShop } from "./components/my-shop";
 import { MyProducts } from "./components/my-products";
 import { MyInventory } from "./components/my-inventory";
@@ -54,7 +54,7 @@ export const HomeSeller = () => {
   };
 
   const handleIncomingOrdersClick = () => {
-    setActiveTab("incoming-orders");
+    setActiveTab("orders");
   };
 
   const handleMyShopClick = () => {
@@ -115,11 +115,11 @@ export const HomeSeller = () => {
             <li
               onClick={handleIncomingOrdersClick}
               className={`${
-                activeTab === "incoming-orders" ? "text-purple-200" : "text-gray-900"
+                activeTab === "orders" ? "text-purple-200" : "text-gray-900"
               } cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out`}
             >
               <FontAwesomeIcon icon={faShoppingBag} className="mr-3" />
-              Incoming Orders
+              Orders
             </li>
             <li
               onClick={handleMyShopClick}
@@ -166,7 +166,7 @@ export const HomeSeller = () => {
       <div className="p-5">
         <div className="rounded-lg shadow-2xl p-8">
           {activeTab === "dashboard" && <Dashboard />}
-          {activeTab === "incoming-orders" && <IncomingOrders />}
+          {activeTab === "orders" && <Orders />}
           {activeTab === "myShop" && <MyShop />}
           {activeTab === "myProducts" && <MyProducts />}
           {activeTab === "myInventory" && <MyInventory />}

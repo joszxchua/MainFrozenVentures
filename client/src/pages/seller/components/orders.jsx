@@ -11,6 +11,7 @@ import {
   faChevronUp,
   faArrowUp,
   faArrowDown,
+  faCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 const formatDate = (dateString) => {
@@ -18,7 +19,7 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
-export const IncomingOrders = () => {
+export const Orders = () => {
   const { user } = useContext(UserContext);
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -146,6 +147,33 @@ export const IncomingOrders = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case "Received":
+        return {
+          background: "#ADFF97",
+          color: "#239205",
+        };
+      case "To Receive":
+        return {
+          background: "#F7EA8A",
+          color: "#AE9900",
+        };
+      case "Cancelled":
+        return {
+          background: "#FF9797",
+          color: "#B00D0D",
+        };
+      case "Pending":
+        return {
+          background: "#D1D5DB",
+          color: "#737373",
+        };
+      default:
+        return {};
+    }
+  };
+
   return (
     <>
       {messageTitle && messageTitle === "Error" && (
@@ -166,24 +194,26 @@ export const IncomingOrders = () => {
       )}
       <div className="flex gap-3 text-4xl font-bold">
         <FontAwesomeIcon icon={faShoppingBag} />
-        <h2>Incoming Orders</h2>
+        <h2>Orders</h2>
       </div>
 
       <div className="flex items-center justify-between mt-5">
         <div className="flex gap-5">
-          {["All", "Pending", "To Receive", "Cancelled"].map((filter) => (
-            <button
-              key={filter}
-              onClick={() => handleFilterChange(filter)}
-              className={`w-fit px-3 py-1 rounded-md border-2 font-bold text-lg ${
-                currentFilter === filter
-                  ? "bg-purple-200 text-white border-purple-200"
-                  : "bg-white text-purple-200 border-purple-200 hover:bg-purple-200 duration-300 hover:text-white ease-in-out"
-              }`}
-            >
-              {filter}
-            </button>
-          ))}
+          {["All", "Pending", "To Receive", "Received", "Cancelled"].map(
+            (filter) => (
+              <button
+                key={filter}
+                onClick={() => handleFilterChange(filter)}
+                className={`w-fit px-3 py-1 rounded-md border-2 font-bold text-lg ${
+                  currentFilter === filter
+                    ? "bg-purple-200 text-white border-purple-200"
+                    : "bg-white text-purple-200 border-purple-200 hover:bg-purple-200 duration-300 hover:text-white ease-in-out"
+                }`}
+              >
+                {filter}
+              </button>
+            )
+          )}
         </div>
         <button
           onClick={handleSortChange}
@@ -215,7 +245,13 @@ export const IncomingOrders = () => {
                     <h3 className="font-bold text-xl">
                       {order.firstName} {order.lastName}
                     </h3>
-                    <p>{order.status}</p>
+                    <div
+                      className="w-fit h-fit flex items-center gap-3 rounded-3xl px-2 py-1"
+                      style={getStatusStyles(order.status)}
+                    >
+                      <FontAwesomeIcon icon={faCircle} className="text-sm" />
+                      <p className="font-bold text-sm">{order.status}</p>
+                    </div>
                   </div>
 
                   <div className="w-full">

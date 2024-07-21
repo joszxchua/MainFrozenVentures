@@ -16,6 +16,7 @@ import { OrderDetails } from "./pages/order-details";
 import { PurchaseHistory } from "./pages/purchase-history";
 import { HomeSeller } from "./pages/seller/home-seller";
 import { ManageProduct } from "./pages/seller/manage-product";
+import { HomeAdmin } from "./pages/admin/home-admin";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
                 path="/manage-product/:productId"
                 element={<ManageProduct />}
               />
+              <Route path="/home-admin" element={<HomeAdmin />} />
             </Routes>
             <Footer />
           </Router>

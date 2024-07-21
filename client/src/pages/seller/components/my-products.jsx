@@ -63,7 +63,7 @@ export const MyProducts = () => {
         </div>
       )}
       <div className="flex items-center">
-        <div className="w-full flex gap-3 text-5xl font-bold">
+        <div className="w-full flex gap-3 text-4xl font-bold">
           <FontAwesomeIcon icon={faIceCream} />
           <h2>My Products</h2>
         </div>

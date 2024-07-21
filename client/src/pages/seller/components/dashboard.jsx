@@ -35,7 +35,7 @@ export const Dashboard = () => {
 
   return (
     <>
-      <div className="flex gap-3 text-5xl font-bold">
+      <div className="flex gap-3 text-4xl font-bold">
         <FontAwesomeIcon icon={faChartLine} />
         <h2>Dashboard</h2>
       </div>

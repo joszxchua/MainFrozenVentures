@@ -138,7 +138,7 @@ export const MyInventory = () => {
         </div>
       )}
       <div className="flex items-center">
-        <div className="w-full flex gap-3 text-5xl font-bold">
+        <div className="w-full flex gap-3 text-4xl font-bold">
           <FontAwesomeIcon icon={faCubes} />
           <h2>My Inventory</h2>
         </div>
@@ -158,7 +158,7 @@ export const MyInventory = () => {
         <div className="w-full"></div>
       </div>
 
-      <div className="mt-10 min-h-[70vh] max-h-[70vh] font-inter">
+      <div className="relative mt-10 min-h-[70vh] max-h-[70vh] font-inter">
         {products.length > 0 ? (
           products.map((product) => (
             <div

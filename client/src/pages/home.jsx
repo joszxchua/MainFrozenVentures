@@ -10,8 +10,18 @@ export const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.userRole && user.userRole !== "customer") {
-      navigate("/home-seller");
+    const roleToPath = {
+      admin: "/home-admin",
+      retailer: "/home-seller",
+      distributor: "/home-seller",
+      manufacturer: "/home-seller",
+    };
+
+    if (user?.userRole) {
+      const path = roleToPath[user.userRole];
+      if (path) {
+        navigate(path);
+      }
     }
   }, [user, navigate]);
 

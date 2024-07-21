@@ -124,7 +124,7 @@ export const IncomingOrders = () => {
           />
         </div>
       )}
-      <div className="flex gap-3 text-5xl font-bold">
+      <div className="flex gap-3 text-4xl font-bold">
         <FontAwesomeIcon icon={faShoppingBag} />
         <h2>Incoming Orders</h2>
       </div>

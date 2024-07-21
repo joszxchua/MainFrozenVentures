@@ -105,6 +105,7 @@ export const Orders = () => {
   const handleYesConfirmation = async () => {
     setConfirmationTitle("");
     setConfirmationMessage("");
+    setExpandedOrderId(null);
 
     if (expandedOrderId) {
       try {
@@ -117,12 +118,23 @@ export const Orders = () => {
         if (statusResponse.data.status === "success") {
           setMessageTitle("Success");
           setMessage(statusResponse.data.message);
-          setOrders((prevOrders) =>
-            prevOrders.filter((order) => order.orderID !== expandedOrderId)
-          );
-          setFilteredOrders((prevOrders) =>
-            prevOrders.filter((order) => order.orderID !== expandedOrderId)
-          );
+
+          try {
+            const productResponse = await axios.post(
+              "http://localhost:8081/order/sellerFetchOrders",
+              { accountId: user.accountId }
+            );
+            if (productResponse.data.status === "success") {
+              setOrders(productResponse.data.order);
+              setFilteredOrders(
+                productResponse.data.order.filter(
+                  (order) => order.status === currentFilter
+                )
+              );
+            }
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
         } else {
           setMessageTitle("Error");
           setMessage("Something went wrong");

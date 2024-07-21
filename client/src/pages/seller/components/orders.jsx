@@ -271,21 +271,23 @@ export const Orders = () => {
                     {formatDate(order.receiveDate)}
                   </p>
 
-                  <div className="h-fit px-3 py-2 rounded-full hover:bg-gray-100 duration-300 ease-in-out">
-                    {expandedOrderId === order.orderID ? (
-                      <FontAwesomeIcon
-                        onClick={handleCloseButton}
-                        icon={faChevronUp}
-                        className="cursor-pointer"
-                      />
-                    ) : (
-                      <FontAwesomeIcon
-                        onClick={() => handleShowButton(order.orderID)}
-                        icon={faChevronDown}
-                        className="cursor-pointer"
-                      />
-                    )}
-                  </div>
+                  {order.status === "Pending" && (
+                    <div className="h-fit px-3 py-2 rounded-full hover:bg-gray-100 duration-300 ease-in-out">
+                      {expandedOrderId === order.orderID ? (
+                        <FontAwesomeIcon
+                          onClick={handleCloseButton}
+                          icon={faChevronUp}
+                          className="cursor-pointer"
+                        />
+                      ) : (
+                        <FontAwesomeIcon
+                          onClick={() => handleShowButton(order.orderID)}
+                          icon={faChevronDown}
+                          className="cursor-pointer"
+                        />
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               {expandedOrderId === order.orderID && (

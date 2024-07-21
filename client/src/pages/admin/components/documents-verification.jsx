@@ -76,12 +76,13 @@ export const DocumentsVerification = () => {
         if (statusResponse.data.status === "success") {
           setMessageTitle("Success");
           setMessage(statusResponse.data.message);
+          setDocuments((prevDocuments) =>
+            prevDocuments.filter((doc) => doc.shopID !== expandedShopId)
+          );
+          setExpandedShopId(null);
         } else {
           setMessageTitle("Error");
           setMessage("Something went wrong");
-          setDocuments((prevDocs) =>
-            prevDocs.filter((document) => document.ShopID !== expandedShopId)
-          );
         }
       } catch (error) {
         console.log(error);

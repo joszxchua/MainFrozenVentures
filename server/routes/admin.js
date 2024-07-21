@@ -4,7 +4,7 @@ const db = require("../db");
 const router = express.Router();
 
 router.post("/updateIsVerified", (req, res) => {
-  const { shopId } = req.body;
+  const { shopId, isVerified } = req.body;
 
   if (!shopId) {
     return res.status(400).json({
@@ -14,10 +14,10 @@ router.post("/updateIsVerified", (req, res) => {
   }
 
   const updateIsVerifiedSql = `UPDATE shop_info 
-                                 SET isVerified = 1
+                                 SET isVerified = ?
                                  WHERE shopID = ?`;
 
-  db.query(updateIsVerifiedSql, [shopId], (err, result) => {
+  db.query(updateIsVerifiedSql, [isVerified, shopId], (err, result) => {
     if (err) {
       console.error("Database update error:", err);
       return res.status(500).json({
@@ -33,9 +33,18 @@ router.post("/updateIsVerified", (req, res) => {
       });
     }
 
+    let message;
+    if (isVerified === 1) {
+      message = "Document has been successfully verified";
+    } else if (isVerified === 2) {
+      message = "Document has been successfully rejected";
+    } else {
+      message = "Document status has been updated";
+    }
+
     return res.status(200).json({
       status: "success",
-      message: "Document has been successfully verified",
+      message,
     });
   });
 });

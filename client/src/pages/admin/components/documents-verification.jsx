@@ -19,6 +19,7 @@ export const DocumentsVerification = () => {
   const [documents, setDocuments] = useState([]);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
   const [expandedShopId, setExpandedShopId] = useState(null);
+  const [changeDocument, setChangeDocument] = useState(null);
   const [confirmationTitle, setConfirmationTitle] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [messageTitle, setMessageTitle] = useState("");
@@ -68,19 +69,28 @@ export const DocumentsVerification = () => {
     setExpandedShopId(null);
   };
 
+  const handleRejectDocument = () => {
+    setConfirmationTitle("Reject Document");
+    setConfirmationMessage("Are you sure you want to reject this document?");
+    setChangeDocument(2);
+  };
+
   const handleVerifyDocument = () => {
     setConfirmationTitle("Verify Document");
     setConfirmationMessage("Are you sure you want to verify this document?");
+    setChangeDocument(1);
   };
 
   const handleCancelVerifyDocument = () => {
     setConfirmationTitle("");
     setConfirmationMessage("");
+    setChangeDocument(null);
   };
 
   const handleYesConfirmation = async () => {
     setConfirmationTitle("");
     setConfirmationMessage("");
+    setChangeDocument(null);
 
     if (expandedShopId) {
       try {
@@ -88,6 +98,7 @@ export const DocumentsVerification = () => {
           "http://localhost:8081/admin/updateIsVerified",
           {
             shopId: expandedShopId,
+            isVerified: changeDocument,
           }
         );
         if (statusResponse.data.status === "success") {
@@ -214,12 +225,20 @@ export const DocumentsVerification = () => {
               </div>
               {expandedShopId === document.shopID && (
                 <div className="flex flex-col items-end mt-3">
-                  <button
-                    onClick={handleVerifyDocument}
-                    className="w-[75%] py-2 rounded-lg bg-purple-200 text-white font-bold text-lg border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
-                  >
-                    Verify Document
-                  </button>
+                  <div className="flex items-center justify-between bg-white w-[75%] px-3 py-2 rounded-lg">
+                    <button
+                      onClick={handleRejectDocument}
+                      className="w-fit px-3 py-1 rounded-lg bg-red-200 text-white font-bold text-lg border-2 border-red-200 hover:bg-white duration-300 hover:text-red-200 ease-in-out"
+                    >
+                      Reject Document
+                    </button>
+                    <button
+                      onClick={handleVerifyDocument}
+                      className="w-fit px-3 py-1 rounded-lg bg-green-200 text-white font-bold text-lg border-2 border-green-200 hover:bg-white duration-300 hover:text-green-200 ease-in-out"
+                    >
+                      Verify Document
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

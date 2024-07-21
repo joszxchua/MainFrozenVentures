@@ -3,6 +3,43 @@ const db = require("../db");
 
 const router = express.Router();
 
+router.post("/updateIsVerified", (req, res) => {
+  const { shopId } = req.body;
+
+  if (!shopId) {
+    return res.status(400).json({
+      status: "error",
+      message: "shopID is required",
+    });
+  }
+
+  const updateIsVerifiedSql = `UPDATE shop_info 
+                                 SET isVerified = 1
+                                 WHERE shopID = ?`;
+
+  db.query(updateIsVerifiedSql, [shopId], (err, result) => {
+    if (err) {
+      console.error("Database update error:", err);
+      return res.status(500).json({
+        status: "error",
+        message: "Database update error",
+      });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Shop not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Document has been successfully verified",
+    });
+  });
+});
+
 router.post("/documentsFetch", (req, res) => {
   const fetchDocumentsSql = `SELECT *
                                 FROM shop_info si

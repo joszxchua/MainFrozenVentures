@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Confirmation } from "../../../components/confirmation";
+import { SuccessMessage } from "../../../components/success-message";
+import { ErrorMessage } from "../../../components/error-message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFile,
@@ -7,9 +10,18 @@ import {
   faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 
+const capitalizeFirstChar = (str) => {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 export const DocumentsVerification = () => {
   const [documents, setDocuments] = useState([]);
   const [expandedShopId, setExpandedShopId] = useState(null);
+  const [confirmationTitle, setConfirmationTitle] = useState("");
+  const [confirmationMessage, setConfirmationMessage] = useState("");
+  const [messageTitle, setMessageTitle] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,8 +51,68 @@ export const DocumentsVerification = () => {
     setExpandedShopId(null);
   };
 
+  const handleVerifyDocument = () => {
+    setConfirmationTitle("Verify Document");
+    setConfirmationMessage("Are you sure you want to verify this document?");
+  };
+
+  const handleCancelVerifyDocument = () => {
+    setConfirmationTitle("");
+    setConfirmationMessage("");
+  };
+
+  const handleYesConfirmation = async () => {
+    setConfirmationTitle("");
+    setConfirmationMessage("");
+
+    if (expandedShopId) {
+      try {
+        const statusResponse = await axios.post(
+          "http://localhost:8081/admin/updateIsVerified",
+          {
+            shopId: expandedShopId,
+          }
+        );
+        if (statusResponse.data.status === "success") {
+          setMessageTitle("Success");
+          setMessage(statusResponse.data.message);
+        } else {
+          setMessageTitle("Error");
+          setMessage("Something went wrong");
+          setDocuments((prevDocs) =>
+            prevDocs.filter((document) => document.ShopID !== expandedShopId)
+          );
+        }
+      } catch (error) {
+        console.log(error);
+        setMessageTitle("Error");
+        setMessage("Something went wrong");
+      }
+    }
+    setTimeout(() => {
+      setMessageTitle("");
+      setMessage("");
+    }, 3000);
+  };
+
   return (
     <>
+      {messageTitle && messageTitle === "Error" && (
+        <ErrorMessage title={messageTitle} message={message} />
+      )}
+      {messageTitle && messageTitle === "Success" && (
+        <SuccessMessage title={messageTitle} message={message} />
+      )}
+      {confirmationTitle && (
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-30 z-30">
+          <Confirmation
+            confirmationTitle={confirmationTitle}
+            confirmationMessage={confirmationMessage}
+            cancelConfirmation={handleCancelVerifyDocument}
+            yesConfirmation={handleYesConfirmation}
+          />
+        </div>
+      )}
       <div className="flex gap-3 text-4xl font-bold">
         <FontAwesomeIcon icon={faFile} />
         <h2>Documents Verification</h2>
@@ -65,7 +137,7 @@ export const DocumentsVerification = () => {
                     <h3 className="font-bold text-xl">
                       {document.firstName} {document.lastName}
                     </h3>
-                    <p>{document.userRole}</p>
+                    <p>{capitalizeFirstChar(document.userRole)}</p>
                   </div>
 
                   <p className="w-full text-lg">
@@ -108,7 +180,10 @@ export const DocumentsVerification = () => {
               </div>
               {expandedShopId === document.shopID && (
                 <div className="flex flex-col items-end mt-3">
-                  <button className="w-[75%] py-2 rounded-lg bg-purple-200 text-white font-bold text-lg border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out">
+                  <button
+                    onClick={handleVerifyDocument}
+                    className="w-[75%] py-2 rounded-lg bg-purple-200 text-white font-bold text-lg border-2 border-purple-200 hover:bg-white duration-300 hover:text-purple-200 ease-in-out"
+                  >
                     Verify Document
                   </button>
                 </div>

@@ -10,20 +10,26 @@ export const Dashboard = () => {
         <h2>Dashboard</h2>
       </div>
 
-      <div className="min-h-[70vh] max-h-[70vh]">
-        <div class="mt-10 flex justify-between gap-10 p-4 items-center text-white">
-          <div class="w-full py-5 flex flex-col justify-center items-center gap-3 bg-purple-200 rounded-lg">
-            <h3 class="text-3xl font-semibold">Orders</h3>
-            <p className="text-xl">10</p>
-          </div>
-          <div class="w-full py-5 flex flex-col justify-center items-center gap-3 bg-purple-200 rounded-lg">
-            <h3 class="text-3xl font-semibold">Received</h3>
-            <p className="text-xl">10</p>
-          </div>
-          <div class="w-full py-5 flex flex-col justify-center items-center gap-3  bg-purple-200 rounded-lg">
-            <h3 class="text-3xl font-semibold">Deliveries</h3>
-            <p className="text-xl">10</p>
-          </div>
+      <div class="mt-10 grid grid-cols-3 grid-rows-2 gap-10 p-4 items-center text-white">
+        <div class="py-5 h-full flex flex-col justify-center items-center gap-3 col-span-1 row-span-2 bg-purple-200 rounded-lg">
+          <h3 class="text-center text-5xl font-semibold">Total Reports</h3>
+          <p className="text-xl">500</p>
+        </div>
+        <div class="py-5 flex flex-col justify-center items-center gap-3  col-span-1 row-span-1 bg-purple-200 rounded-lg">
+          <h3 class="text-3xl font-semibold">Total Customers</h3>
+          <p className="text-xl">10</p>
+        </div>
+        <div class="py-5 flex flex-col justify-center items-center gap-3  col-span-1 row-span-1 bg-purple-200 rounded-lg">
+          <h3 class="text-3xl font-semibold">Total Retailers</h3>
+          <p className="text-xl">10</p>
+        </div>
+        <div class="py-5 flex flex-col justify-center items-center gap-3  col-span-1 row-span-1 bg-purple-200 rounded-lg">
+          <h3 class="text-3xl font-semibold">Total Distributors</h3>
+          <p className="text-xl">10</p>
+        </div>
+        <div class="py-5 flex flex-col justify-center items-center gap-3  col-span-1 row-span-1 bg-purple-200 rounded-lg">
+          <h3 class="text-3xl font-semibold">Total Manufacturers</h3>
+          <p className="text-xl">10</p>
         </div>
       </div>
     </>

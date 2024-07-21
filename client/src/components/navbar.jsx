@@ -154,13 +154,15 @@ export const Navbar = () => {
       </div>
 
       <div className="flex items-center gap-6">
-        <p
-          onClick={handleShopClick}
-          className="font-inter font-bold text-lg cursor-pointer hover:text-purple-200 duration-300 ease-in-out"
-        >
-          Shop
-        </p>
-        {location.pathname !== "/cart" && location.pathname !== "/order" && (
+        {user?.userRole !== "admin" && (
+          <p
+            onClick={handleShopClick}
+            className="font-inter font-bold text-lg cursor-pointer hover:text-purple-200 duration-300 ease-in-out"
+          >
+            Shop
+          </p>
+        )}
+        {user?.userRole !== "admin" && location.pathname !== "/cart" && location.pathname !== "/order" && (
           <p
             onClick={handleCartClick}
             className="font-inter font-bold text-lg cursor-pointer hover:text-purple-200 duration-300 ease-in-out"

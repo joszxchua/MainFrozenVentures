@@ -189,14 +189,16 @@ export const Settings = () => {
               <FontAwesomeIcon icon={faLock} className="mr-3" />
               Security
             </li>
-            <li
-              onClick={handlePurchaseHistoryClick}
-              className="cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out"
-            >
-              <FontAwesomeIcon icon={faClockRotateLeft} className="mr-3" />
-              Purchase History
-            </li>
-            {user.userRole !== "customer" && (
+            {user.userRole !== "admin" && (
+              <li
+                onClick={handlePurchaseHistoryClick}
+                className="cursor-pointer hover:bg-purple-200 hover:text-white rounded-lg p-3 duration-300 ease-in-out"
+              >
+                <FontAwesomeIcon icon={faClockRotateLeft} className="mr-3" />
+                Purchase History
+              </li>
+            )}
+            {user.userRole !== "customer" && user.userRole !== "admin" && (
               <li
                 onClick={handleSetUpShopClick}
                 className={`${

@@ -59,23 +59,25 @@ export const UserList = () => {
         <h2>User List</h2>
       </div>
 
-      <div className="mt-5 flex gap-5">
-        {["All", "Admin", "Retailer", "Distributor", "Manufacturer"].map((filter) => (
-          <button
-            key={filter}
-            onClick={() => handleFilterChange(filter)}
-            className={`w-fit px-3 py-1 rounded-md border-2 font-bold text-lg ${
-              currentFilter === filter
-                ? "bg-purple-200 text-white border-purple-200"
-                : "bg-white text-purple-200 border-purple-200 hover:bg-purple-200 duration-300 hover:text-white ease-in-out"
-            }`}
-          >
-            {filter}
-          </button>
-        ))}
-      </div>
+      <div className="relative min-h-[70vh] max-h-[70vh] overflow-auto">
+        <div className="mt-5 flex gap-5">
+          {["All", "Admin", "Retailer", "Distributor", "Manufacturer"].map(
+            (filter) => (
+              <button
+                key={filter}
+                onClick={() => handleFilterChange(filter)}
+                className={`w-fit px-3 py-1 rounded-md border-2 font-bold text-lg ${
+                  currentFilter === filter
+                    ? "bg-purple-200 text-white border-purple-200"
+                    : "bg-white text-purple-200 border-purple-200 hover:bg-purple-200 duration-300 hover:text-white ease-in-out"
+                }`}
+              >
+                {filter}
+              </button>
+            )
+          )}
+        </div>
 
-      <div className="relative min-h-[70vh] max-h-[70vh]">
         {filteredUsers.length > 0 ? (
           filteredUsers.map((user) => (
             <div

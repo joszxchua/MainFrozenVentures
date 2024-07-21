@@ -51,14 +51,16 @@ export const MenuDropdown = forwardRef((props, ref) => {
           <FontAwesomeIcon icon={faLock} className="mr-3" />
           Security
         </li>
-        <li
-          className="cursor-pointer rounded-lg hover:bg-purple-200 hover:text-white p-3 duration-300 ease-in-out"
-          onClick={handlePurchaseHistory}
-        >
-          <FontAwesomeIcon icon={faClockRotateLeft} className="mr-3" />
-          Purchase History
-        </li>
-        {user?.userRole !== "customer" && (
+        {user?.userRole !== "admin" && (
+          <li
+            className="cursor-pointer rounded-lg hover:bg-purple-200 hover:text-white p-3 duration-300 ease-in-out"
+            onClick={handlePurchaseHistory}
+          >
+            <FontAwesomeIcon icon={faClockRotateLeft} className="mr-3" />
+            Purchase History
+          </li>
+        )}
+        {user?.userRole !== "customer" && user?.userRole !== "admin" && (
           <li
             className="text-gray-900 cursor-pointer rounded-lg hover:bg-purple-200 hover:text-white p-3 duration-300 ease-in-out"
             onClick={() => handleNavigation("setUpShop")}

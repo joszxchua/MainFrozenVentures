@@ -17,11 +17,13 @@ const capitalizeFirstChar = (str) => {
 
 export const DocumentsVerification = () => {
   const [documents, setDocuments] = useState([]);
+  const [filteredDocuments, setFilteredDocuments] = useState([]);
   const [expandedShopId, setExpandedShopId] = useState(null);
   const [confirmationTitle, setConfirmationTitle] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [currentFilter, setCurrentFilter] = useState("All");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +36,7 @@ export const DocumentsVerification = () => {
             (document) => document.isVerified === 0
           );
           setDocuments(unverifiedDocuments);
+          setFilteredDocuments(unverifiedDocuments);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -42,6 +45,20 @@ export const DocumentsVerification = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (currentFilter === "All") {
+      setFilteredDocuments(documents);
+    } else {
+      setFilteredDocuments(
+        documents.filter((doc) => doc.userRole === currentFilter.toLowerCase())
+      );
+    }
+  }, [currentFilter, documents]);
+
+  const handleFilterChange = (filter) => {
+    setCurrentFilter(filter);
+  };
 
   const handleShowButton = (shopID) => {
     setExpandedShopId(expandedShopId === shopID ? null : shopID);
@@ -119,9 +136,25 @@ export const DocumentsVerification = () => {
         <h2>Documents Verification</h2>
       </div>
 
+      <div className="mt-5 flex gap-5">
+        {["All", "Retailer", "Distributor", "Manufacturer"].map((filter) => (
+          <button
+            key={filter}
+            onClick={() => handleFilterChange(filter)}
+            className={`w-fit px-3 py-1 rounded-md border-2 font-bold text-lg ${
+              currentFilter === filter
+                ? "bg-purple-200 text-white border-purple-200"
+                : "bg-white text-purple-200 border-purple-200 hover:bg-purple-200 duration-300 hover:text-white ease-in-out"
+            }`}
+          >
+            {filter}
+          </button>
+        ))}
+      </div>
+
       <div className="relative min-h-[70vh] max-h-[70vh]">
-        {documents.length > 0 ? (
-          documents.map((document) => (
+        {filteredDocuments.length > 0 ? (
+          filteredDocuments.map((document) => (
             <div
               key={document.shopID}
               className="bg-gray-100 mt-5 px-4 py-3 rounded-lg"
@@ -193,10 +226,9 @@ export const DocumentsVerification = () => {
           ))
         ) : (
           <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] flex flex-col items-center gap-3">
-            <h2 className="text-4xl font-bold">No Orders</h2>
+            <h2 className="text-4xl font-bold">No Documents</h2>
             <p className="text-lg text-center">
-              Effortlessly manage and track your incoming orders, simplifying
-              your workflow and enhancing productivity
+              No documents found based on the selected filter
             </p>
           </div>
         )}

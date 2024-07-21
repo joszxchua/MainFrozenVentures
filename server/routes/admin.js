@@ -64,4 +64,26 @@ router.post("/documentsFetch", (req, res) => {
   });
 });
 
+router.post("/fetchAllAccounts", (req, res) => {
+  const fetchAllAccountsSql = `SELECT *
+                                   FROM account_info ai
+                               INNER JOIN 
+                                   personal_info pi ON ai.accountID = pi.accountID`;
+
+  db.query(fetchAllAccountsSql, (err, results) => {
+    if (err) {
+      console.error("Database fetch error:", err);
+      return res.status(500).json({
+        status: "error",
+        message: "Database fetch error",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      users: results,
+    });
+  });
+});
+
 module.exports = router;

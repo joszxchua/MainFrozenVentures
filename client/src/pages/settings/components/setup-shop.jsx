@@ -143,6 +143,7 @@ export const SetUpShop = () => {
   };
 
   const handleSelectPicture = () => {
+    console.log(fileInputRef.current)
     fileInputRef.current.click();
   };
 
@@ -290,9 +291,6 @@ export const SetUpShop = () => {
       setDocument(null);
       setIsLoading(false);
       setIsVerifyingShop(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
     }, 2500);
   };
 
@@ -375,12 +373,20 @@ export const SetUpShop = () => {
         >
           <div className="w-full flex gap-10">
             <div className="w-full flex flex-col gap-5 items-center justify-center">
-              {shopLogoPreview ? (
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                style={{ display: "none" }}
+              />
+
+               {shopLogoPreview ? (
                 <img
                   onClick={isSettingUpShop ? handleSelectPicture : null}
                   src={shopLogoPreview}
                   alt="Shop Logo"
-                  className="rounded-lg w-60 h-60 object-cover"
+                  className="rounded-lg w-60 h-60 object-cover cursor-pointer"
                 />
               ) : (
                 <FontAwesomeIcon
@@ -389,15 +395,6 @@ export const SetUpShop = () => {
                   className="text-[200px]"
                 />
               )}
-
-              <input
-                id="fileInput"
-                type="file"
-                accept="image/*"
-                style={{ display: "none" }}
-                ref={fileInputRef}
-                onChange={handleFileChange}
-              />
 
               {isSettingUpShop && (
                 <button
@@ -495,18 +492,17 @@ export const SetUpShop = () => {
           </div>
 
           <div className="mt-5 flex flex-col gap-2 items-center text-xl">
-            <label className="font-semibold" htmlFor="shopImage">
+            <label className="font-semibold" htmlFor="shopDocument">
               Document:
             </label>
             <input
               type="file"
-              id="shopImage"
-              name="shopImage"
+              id="shopDocument"
+              name="shopDocument"
               accept=".pdf"
               className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               disabled={!isVerifyingShop}
               onChange={handleDocumentChange}
-              ref={fileInputRef}
             />
           </div>
 

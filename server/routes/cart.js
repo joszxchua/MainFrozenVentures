@@ -3,6 +3,35 @@ const db = require("../db");
 
 const router = express.Router();
 
+router.post("/removeFromCartAfterOrder", async (req, res) => {
+  const { accountId, productId, sizeId } = req.body;
+
+  if (!accountId || !productId || !sizeId) {
+    return res.status(400).json({
+      status: "error",
+      message: "Missing accountID, productID and sizeID",
+    });
+  }
+
+  const removeItemSql =
+    "DELETE FROM user_cart WHERE accountID = ? AND productID = ? AND sizeID = ?";
+
+  db.query(removeItemSql, [accountId, productId, sizeId], (err, results) => {
+    if (err) {
+      console.error("Error removing item:", err);
+      return res.status(500).json({
+        status: "error",
+        message: "Database delete error",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Product removed successfully",
+    });
+  });
+});
+
 router.post("/updateQuantity", async (req, res) => {
   const { accountId, cartId, quantity } = req.body;
 
@@ -49,7 +78,8 @@ router.post("/removeFromCart", async (req, res) => {
     });
   }
 
-  const removeItemSql = "DELETE FROM user_cart WHERE accountID = ? AND cartID = ?";
+  const removeItemSql =
+    "DELETE FROM user_cart WHERE accountID = ? AND cartID = ?";
 
   db.query(removeItemSql, [accountId, cartId], (err, results) => {
     if (err) {

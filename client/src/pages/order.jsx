@@ -34,6 +34,7 @@ export const Order = () => {
   const [selectedMunicipality, setSelectedMunicipality] = useState("");
   const [selectedBarangay, setSelectedBarangay] = useState("");
   const [barangays, setBarangays] = useState([]);
+  const [productIds, setProductIds] = useState([]);
   const [shippingMode, setShippingMode] = useState("Pickup");
   const [messageTitle, setMessageTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -148,6 +149,8 @@ export const Order = () => {
     }
 
     let orderTotal = 0;
+    const productIdsArray = [];
+    const sizeIdsArray = [];
 
     for (const product of productsArray) {
       const serviceFee = product.price * product.quantity * SERVICE_FEE_RATE;
@@ -162,6 +165,8 @@ export const Order = () => {
         vat;
 
       orderTotal += totalPrice;
+      productIdsArray.push(product.productId);
+      sizeIdsArray.push(product.sizeId);
 
       const orderData = {
         accountId: user.accountId,
@@ -180,28 +185,44 @@ export const Order = () => {
         province: data.province,
       };
 
-      console.log(orderData);
       try {
         const response = await axios.post(
           "http://localhost:8081/order/placeOrder",
           orderData
         );
         if (response.data.status === "success") {
-          const invoiceData = {
-            accountId: user.accountId,
-            orderDate: new Date().toISOString().split("T")[0],
-            receiveDate: data.receiveDate,
-            shippingMode: shippingMode,
-            totalCost: orderTotal,
-          };
+          for (let i = 0; i < productIdsArray.length; i++) {
+            try {
+              const cartResponse = await axios.post(
+                "http://localhost:8081/cart/removeFromCartAfterOrder",
+                {
+                  accountId: user.accountId,
+                  productId: productIdsArray[i],
+                  sizeId: sizeIdsArray[i],
+                }
+              );
 
-          setMessageTitle("Success");
-          setMessage(response.data.message);
+              const invoiceData = {
+                accountId: user.accountId,
+                orderDate: new Date().toISOString().split("T")[0],
+                receiveDate: data.receiveDate,
+                shippingMode: shippingMode,
+                totalCost: orderTotal,
+              };
 
-          setTimeout(() => {
-            clearOrder();
-            navigate("/order-invoice", { state: { invoiceData } });
-          }, 1500);
+              setMessageTitle("Success");
+              setMessage(response.data.message);
+
+              setTimeout(() => {
+                clearOrder();
+                navigate("/order-invoice", { state: { invoiceData } });
+              }, 1500);
+            } catch (error) {
+              console.error("Something went wrong:", error);
+              setMessageTitle("Error");
+              setMessage("Something went wrong");
+            }
+          }
         } else {
           setMessageTitle("Error");
           setMessage(response.data.message);

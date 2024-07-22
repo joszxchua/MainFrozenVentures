@@ -10,6 +10,11 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
+const capitalizeFirstChar = (str) => {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 export const OrderInvoice = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -59,7 +64,8 @@ export const OrderInvoice = () => {
 
         <p className="flex justify-between text-xl font-semibold border-b pb-5">
           <span>Customer Name</span>
-          {userInfo.firstName} {userInfo.lastName}
+          {capitalizeFirstChar(userInfo.firstName)}{" "}
+          {capitalizeFirstChar(userInfo.lastName)}
         </p>
 
         <div className="flex flex-col items-center justify-center gap-2 my-10">

@@ -59,6 +59,11 @@ export const OrderDetails = () => {
           background: "#ADFF97",
           color: "#239205",
         };
+      case "To Receive":
+        return {
+          background: "#F7EA8A",
+          color: "#AE9900",
+        };
       case "Cancelled":
         return {
           background: "#FF9797",
@@ -131,7 +136,7 @@ export const OrderDetails = () => {
           setMessage("Something went wrong");
         }
       } catch (error) {
-        console.log(error)
+        console.log(error);
         setMessageTitle("Error");
         setMessage("Something went wrong");
       }
@@ -208,14 +213,6 @@ export const OrderDetails = () => {
       )}
       <div className="flex justify-between items-center mb-5">
         <h1 className="text-4xl font-bold">Order Details</h1>
-        {order.status === "Pending" && (
-          <button
-            onClick={handleCancelOrder}
-            className="bg-red-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-red-200 hover:bg-white hover:text-red-200 duration-300 ease-in-out"
-          >
-            Cancel Order
-          </button>
-        )}
       </div>
 
       <div className="flex flex-col md:flex-row gap-10">
@@ -295,15 +292,16 @@ export const OrderDetails = () => {
                 <p className="font-bold text-xl">{order.status}</p>
               </div>
 
-              {order.status === "Received" && order.isReviewed === 1 && <div
-                className="w-fit h-fit flex items-center gap-3 rounded-3xl px-2 py-1"
-                style={getStatusStyles(order.status)}
-              >
-                <FontAwesomeIcon icon={faCircle} className="text-sm" />
-                <p className="font-bold text-xl">Reviewed</p>
-              </div>}
+              {order.status === "Pending" && (
+                <button
+                  onClick={handleCancelOrder}
+                  className="bg-red-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-red-200 hover:bg-white hover:text-red-200 duration-300 ease-in-out"
+                >
+                  Cancel Order
+                </button>
+              )}
 
-              {order.status === "Pending" && order.isReviewed === 0 && (
+              {order.status === "To Receive" && order.isReviewed === 0 && (
                 <button
                   onClick={handleReceiveOrder}
                   className="bg-green-200 text-white font-bold text-lg px-3 py-1 rounded-md border-2 border-green-200 hover:bg-white hover:text-green-200 duration-300 ease-in-out"
@@ -311,6 +309,17 @@ export const OrderDetails = () => {
                   Receive Order
                 </button>
               )}
+
+              {order.status === "Received" && order.isReviewed === 1 && (
+                <div
+                  className="w-fit h-fit flex items-center gap-3 rounded-3xl px-2 py-1"
+                  style={getStatusStyles(order.status)}
+                >
+                  <FontAwesomeIcon icon={faCircle} className="text-sm" />
+                  <p className="font-bold text-xl">Reviewed</p>
+                </div>
+              )}
+
               {order.status === "Received" && order.isReviewed === 0 && (
                 <button
                   onClick={handleReviewProduct}

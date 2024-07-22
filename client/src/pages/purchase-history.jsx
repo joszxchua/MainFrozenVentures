@@ -79,6 +79,11 @@ export const PurchaseHistory = () => {
           background: "#ADFF97",
           color: "#239205",
         };
+      case "To Receive":
+        return {
+          background: "#F7EA8A",
+          color: "#AE9900",
+        };
       case "Cancelled":
         return {
           background: "#FF9797",

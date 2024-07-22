@@ -5,6 +5,42 @@ const db = require("../db");
 
 const router = express.Router();
 
+router.post("/updateStock", (req, res) => {
+  const { productId, sizeId, quantity } = req.body;
+
+  if (!productId || !sizeId || quantity === undefined) {
+    return res.json({
+      status: 0,
+      message: "Product ID, Size ID, and quantity are required",
+    });
+  }
+
+  const sql = `
+    UPDATE product_size 
+    SET stock = stock - ?
+    WHERE productID = ? AND sizeID = ? AND stock >= ?
+  `;
+
+  db.query(sql, [quantity, productId, sizeId, quantity], (err, result) => {
+    if (err) {
+      return res.json({ status: 0, message: "Database error", error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.json({
+        status: 0,
+        message:
+          "No product found with the provided product ID and size ID, or insufficient stock",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Product stock updated successfully",
+    });
+  });
+});
+
 const productStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/productImages");

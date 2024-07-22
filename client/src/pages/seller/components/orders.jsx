@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { UserContext } from "../../../context/user-context";
 import { Confirmation } from "../../../components/confirmation";
@@ -22,7 +22,6 @@ const formatDate = (dateString) => {
 export const Orders = () => {
   const { user } = useContext(UserContext);
   const [orders, setOrders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [confirmationTitle, setConfirmationTitle] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
@@ -41,11 +40,6 @@ export const Orders = () => {
           );
           if (productResponse.data.status === "success") {
             setOrders(productResponse.data.order);
-            setFilteredOrders(
-              productResponse.data.order.filter(
-                (order) => order.status === currentFilter
-              )
-            );
           }
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -56,34 +50,20 @@ export const Orders = () => {
     fetchData();
   }, [user.accountId]);
 
-  useEffect(() => {
-    let sortedOrders = [...filteredOrders];
-
-    sortedOrders.sort((a, b) =>
+  const filteredAndSortedOrders = useMemo(() => {
+    let filtered = orders;
+    if (currentFilter !== "All") {
+      filtered = orders.filter((order) => order.status === currentFilter);
+    }
+    return filtered.sort((a, b) =>
       sortOrder === "asc"
         ? new Date(a.orderDate) - new Date(b.orderDate)
         : new Date(b.orderDate) - new Date(a.orderDate)
     );
-
-    setFilteredOrders(sortedOrders);
-  }, [sortOrder, filteredOrders]);
-
-  useEffect(() => {
-    if (currentFilter === "All") {
-      setFilteredOrders(orders);
-    } else {
-      setFilteredOrders(
-        orders.filter((order) => order.status === currentFilter)
-      );
-    }
-  }, [currentFilter, orders]);
+  }, [orders, currentFilter, sortOrder]);
 
   const handleShowButton = (orderID) => {
     setExpandedOrderId(expandedOrderId === orderID ? null : orderID);
-  };
-
-  const handleCloseButton = () => {
-    setExpandedOrderId(null);
   };
 
   const handleChangeStatus = (shippingMode) => {
@@ -97,43 +77,37 @@ export const Orders = () => {
     );
   };
 
-  const handleCloseChangeStatus = () => {
-    setConfirmationTitle("");
-    setConfirmationMessage("");
-  };
-
   const handleYesConfirmation = async () => {
     setConfirmationTitle("");
     setConfirmationMessage("");
     setExpandedOrderId(null);
 
     if (expandedOrderId) {
+      const order = orders.find((o) => o.orderID === expandedOrderId);
+      if (!order) return;
+
       try {
         const statusResponse = await axios.post(
           "http://localhost:8081/order/updateOrderStatus",
-          {
-            orderId: expandedOrderId,
-          }
+          { orderId: expandedOrderId }
         );
+
+        await axios.post("http://localhost:8081/product/updateStock", {
+          productId: order.productID,
+          sizeId: order.sizeID,
+          quantity: order.quantity,
+        });
+
         if (statusResponse.data.status === "success") {
           setMessageTitle("Success");
           setMessage(statusResponse.data.message);
 
-          try {
-            const productResponse = await axios.post(
-              "http://localhost:8081/order/sellerFetchOrders",
-              { accountId: user.accountId }
-            );
-            if (productResponse.data.status === "success") {
-              setOrders(productResponse.data.order);
-              setFilteredOrders(
-                productResponse.data.order.filter(
-                  (order) => order.status === currentFilter
-                )
-              );
-            }
-          } catch (error) {
-            console.error("Error fetching data:", error);
+          const productResponse = await axios.post(
+            "http://localhost:8081/order/sellerFetchOrders",
+            { accountId: user.accountId }
+          );
+          if (productResponse.data.status === "success") {
+            setOrders(productResponse.data.order);
           }
         } else {
           setMessageTitle("Error");
@@ -149,14 +123,6 @@ export const Orders = () => {
       setMessageTitle("");
       setMessage("");
     }, 3000);
-  };
-
-  const handleFilterChange = (filter) => {
-    setCurrentFilter(filter);
-  };
-
-  const handleSortChange = () => {
-    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
   const getStatusStyles = (status) => {
@@ -199,7 +165,10 @@ export const Orders = () => {
           <Confirmation
             confirmationTitle={confirmationTitle}
             confirmationMessage={confirmationMessage}
-            cancelConfirmation={handleCloseChangeStatus}
+            cancelConfirmation={() => {
+              setConfirmationTitle("");
+              setConfirmationMessage("");
+            }}
             yesConfirmation={handleYesConfirmation}
           />
         </div>
@@ -215,7 +184,7 @@ export const Orders = () => {
             (filter) => (
               <button
                 key={filter}
-                onClick={() => handleFilterChange(filter)}
+                onClick={() => setCurrentFilter(filter)}
                 className={`w-fit px-3 py-1 rounded-md border-2 font-bold text-lg ${
                   currentFilter === filter
                     ? "bg-purple-200 text-white border-purple-200"
@@ -228,7 +197,7 @@ export const Orders = () => {
           )}
         </div>
         <button
-          onClick={handleSortChange}
+          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
           className="flex items-center gap-1 font-bold text-lg"
         >
           Order Date
@@ -239,8 +208,8 @@ export const Orders = () => {
       </div>
 
       <div className="relative mt-5 min-h-[70vh] max-h-[70vh] font-inter overflow-auto">
-        {filteredOrders.length > 0 ? (
-          filteredOrders.map((order) => (
+        {filteredAndSortedOrders.length > 0 ? (
+          filteredAndSortedOrders.map((order) => (
             <div
               key={order.orderID}
               className="bg-gray-100 mt-5 px-4 py-3 rounded-lg"
@@ -287,13 +256,13 @@ export const Orders = () => {
                     <div className="h-fit px-3 py-2 rounded-full hover:bg-gray-100 duration-300 ease-in-out">
                       {expandedOrderId === order.orderID ? (
                         <FontAwesomeIcon
-                          onClick={handleCloseButton}
+                          onClick={() => setExpandedOrderId(null)}
                           icon={faChevronUp}
                           className="cursor-pointer"
                         />
                       ) : (
                         <FontAwesomeIcon
-                          onClick={() => handleShowButton(order.orderID)}
+                          onClick={() => setExpandedOrderId(order.orderID)}
                           icon={faChevronDown}
                           className="cursor-pointer"
                         />

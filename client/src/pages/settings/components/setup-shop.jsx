@@ -65,6 +65,7 @@ export const SetUpShop = () => {
 
           setShopData(accountData);
           setInitialShopValues({
+            shopLogo: accountData.shopLogo,
             shopName: accountData.shopName,
             shopDescription: accountData.shopDescription,
           });
@@ -74,7 +75,9 @@ export const SetUpShop = () => {
 
           setShopLogo(accountData.shopLogo);
           setShopLogoPreview(
-            `http://localhost:8081/shopLogos/${accountData.shopLogo}`
+            accountData.shopLogo
+              ? `http://localhost:8081/shopLogos/${accountData.shopLogo}`
+              : null
           );
 
           setInitialAddressValues({
@@ -137,13 +140,17 @@ export const SetUpShop = () => {
 
   const handleCancelSetUpShop = () => {
     setIsSettingUpShop(false);
-    setShopLogo(null);
-    setShopLogoPreview(null);
-    reset();
+    setShopLogo(initialShopValues.shopLogo);
+    setShopLogoPreview(
+      shopLogo
+        ? `http://localhost:8081/shopLogos/${initialShopValues.shopLogo}`
+        : null
+    );
+    setValueShop("shopName", initialShopValues.shopName);
+    setValueShop("shopDescription", initialShopValues.shopDescription);
   };
 
   const handleSelectPicture = () => {
-    console.log(fileInputRef.current)
     fileInputRef.current.click();
   };
 
@@ -381,16 +388,16 @@ export const SetUpShop = () => {
                 style={{ display: "none" }}
               />
 
-               {shopLogoPreview ? (
+              {shopLogoPreview ? (
                 <img
-                  onClick={isSettingUpShop ? handleSelectPicture : null}
+                  onClick={isSettingUpShop && handleSelectPicture}
                   src={shopLogoPreview}
                   alt="Shop Logo"
                   className="rounded-lg w-60 h-60 object-cover cursor-pointer"
                 />
               ) : (
                 <FontAwesomeIcon
-                  onClick={isSettingUpShop ? handleSelectPicture : null}
+                  onClick={isSettingUpShop && handleSelectPicture}
                   icon={faShop}
                   className="text-[200px]"
                 />
@@ -399,7 +406,7 @@ export const SetUpShop = () => {
               {isSettingUpShop && (
                 <button
                   type="button"
-                  onClick={handleSelectPicture}
+                  onClick={isSettingUpShop && handleSelectPicture}
                   className="font-bold px-4 py-2 bg-purple-200 border-2 border-purple-200 text-white cursor-pointer rounded-lg hover:bg-white hover:text-purple-200 duration-300"
                 >
                   Select Image

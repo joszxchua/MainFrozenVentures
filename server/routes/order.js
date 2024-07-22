@@ -40,7 +40,7 @@ router.post("/updateOrderStatus", (req, res) => {
   });
 });
 
-router.post("/sellerFetchOrders", (req,res) => {
+router.post("/sellerFetchOrders", (req, res) => {
   const { accountId } = req.body;
 
   if (!accountId) {
@@ -84,9 +84,10 @@ router.post("/sellerFetchOrders", (req,res) => {
     return res.status(200).json({
       status: "success",
       order: results,
+      smsApiKey: process.env.SMS_API_KEY,
     });
   });
-})
+});
 
 router.post("/cancelOrder", (req, res) => {
   const { accountId, orderId, reason } = req.body;

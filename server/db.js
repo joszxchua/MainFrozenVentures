@@ -1,18 +1,19 @@
+require("dotenv").config();
 const mysql = require("mysql");
 
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "main-frozen-ventures",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
 });
 
-db.connect(err => {
+db.connect((err) => {
   if (err) {
-    console.error('Database connection failed: ' + err.stack);
+    console.error("Database connection failed: " + err.stack);
     return;
   }
-  console.log('Connected to database.');
+  console.log("Connected to database.");
 });
 
 module.exports = db;

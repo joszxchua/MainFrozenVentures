@@ -19,6 +19,18 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
+const capitalizeFirstChar = (str) => {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const smsFormat = (str) => {
+  if (str && str.length > 0) {
+    return `63${str.slice(1)}`;
+  }
+  return str;
+};
+
 export const Orders = () => {
   const { user } = useContext(UserContext);
   const [orders, setOrders] = useState([]);
@@ -29,6 +41,7 @@ export const Orders = () => {
   const [message, setMessage] = useState("");
   const [currentFilter, setCurrentFilter] = useState("All");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [smsApiKey, setSmsApiKey] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +53,7 @@ export const Orders = () => {
           );
           if (productResponse.data.status === "success") {
             setOrders(productResponse.data.order);
+            setSmsApiKey(productResponse.data.smsApiKey);
           }
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -61,10 +75,6 @@ export const Orders = () => {
         : new Date(b.orderDate) - new Date(a.orderDate)
     );
   }, [orders, currentFilter, sortOrder]);
-
-  const handleShowButton = (orderID) => {
-    setExpandedOrderId(expandedOrderId === orderID ? null : orderID);
-  };
 
   const handleChangeStatus = (shippingMode) => {
     setConfirmationTitle(
@@ -102,10 +112,66 @@ export const Orders = () => {
           setMessageTitle("Success");
           setMessage(statusResponse.data.message);
 
+          const messageText =
+            order.shippingMode === "Pickup"
+              ? `Good day ${capitalizeFirstChar(
+                  order.firstName
+                )} ${capitalizeFirstChar(
+                  order.lastName
+                )}, FrozenVentures Pickup!\n\nYour order ${order.name} ${
+                  order.flavor
+                }, ${order.size}, x${
+                  order.quantity
+                } is ready for pickup. Please prepare the exact amount of Php ${order.totalPrice.toFixed(
+                  2
+                )}.`
+              : `Good day ${capitalizeFirstChar(
+                  order.firstName
+                )} ${capitalizeFirstChar(
+                  order.lastName
+                )}, FrozenVentures Delivery!\n\nYour order ${order.name} ${
+                  order.flavor
+                }, ${order.size}, x${
+                  order.quantity
+                } is on the way, please prepare the exact amount of Php ${order.totalPrice.toFixed(
+                  2
+                )}.`;
+
+          const data = {
+            messages: [
+              {
+                destinations: [{ to: `${smsFormat(order.phone)}` }],
+                from: "FrozenVenturesSMS",
+                text: messageText,
+              },
+            ],
+          };
+
+          const myHeaders = {
+            Authorization: `App ${smsApiKey}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          };
+
+          try {
+            const response = await axios.post(
+              "https://vvn3gp.api.infobip.com/sms/2/text/advanced",
+              data,
+              { headers: myHeaders }
+            );
+            console.log("SMS sent successfully:", response.data);
+          } catch (error) {
+            console.error(
+              "Error sending SMS:",
+              error.response ? error.response.data : error.message
+            );
+          }
+
           const productResponse = await axios.post(
             "http://localhost:8081/order/sellerFetchOrders",
             { accountId: user.accountId }
           );
+
           if (productResponse.data.status === "success") {
             setOrders(productResponse.data.order);
           }

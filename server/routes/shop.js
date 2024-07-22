@@ -46,4 +46,33 @@ router.post(
   }
 );
 
+router.post("/updateShopAddress", (req, res) => {
+  const { accountId, street, barangay, municipality, province, zipCode } =
+    req.body;
+
+  const sql = `
+    UPDATE shop_info 
+    SET street = ?, barangay = ?, municipality = ?, province = ?, zipCode = ? 
+    WHERE accountID = ?`;
+
+  db.query(
+    sql,
+    [street, barangay, municipality, province, zipCode, accountId],
+    (err, result) => {
+      if (err) {
+        res.status(200).json({
+          status: "error",
+          message: "Failed to update shop address",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        status: "success",
+        message: "Shop address updated successfully",
+      });
+    }
+  );
+});
+
 module.exports = router;

@@ -6,6 +6,7 @@ const productRoutes = require("./routes/product");
 const cartRoutes = require("./routes/cart");
 const orderRoutes = require("./routes/order");
 const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use("/product", productRoutes);
 app.use("/cart", cartRoutes);
 app.use("/order", orderRoutes);
 app.use("/admin", adminRoutes);
+app.use("/shop", shopRoutes);
 
 app.get("/", (req, res) => {
   return res.json("From backend side");

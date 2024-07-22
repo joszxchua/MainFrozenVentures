@@ -186,7 +186,7 @@ export const SetUpShop = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8081/account/uploadShopDocuments",
+        "http://localhost:8081/shop/uploadShopDocuments",
         formData
       );
 
@@ -332,7 +332,7 @@ export const SetUpShop = () => {
         </form>
       </div>
 
-      {shopData.isVerified === 0 && (
+      {shopData.isVerified !== 1 && (
         <div className="mt-3">
           <div className="flex items-center">
             <p className="w-28 font-semibold text-gray-200">Verify Shop</p>
@@ -340,6 +340,12 @@ export const SetUpShop = () => {
           </div>
 
           <div className="mt-5 flex flex-col items-center">
+            {shopData.isVerified === 2 && (
+              <p className="px-3 py-1 font-bold text-lg text-red-200 bg-red-100 rounded-lg">
+                Your document was rejected, Please resubmit your document with
+                complete requirements
+              </p>
+            )}
             <h4 className="font-bold text-xl">
               Please insert the following into a single PDF file:
             </h4>

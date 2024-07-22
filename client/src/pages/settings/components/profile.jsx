@@ -123,6 +123,7 @@ export const Profile = () => {
           (barangay) => barangay.name === selectedBarangay
         );
         if (selectedBarangayObj) {
+          setValueAddress("province", "Bataan");
           setValueAddress("zipCode", selectedBarangayObj.zipCode);
         }
       }
@@ -439,7 +440,7 @@ export const Profile = () => {
               id="province"
               className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               {...registerAddress("province")}
-              disabled={!isEditingAddress}
+              readOnly
             />
           </div>
 
@@ -453,7 +454,7 @@ export const Profile = () => {
               id="zipCode"
               className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               {...registerAddress("zipCode")}
-              disabled={!isEditingAddress}
+              readOnly
             />
           </div>
 

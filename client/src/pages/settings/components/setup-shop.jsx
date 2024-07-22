@@ -128,6 +128,7 @@ export const SetUpShop = () => {
           (barangay) => barangay.name === selectedBarangay
         );
         if (selectedBarangayObj) {
+          setValueAddress("province", "Bataan");
           setValueAddress("zipCode", selectedBarangayObj.zipCode);
         }
       }
@@ -136,6 +137,8 @@ export const SetUpShop = () => {
 
   const handleSetUpShop = () => {
     setIsSettingUpShop(true);
+    setIsVerifyingShop(false);
+    setIsEditingAddress(false);
   };
 
   const handleCancelSetUpShop = () => {
@@ -219,6 +222,8 @@ export const SetUpShop = () => {
 
   const handleVerifyShop = () => {
     setIsVerifyingShop(true);
+    setIsSettingUpShop(false);
+    setIsEditingAddress(false);
   };
 
   const handleCancelVerifyShop = () => {
@@ -303,7 +308,8 @@ export const SetUpShop = () => {
 
   const handleEditAddressInfo = () => {
     setIsEditingAddress(true);
-    setIsEditingPersonal(false);
+    setIsSettingUpShop(false);
+    setIsVerifyingShop(false);
   };
 
   const handleCancelEditAddress = () => {
@@ -320,7 +326,7 @@ export const SetUpShop = () => {
   const onSubmitAddress = async (data) => {
     try {
       const response = await axios.post(
-        "http://localhost:8081/account/addressUpdate",
+        "http://localhost:8081/shop/updateShopAddress",
         {
           ...data,
           municipality: selectedMunicipality,
@@ -623,7 +629,7 @@ export const SetUpShop = () => {
               id="province"
               className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               {...registerAddress("province")}
-              disabled={!isEditingAddress}
+              readOnly
             />
           </div>
 
@@ -637,7 +643,7 @@ export const SetUpShop = () => {
               id="zipCode"
               className="text-lg px-3 py-1 border-[1px] border-gray-200 rounded-[5px] w-full outline-purple-200"
               {...registerAddress("zipCode")}
-              disabled={!isEditingAddress}
+              readOnly
             />
           </div>
 
